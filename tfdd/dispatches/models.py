@@ -1,9 +1,18 @@
 from django.db import models
 
 
+
+
 class Unit(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
+    def __unicode__(self):
+        return self.id
 
+class Follower(models.Model):
+    phone_number=models.CharField(max_length=20)
+    units = models.ManyToManyField(Unit)
+    def __unicode__(self):
+        return self.phone_number
 
 class Dispatch(models.Model):
     call_type = models.CharField(max_length=255)
@@ -17,8 +26,10 @@ class Dispatch(models.Model):
 
     class Meta:
         verbose_name_plural = 'Dispatches'
-
+        
 class RawDispatch(models.Model):
     dispatch = models.OneToOneField(Dispatch, related_name='raw')
     text = models.TextField()
     received = models.DateTimeField(auto_now_add=True)
+    
+
