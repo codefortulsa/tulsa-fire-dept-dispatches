@@ -1,8 +1,5 @@
 from django.db import models
 
-
-
-
 class Unit(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     def __unicode__(self):
@@ -26,10 +23,8 @@ class Dispatch(models.Model):
 
     class Meta:
         verbose_name_plural = 'Dispatches'
-        
+
 class RawDispatch(models.Model):
     dispatch = models.OneToOneField(Dispatch, related_name='raw')
     text = models.TextField()
     received = models.DateTimeField(auto_now_add=True)
-    
-

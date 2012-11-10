@@ -1,30 +1,32 @@
-from django.shortcuts import render_to_response
-
-from dispatches.models import Dispatch,Follower
-
-from dispatches.forms import FollowForm
-
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 
-from django.http import HttpResponseRedirect
+from dispatches.forms import FollowForm
+from dispatches.models import Dispatch, Follower, Unit
+
 
 def index(request):
     dispatches = Dispatch.objects.order_by('-dispatched')[:10]
     return render_to_response('index.html', {'dispatches': dispatches})
-    
-def follow_unit(request):
-    
+
+
+def follow_unit(request, unit_id):
+    assert unit_id
+    unit, created = Unit.objects.get_or_create(id=unit_id)
     if request.method == 'POST':
-        follower, created = get_or_create(Follower, phone)
-        form = FollowForm(request.POST) 
+        form = FollowForm(request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/dispatches') # Redirect after POST
+            phone = form.cleaned_data['phone_number']
+            follower, created = Follower.objects.get_or_create(
+                phone_number=phone)
+            follower.units.add(unit)
+            return redirect('responses_index') # Redirect after POST
     else:
         form = FollowForm() # An unbound form
 
-    c=RequestContext(request,    {
-            'form': form,'unit':request.GET['unit']
-        })
-    
+    c = RequestContext(request, {
+        'form': form, 'unit': unit_id
+    })
+
     return render_to_response('follow.html', c)

@@ -23,7 +23,7 @@
                     <p>Units:</p>
                     {% for unit in dispatch.units.all %}
                             <p>
-                        <a href='/dispatches/follow/?unit={{unit.id}}'data-role="button" data-icon="star">Follow {{unit.id}}</a>
+                            <a href='{% url follow_unit unit=unit.id %}' data-role="button" data-icon="star">Follow {{unit.id}}</a>
                         
                             </p>
                     

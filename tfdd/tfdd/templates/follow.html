@@ -13,10 +13,9 @@
             <h1>You are about to follow {{unit}}</h1>
         </div>
         <div data-role="content">	
-            <form action="/dispatches/follow/" method="post">
+            <form action="" method="post" data-ajax="false">
                 {% csrf_token %}
-                <input type='hidden' value='{{unit}}'>    
-                    {{ form.as_p }}
+                {{ form.as_p }}
                 <input type="submit" value="Submit" />
             </form>
         </div>
