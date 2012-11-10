@@ -64,13 +64,14 @@ END OF MESSAGE
 
 
 class Command(BaseCommand):
-    args = 'port=/dev/ttyUSB0, baudrate=9600, bytesize=8, parity=\'N\', '
-           'stopbits=1, timeout=None, xonxoff=False, rtscts=False, '
-           'writeTimeout=None, dsrdtr=False, interCharTimeout=None'
+    args = ('port=/dev/ttyUSB0, baudrate=1200, bytesize=8, parity=\'N\', '
+            'stopbits=1, timeout=None, xonxoff=False, rtscts=False, '
+            'writeTimeout=None, dsrdtr=False, interCharTimeout=None')
     help = 'Reads dispatches from the specified serial port'
 
     def handle(self, *args, **options):
         options.setdefault('port', '/dev/ttyUSB0')
+        options.setdefault('baudrate', 1200)
         s = Serial(*args, **options)
         for dispatch in examples:
             s.write(dispatch)
