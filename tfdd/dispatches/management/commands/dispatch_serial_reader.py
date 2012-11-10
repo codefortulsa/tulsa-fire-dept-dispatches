@@ -4,9 +4,9 @@ from serial import Serial
 from dispatches.models import RawDispatch
 
 class Command(BaseCommand):
-    args = 'port=/dev/ttyUSB0, baudrate=9600, bytesize=8, parity=\'N\', '
+    args = 'port=/dev/ttyUSB0, baudrate=1200, bytesize=8, parity=\'N\', '
            'stopbits=1, timeout=None, xonxoff=False, rtscts=False, '
-           'writeTimeout=None, dsrdtr=False, interCharTimeout=None'
+           'writeTimeout=None, dsrdtr=True, interCharTimeout=None'
     help = 'Reads dispatches from the specified serial port'
 
     def handle(self, *args, **options):
