@@ -95,8 +95,16 @@ class VerifyPhoneForm(forms.ModelForm):
         return user
 
 class UpdateSettings(forms.ModelForm):
+    phone = USPhoneNumberField(required=False)
+
     class Meta:
         model = User
         fields =('email',)
 
-    
+    def __init__(self, *args, **kwargs):
+        super(UpdateSettings, self).__init__(*args, **kwargs)
+        if self.instance:
+            self.initial['phone'] = self.instance.profile.phone
+
+    def save(self):
+        user = super(UpdateSettings, self).save()
