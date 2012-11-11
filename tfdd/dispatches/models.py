@@ -6,6 +6,8 @@ import requests
 import string
 import traceback
 
+import dateutil.parser
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
@@ -121,12 +123,22 @@ class RawDispatch(models.Model):
     sent = models.DateTimeField(blank=True, null=True)
     regex = re.compile(
         r'.*DISPATCH INFO\s+CALL TYPE\s+(?P<call_type>.+)\s+'
+        r'\((?P<call_type_desc>.*)\s*\)\s+'
         r'LOC\s+(?P<location>.+)\s+MP\s+(?P<map_page>.+)\s+'
-        r'DATE\s+(?P<date>\d+/\d+/\d+)\s+DIS\s+(?P<dispatch_time>\d+)\s+'
-        r'UNIT\s+(?P<units>.+)\s+TF\s+(?P<tf_id>\d+)\s+END OF MESSAGE', re.S)
+        r'DATE\s+(?P<date>\d+/\d+/\d+)\s+DIS\s+(?P<time>\d+)\s+'
+        r'UNIT\s+(?P<units>.+)\s+TF\s+(?P<tf>\d+)\s+END OF MESSAGE', re.S)
 
     def parse(self):
-        return self.regex.findall(self.text)
+        p = self.regex.match(self.text).groupdict()
+        if ';' in p['location']:
+            p['location'], p['notes'] = p['location'].split(';', 1)
+        for k, v in p.items():
+            p[k] = v.strip()
+        unit_ids = p.pop('units').split()
+        p['dispatched'] = dateutil.parser.parse(
+            p.pop('date') + ' ' + p.pop('time'))
+
+        return p
 
     def post(self):
         url = settings.DISPATCH_POST_URL
