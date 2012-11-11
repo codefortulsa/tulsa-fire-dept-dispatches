@@ -83,7 +83,6 @@ def post(request):
     raw_dispatch = RawDispatch(text=request.POST.get('text'))
     if raw_dispatch.text:
         raw_dispatch.parse()
-        raw_dispatch.save()
         ACCEPTED = 202
         return HttpResponse(status=ACCEPTED)
     else:
