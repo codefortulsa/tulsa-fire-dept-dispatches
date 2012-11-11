@@ -166,6 +166,7 @@ SERIAL_BAUDRATE = 1200
 TWILIO_ACCOUNT = 'override in local_settings'
 TWILIO_TOKEN = 'override in local_settings'
 BASE_URL = 'http://tfdd.co'
+LOGIN_REDIRECT_URL = '/dispatches/'
 
 try:
     from local_settings import *

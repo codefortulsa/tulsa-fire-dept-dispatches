@@ -1,11 +1,15 @@
 import logging
 import traceback
 
+from django.contrib.auth.views import login as auth_login
+from django.contrib.auth.views import logout as auth_logout
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from emailusernames.forms import EmailAuthenticationForm
 
 from dispatches.forms import FollowForm, RegisterForm, Send_Text, VerifyEmailForm, VerifyPhoneForm
 from dispatches.models import Dispatch, RawDispatch, Unit
@@ -60,6 +64,12 @@ def send_text(request):
 
         return render_to_response('send_text.html', c)
 
+def login(request):
+    return auth_login(
+        request, template_name='login.html', authentication_form=EmailAuthenticationForm)
+
+def logout(request):
+    return auth_logout( request, next_page=reverse('dispatches'))
 
 def register(request):
     if request.user.is_authenticated():
