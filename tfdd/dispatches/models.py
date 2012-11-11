@@ -2,12 +2,41 @@ import datetime
 import logging
 import traceback
 
+from django.contrib.auth.models import User
+from django.contrib.localflavor.us.models import PhoneNumberField, USPostalCodeField
 from django.db import models
+from django.db.models.signals import post_save
+
 import requests
+
+
+class Profile(models.Model):
+    """Additional User data"""
+    user = models.OneToOneField(User)
+    phone = PhoneNumberField()
+    phone_confirmed = models.BooleanField(default=False)
+    email_confirmed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "%s's profile" % self.user
+
+    @staticmethod
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            profile, created = Profile.objects.get_or_create(user=instance)
+
+post_save.connect(Profile.create_user_profile, sender=User)
+
+
+class Station(models.Model):
+    id = models.CharField(max_length=3, primary_key=True)
+    address = models.CharField(max_length=100, blank=True)
+    zipcode = models.CharField(max_length=10, blank=True)
 
 
 class Unit(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
+    station = models.ForeignKey(Station, blank=True, null=True)
 
     def __unicode__(self):
         return self.id
