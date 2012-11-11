@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 
-from dispatches.forms import FollowForm,Send_Text
+from dispatches.forms import FollowForm, RegisterForm, Send_Text
 from dispatches.models import Dispatch, Unit
 from twilio_utils import send_msg
 
