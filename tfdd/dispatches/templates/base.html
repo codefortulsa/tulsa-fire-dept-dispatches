@@ -14,7 +14,7 @@
             <div data-role="navbar">
                 <ul>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url dispatches %}">All Dispatches</a></li>
+                    <li><a href="{% url dispatches %}">Dispatches</a></li>
                     <li selected><a href="{% url following %}">Following</a></li>
                     <li><a href="{% url settings %}">Settings</a></li>
                     {% else %}
