@@ -13,5 +13,7 @@ urlpatterns = patterns(
     url(r'^login/$', direct_to_template, {'template': 'login.html'}, name='login'),
     url(r'^following/$', 'following', name='following'),
     url(r'^settings/$', direct_to_template, {'template': 'settings.html'}, name='settings'),
+    url(r'^register/phone/$', 'register_phone', name='register_phone'),
+    url(r'^register/email/$', 'register_email', name='register_email'),
     url(r'^$', 'index', name='dispatches'),
 )

@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% block title %}Tulsa Fire Dept. Dispatches Registration{% endblock %}
+{% block title %}Tulsa Fire Dept. Dispatches Email Registration{% endblock %}
 {% block content %}
+<h2>Please enter the code from your text message</h2>
 <form action="" method="post" data-ajax="false">
-    {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit" />
 </form>

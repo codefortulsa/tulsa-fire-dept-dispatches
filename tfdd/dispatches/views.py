@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from dispatches.forms import FollowForm, RegisterForm, Send_Text
+from dispatches.forms import FollowForm, RegisterForm, Send_Text, VerifyEmailForm, VerifyPhoneForm
 from dispatches.models import Dispatch, RawDispatch, Unit
 from twilio_utils import send_msg
 
@@ -75,6 +75,32 @@ def register(request):
         form = RegisterForm()
     return render_to_response(
         'register.html', RequestContext(request, {'form': form}))
+
+
+@csrf_exempt
+def register_email(request):
+    if 'code' in request.REQUEST:
+        form = VerifyEmailForm(request.REQUEST)
+        if form.is_valid():
+            form.save()
+            return redirect('dispatches')
+    else:
+        form = VerifyEmailForm()
+    return render_to_response(
+        'register_email.html', RequestContext(request, {'form': form}))
+
+
+@csrf_exempt
+def register_phone(request):
+    if 'code' in request.REQUEST:
+        form = VerifyPhoneForm(request.REQUEST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('dispatches')
+    else:
+        form = VerifyPhoneForm()
+    return render_to_response(
+        'register_phone.html', RequestContext(request, {'form': form}))
 
 
 def unit_select(request):

@@ -4,3 +4,5 @@ DEBUG=True
 # Put your Twilio API key here
 TWILIO_ACCOUNT = ''
 TWILIO_TOKEN = ''
+
+BASE_URL='http://localhost'

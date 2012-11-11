@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.expressions import ExpressionNode
 from django.db.models.signals import post_save
@@ -77,7 +78,7 @@ class VerificationBase(models.Model):
         while cls.objects.filter(code=code).exists():
             code = cls.random_code()
         obj = cls.objects.create(
-            value=value, code=code, sent_at=datetime.datetime.now())
+            value=value, code=code, sent_at=datetime.now())
         obj.send()
         return obj
 
@@ -87,14 +88,20 @@ class PhoneVerification(VerificationBase):
 
     def send(self):
         from dispatches.twilio_utils import send_msg
-        send_msg(self.value, 'Registration code %s' % self.code)
+        send_msg(
+            self.value,
+            'To verify your phone w/ tfdd.co, please visit %s%s?code=%s .' % (
+                settings.BASE_URL, reverse('register_phone'), self.code))
 
 
 class EmailVerification(VerificationBase):
     value = models.EmailField()
 
     def send(self):
-        send_mail('Registration', 'Registration code %s' % self.code,
+        send_mail(
+            'Registration',
+            'To verify your email, please visit %s%s?code=%s .' % (
+                settings.BASE_URL, reverse('register_email'), self.code),
             'tfdd@tfdd.com', [self.value], fail_silently=True)
 
 
