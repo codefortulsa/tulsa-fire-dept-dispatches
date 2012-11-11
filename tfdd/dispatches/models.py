@@ -1,10 +1,11 @@
-import datetime
+from datetime import datetime
 import logging
 import random
 import requests
 import string
 import traceback
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
 from django.core.mail import send_mail
@@ -112,11 +113,12 @@ class Dispatch(models.Model):
 
 
 class RawDispatch(models.Model):
-    dispatch = models.OneToOneField(Dispatch, related_name='raw', blank=True, null=True)
+    dispatch = models.OneToOneField(Dispatch, related_name='raw', blank=True,
+                                    null=True)
     text = models.TextField()
     received = models.DateTimeField(auto_now_add=True)
     sent = models.DateTimeField(blank=True, null=True)
-    
+
     def parse(self):
         'TODO'
 
