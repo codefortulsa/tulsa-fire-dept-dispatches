@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<p><i>Followed Dispatches goes here</i></p>
-
+<p><i>These are the units you are following</i></p>
+<a href="/dispatches/unit_select">Edit Follows</a>
 <ul data-role="listview" data-inset="true" >
 {% for dispatch in dispatches %}
 <li>

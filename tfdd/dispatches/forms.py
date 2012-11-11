@@ -94,3 +94,9 @@ class VerifyPhoneForm(forms.ModelForm):
         user.profile.save()
         return user
 
+class UpdateSettings(forms.ModelForm):
+    class Meta:
+        model = User
+        fields =('email',)
+
+    

@@ -11,7 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from emailusernames.forms import EmailAuthenticationForm
 
-from dispatches.forms import FollowForm, RegisterForm, Send_Text, VerifyEmailForm, VerifyPhoneForm
+from dispatches.forms import (FollowForm, RegisterForm, Send_Text, VerifyEmailForm, 
+VerifyPhoneForm, UpdateSettings)
 from dispatches.models import Dispatch, RawDispatch, Unit
 from twilio_utils import send_msg
 
@@ -133,3 +134,18 @@ def post(request):
         return HttpResponse(status=ACCEPTED)
     else:
         return HttpResponseBadRequest()
+
+
+def update_settings(request):
+    if request.method == 'POST':
+        form = UpdateSettings(request.POST,instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('dispatches')  # Redirect after POST
+    else:
+        form = UpdateSettings(instance=request.user)
+        c = RequestContext(request, {
+            'form': form,
+        })
+
+        return render_to_response('settings.html', c)
