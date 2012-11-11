@@ -159,8 +159,11 @@ LOGGING = {
     }
 }
 
+DISPATCH_POST_URL = 'http://tfdd.co/dispatches/post/'
+SERIAL_PORT = '/dev/ttyUSB0'
+SERIAL_BAUDRATE = 1200
+
 try:
     from local_settings import *
 except ImportError:
     pass
-

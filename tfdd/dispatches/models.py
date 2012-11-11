@@ -1,4 +1,9 @@
+import datetime
+import logging
+import traceback
+
 from django.db import models
+import requests
 
 
 class Unit(models.Model):
@@ -40,4 +45,11 @@ class RawDispatch(models.Model):
         'TODO'
 
     def post(self):
-        'TODO' 
+        url = settings.DISPATCH_POST_URL
+        logging.debug('posting raw dispatch to %s' % url)
+        try:
+            requests.post(url, dict(text=self.text))
+        except:
+            logging.error(traceback.format_exc())
+        else:
+            self.sent = datetime.now()
