@@ -196,7 +196,8 @@ class RawDispatch(models.Model):
                 dispatch=self.dispatch).exists():
             self.save()
         self.dispatch.units.add(*units)
-        self.dispatch.notify_listeners()
+        if created:
+            self.dispatch.notify_listeners()
 
     def post(self):
         url = settings.DISPATCH_POST_URL

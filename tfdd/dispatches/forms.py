@@ -59,12 +59,12 @@ class VerifyEmailForm(forms.ModelForm):
         try:
             self.instance = EmailVerification.objects.get(code=code)
         except EmailVerification.DoesNotExist:
-            raise ValidationError('Unknown code')
+            raise forms.ValidationError('Unknown code')
         return code
 
     def save(self):
         assert self.instance
-        email = form.cleaned_data['value']
+        email = self.cleaned_data['value']
         self.instance.delete()
         user = User.objects.get(email=email)
         user.profile.email_confirmed = True
@@ -82,12 +82,12 @@ class VerifyPhoneForm(forms.ModelForm):
         try:
             self.instance = PhoneVerification.objects.get(code=code)
         except PhoneVerification.DoesNotExist:
-            raise ValidationError('Unknown code')
+            raise forms.ValidationError('Unknown code')
         return code
 
     def save(self):
         assert self.instance
-        phone = form.cleaned_data['value']
+        phone = self.cleaned_data['value']
         self.instance.delete()
         user = User.objects.get(profile__phone=phone)
         user.profile.phone_confirmed = True
