@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Select a unit{% endblock %}
+{% block content %}
+<p>
+    Units:
+</p>
+<div data-role="collapsible-set">
+{% for unit in units %}
+    <div data-role="collapsible" >
+        <h1> {{unit.id}}</h1>
+
+        <div class="containing-element">
+            <div class="ui-grid-a">
+                <div class="ui-block-a">
+                    <label for="flip-min">Send Text</label> 
+                    <select send_text="{{unit.id}}" name="flip-min" id="flip-min" data-role="slider">
+                        <option value="off"{% if not unit.by_phone %} selected{% endif %}>Off</option>
+                        <option value="on"{% if unit.by_phone %} selected{% endif %}>On</option>
+                    </select>
+                </div>
+                <div class="ui-block-b">
+                    <label for="flip-min">Send Email</label> 
+                    <select send_email="{{unit.id}}" name="flip-min" id="flip-min" data-role="slider">
+                        <option value="off"{% if not unit.by_email %} selected{% endif %}>Off</option>
+                        <option value="on"{% if unit.by_email %} selected{% endif %}>On</option>
+                    </select>
+                </div>
+            </div><!-- /grid-a -->
+        </div>
+    </div>
+{% endfor %}
+{% endblock content %}

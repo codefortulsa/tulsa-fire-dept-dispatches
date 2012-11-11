@@ -105,9 +105,9 @@ ROOT_URLCONF = 'tfdd.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'tfdd.wsgi.application'
 
-TEMPLATE_DIRS = (
-    os.path.join(base_dir, 'templates'),
-)
+#TEMPLATE_DIRS = (
+#    os.path.join(base_dir, 'templates'),
+#)
 
 INSTALLED_APPS = (
     'django.contrib.auth',

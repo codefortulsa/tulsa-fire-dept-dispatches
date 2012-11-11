@@ -1,0 +1,9 @@
+{% extend 'base.html' %}
+{% block title %}Tulsa Fire Dept. Dispatches Registration{% endblock %}
+{% block content %}
+<form action="" method="post" data-ajax="false">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+</form>
+{% endblock content %}

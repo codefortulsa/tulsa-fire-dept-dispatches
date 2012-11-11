@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<ul data-role="listview" data-inset="true" data-filter="true">
+{% for dispatch in dispatches %}
+    <li>
+        <h3>{{dispatch.call_type_desc}} AT: {{dispatch.location}}</h3>
+        <p><strong>Map Page:</strong> {{dispatch.map_page}}</p>
+        <p><strong>Dispatched:</strong> {{dispatch.dispatched}}</p>
+        <p>Units:</p>
+        {% for unit in dispatch.units.all %}
+            {{unit.id}}&nbsp;
+            {#<a href='{% url follow_unit unit_id=unit.id %}' data-role="button" data-icon="star">Follow {{unit.id}}</a> #}
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock content %}

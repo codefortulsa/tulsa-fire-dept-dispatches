@@ -1,0 +1,44 @@
+{% spaceless %}<!DOCTYPE html> 
+<html>
+<head>
+    <title>{% block title %}Tulsa Fire Dept. Dispatches{% endblock %}</title> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+</head>
+<body>
+    <div data-role="page">
+        <div data-role="header">
+            <h1>Tulsa Fire Dept</h1>
+            <div data-role="navbar">
+                <ul>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url dispatches %}">All Dispatches</a></li>
+                    <li><a href="{% url following %}">Following</a></li>
+                    <li><a href="{% url settings %}">Settings</a></li>
+                    {% else %}
+                    <li><a href="{% url dispatches %}">All Dispatches</a></li>
+                    <li><a href="{% url login %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div><!-- /navbar -->
+        </div>
+        <div data-role="content">
+            <div class='messages'>
+                {% if user.is_authenticated %}
+                    <p>Verification message goes here...</p>
+                {% endif %}
+                <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% block content %}
+            <p> Content goes here </p>
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>{% endspaceless %}
