@@ -134,11 +134,16 @@ class RawDispatch(models.Model):
             p['location'], p['notes'] = p['location'].split(';', 1)
         for k, v in p.items():
             p[k] = v.strip()
-        unit_ids = p.pop('units').split()
         p['dispatched'] = dateutil.parser.parse(
             p.pop('date') + ' ' + p.pop('time'))
-
-        return p
+        units = []
+        for id in p.pop('units').split():
+            unit, created = Unit.objects.get_or_create(id=id)
+            units.append(unit)
+        self.dispatch, created = Dispatch.objects.get_or_create(**p)
+        if created or not self.dispatch.raw:
+            self.save()
+        self.dispatch.units.add(*units)
 
     def post(self):
         url = settings.DISPATCH_POST_URL
