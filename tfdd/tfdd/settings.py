@@ -129,6 +129,7 @@ INSTALLED_APPS = (
 AUTHENTICATION_BACKENDS = (
     'emailusernames.backends.EmailAuthBackend',
 )
+AUTH_PROFILE_MODULE = 'dispatches.Profile'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
