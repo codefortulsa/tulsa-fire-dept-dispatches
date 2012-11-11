@@ -17,6 +17,8 @@ from django.db import models
 from django.db.models.expressions import ExpressionNode
 from django.db.models.signals import post_save
 
+from twilio_utils import send_msg, dispatch_msg
+
 
 def update(instance, **kwargs):
     using = kwargs.pop('using', '')
@@ -140,9 +142,28 @@ class Dispatch(models.Model):
     notes = models.CharField(blank=True, max_length=255)
     tf = models.IntegerField()
     units = models.ManyToManyField(Unit, related_name='dispatches')
+    MEDICAL_CALL_TYPES = ('ME', 'MEM', 'MEP', 'CARDIAC')
 
     class Meta:
         verbose_name_plural = 'Dispatches'
+
+    def notify_listeners(self):
+        phones = set()
+        emails = set()
+        for unit in self.units.all():
+            for unitfollower in unit.unitfollower_set.all():
+                if unitfollower.by_phone:
+                    phones.add(unitfollower.user.profile.phone)
+                if unitfollower.by_email:
+                    emails.add(unitfollower.user.email)
+        for phone in phones:
+            if phone:
+                send_msg(phone, None, dispatch=self)
+        email_msg = dispatch_msg(self)
+        for email in emails:
+            send_mail(
+                'TPDD Dispatch %s' % self.call_type_desc,
+                email_msg, 'tfdd@tfdd.co', [email], fail_silently=True)
 
 
 class RawDispatch(models.Model):
@@ -175,6 +196,8 @@ class RawDispatch(models.Model):
                 dispatch=self.dispatch).exists():
             self.save()
         self.dispatch.units.add(*units)
+        if created:
+            self.dispatch.notify_listeners()
 
     def post(self):
         url = settings.DISPATCH_POST_URL
