@@ -67,7 +67,7 @@ def register(request):
             return redirect('responses_index')
     else:
         assert request.method == 'GET'
-        form = RegisterForm(request.GET)
+        form = RegisterForm()
     return render_to_response(
         'register.html', RequestContext(request, {'form': form}))
 
