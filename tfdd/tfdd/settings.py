@@ -121,8 +121,13 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'django_extensions',
+    'emailusernames',
     'south',
     'dispatches',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'emailusernames.backends.EmailAuthBackend',
 )
 
 # A sample logging configuration. The only tangible logging
