@@ -4,25 +4,15 @@
 {% for dispatch in dispatches %}
     <li>
         <h2>{{dispatch.call_type_desc}}</h2>
-        <h3>        
-        <div class="ui-grid-a">
-            <div class="ui-block-a">
-                {{dispatch.location}}
-            </div>
-            <div class="ui-block-b">
-            Map Page: {{dispatch.map_page}}
-        
-            </div>    
-        </div><!--      end of grid    -->
-        </h3>
-       <h3>Unit:
+        <h3>{{dispatch.location}}</h3>
+        <h3>Map Page: {{dispatch.map_page}}</h3>
+        <h3>Unit:
         {% for unit in dispatch.units.all %}
             {{unit.id}}&nbsp;
         {% endfor %}</h3>
         
         <p>{{dispatch.dispatched}}</p>
-        
-        
+               
     </li>
 {% endfor %}
 </ul>
