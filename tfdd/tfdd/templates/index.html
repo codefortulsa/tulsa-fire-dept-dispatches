@@ -31,8 +31,8 @@
                     <p><strong>Dispatched:</strong> {{dispatch.dispatched}}</p>
                     <p>Units:</p>
                     {% for unit in dispatch.units.all %}
-                            <a href='{% url follow_unit unit_id=unit.id %}' data-role="button" data-icon="star">Follow {{unit.id}}</a>
-                    
+                        {{unit.id}}&nbsp;
+                        {#<a href='{% url follow_unit unit_id=unit.id %}' data-role="button" data-icon="star">Follow {{unit.id}}</a> #}
                     {% endfor %}
                 </li>
 

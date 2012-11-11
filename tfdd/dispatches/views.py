@@ -25,7 +25,7 @@ def old_follow_unit(request, unit_id):
         #    follower, created = Follower.objects.get_or_create(
         #        phone_number=phone)
         #    follower.units.add(unit)
-            return redirect('responses_index') # Redirect after POST
+            return redirect('dispatches') # Redirect after POST
     else:
         form = FollowForm() # An unbound form
 
@@ -49,7 +49,7 @@ def send_text(request):
             this_dsp=form.cleaned_data.get('dispatch')
             send_msg(to_num=this_phone,msg_end=this_msg,dispatch=this_dsp)
      
-            return redirect('responses_index') # Redirect after POST
+            return redirect('dispatches') # Redirect after POST
             
     else:
         form = Send_Text()
@@ -62,12 +62,12 @@ def send_text(request):
 
 def register(request):
     if request.user.is_authenticated():
-        return redirect('responses_index')
+        return redirect('dispatches')
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('responses_index')
+            return redirect('dispatches')
     else:
         assert request.method == 'GET'
         form = RegisterForm()
