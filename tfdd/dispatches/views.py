@@ -107,9 +107,12 @@ def follow_unit(request, unit_id, channel, state):
 def post(request):
     raw_dispatch = RawDispatch(text=request.POST.get('text'))
     if raw_dispatch.text:
-        raw_dispatch.parse()
+        try:
+            raw_dispatch.parse()
+        except:
+            logging.error(traceback.format_exc())
+            raw_dispatch.save()
         ACCEPTED = 202
         return HttpResponse(status=ACCEPTED)
     else:
         return HttpResponseBadRequest()
-
