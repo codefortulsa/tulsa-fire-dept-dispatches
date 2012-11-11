@@ -3,3 +3,4 @@ South==0.7.6
 django-extensions==0.9
 ipython==0.13
 pyserial==2.6
+twilio==3.4.1
