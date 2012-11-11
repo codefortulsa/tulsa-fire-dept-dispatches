@@ -48,14 +48,6 @@ class UnitFollower(models.Model):
         default=False, help_text='Notify user by email')
 
 
-class Follower(models.Model):
-    phone_number=models.CharField(max_length=20)
-    units = models.ManyToManyField(Unit)
-
-    def __unicode__(self):
-        return self.phone_number
-
-
 class Dispatch(models.Model):
     call_type = models.CharField(max_length=255)
     call_type_desc = models.CharField('Call type description', max_length=255)
