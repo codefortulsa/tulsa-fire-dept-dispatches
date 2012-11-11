@@ -1,13 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
-<p><i>Settings goes here</i></p>
-
+<p><i>Your current settings</i></p>
 
 <form action="" method="post" data-ajax="false">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Submit" />
+
+    <div class="ui-grid-a">
+    	<div class="ui-block-a"></div>
+    	<div class="ui-block-b"><input type="submit" value="Update" /></div>
+    </div><!-- /grid-a -->
 </form>
+
+<br>
+<br>
+<br>
+<br>
+
+    <div class="ui-grid-solo">
+    	<div class="ui-block-a">
+    	    <a href="/dispatches/logout" data-role="button" data-icon="delete">Log out</a> 
+    	</div>
+    </div>
+
 
 
 {% endblock content %}
