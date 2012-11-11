@@ -14,8 +14,13 @@ from twilio_utils import send_msg
 
 def index(request):
     dispatches = Dispatch.objects.order_by('-dispatched')[:10]
-    return render_to_response('index.html', RequestContext(request, {'dispatches': dispatches}))
+    return render_to_response('index.html', RequestContext(request, 
+        {'dispatches': dispatches}))
 
+def following(request):
+    dispatches = Dispatch.objects.order_by('-dispatched')[:10]
+    return render_to_response('following.html', RequestContext(request, 
+        {'dispatches': dispatches}))
 
 def old_follow_unit(request, unit_id):
     assert unit_id
