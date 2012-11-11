@@ -1,5 +1,7 @@
-from django.http import (HttpResponse, HttpResponseBadRequest,
-                         HttpResponseRedirect)
+import logging
+import traceback
+
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
@@ -25,9 +27,9 @@ def old_follow_unit(request, unit_id):
         #    follower, created = Follower.objects.get_or_create(
         #        phone_number=phone)
         #    follower.units.add(unit)
-            return redirect('dispatches') # Redirect after POST
+            return redirect('dispatches')  # Redirect after POST
     else:
-        form = FollowForm() # An unbound form
+        form = FollowForm()  # An unbound form
 
     c = RequestContext(request, {
         'form': form, 'unit': unit_id
@@ -37,28 +39,22 @@ def old_follow_unit(request, unit_id):
 
 
 def send_text(request):
-    
-    if request.method=='POST':
-        
+    if request.method == 'POST':
         form = Send_Text(request.POST)
-        
         if form.is_valid():
-        
-            this_phone=form.cleaned_data['to_phone_number']
-            this_msg=form.cleaned_data.get('msg_ending')
-            this_dsp=form.cleaned_data.get('dispatch')
-            send_msg(to_num=this_phone,msg_end=this_msg,dispatch=this_dsp)
-     
-            return redirect('dispatches') # Redirect after POST
-            
+            this_phone = form.cleaned_data['to_phone_number']
+            this_msg = form.cleaned_data.get('msg_ending')
+            this_dsp = form.cleaned_data.get('dispatch')
+            send_msg(to_num=this_phone, msg_end=this_msg, dispatch=this_dsp)
+            return redirect('dispatches')  # Redirect after POST
     else:
         form = Send_Text()
-        
         c = RequestContext(request, {
             'form': form,
         })
 
         return render_to_response('send_text.html', c)
+
 
 def register(request):
     if request.user.is_authenticated():
@@ -75,7 +71,6 @@ def register(request):
         'register.html', RequestContext(request, {'form': form}))
 
 
-
 def unit_select(request):
     if not request.user.is_authenticated():
         return redirect('responses_index')
@@ -90,12 +85,13 @@ def unit_select(request):
         'unit_selection.html', RequestContext(request, {
             'units': all_units}))
 
+
 def follow_unit(request, unit_id, channel, state):
     assert channel in ['by_phone', 'by_email']
     assert state in ['on', 'off']
     unit, created = Unit.objects.get_or_create(id=unit_id)
     follower, created = request.user.unitfollower_set.get_or_create(unit=unit)
-    setattr(follower, channel, state=='on')
+    setattr(follower, channel, state == 'on')
     follower.save()
     return HttpResponse(
         'User %s is now%sfollowing %s %s' %
@@ -107,9 +103,12 @@ def follow_unit(request, unit_id, channel, state):
 def post(request):
     raw_dispatch = RawDispatch(text=request.POST.get('text'))
     if raw_dispatch.text:
-        raw_dispatch.parse()
+        try:
+            raw_dispatch.parse()
+        except:
+            logging.error(traceback.format_exc())
+            raw_dispatch.save()
         ACCEPTED = 202
         return HttpResponse(status=ACCEPTED)
     else:
         return HttpResponseBadRequest()
-
