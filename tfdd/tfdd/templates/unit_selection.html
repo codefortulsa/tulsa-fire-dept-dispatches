@@ -30,7 +30,6 @@
                 Select a unit
             </h1>
         </div>
-        <p>User: {{user}}</p>
         <div data-role="content">
             <p>
                 Units:
@@ -41,20 +40,19 @@
                     <h1> {{unit.id}}</h1>
 
                     <div class="containing-element">
-                        
                         <div class="ui-grid-a">
                             <div class="ui-block-a">
-                                <label for="flip-min">Send Text by_p={{unit.by_phone}} by_e={{unit.by_email}}</label> 
+                                <label for="flip-min">Send Text</label> 
                                 <select send_text="{{unit.id}}" name="flip-min" id="flip-min" data-role="slider">
-                                        <option value="off"{% if not unit.by_phone %} selected{% endif %}>Off</option>
+                                    <option value="off"{% if not unit.by_phone %} selected{% endif %}>Off</option>
                                     <option value="on"{% if unit.by_phone %} selected{% endif %}>On</option>
                                 </select>
                             </div>
                             <div class="ui-block-b">
                                 <label for="flip-min">Send Email</label> 
                                 <select send_email="{{unit.id}}" name="flip-min" id="flip-min" data-role="slider">
-                                    <option value="off">Off</option>
-                                    <option value="on">On</option>
+                                    <option value="off"{% if not unit.by_email %} selected{% endif %}>Off</option>
+                                    <option value="on"{% if unit.by_email %} selected{% endif %}>On</option>
                                 </select>
                             </div>
                         </div><!-- /grid-a -->

@@ -77,8 +77,10 @@ def register(request):
 
 
 def unit_select(request):
-    all_units = Unit.objects.all()
-    for unit in all_units.all():
+    if not request.user.is_authenticated():
+        return redirect('responses_index')
+    all_units = list(Unit.objects.all())
+    for unit in all_units:
         follow_q = unit.unitfollower_set.filter(user=request.user)
         if follow_q.exists():
             follow = follow_q.get()
@@ -98,8 +100,6 @@ def follow_unit(request, unit_id, channel, state):
     return HttpResponse(
         'User %s is now%sfollowing %s %s' %
         (request.user, ' ' if state == 'on' else ' not ', unit, channel))
-        
-
 
 
 @csrf_exempt
