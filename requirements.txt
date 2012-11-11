@@ -8,3 +8,5 @@ pyserial==2.6
 twilio==3.4.1
 wsgiref==0.1.2
 requests==0.14.2
+ipdb==0.7
+python-dateutil==2.1

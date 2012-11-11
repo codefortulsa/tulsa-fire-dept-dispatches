@@ -9,7 +9,8 @@ urlpatterns = patterns(
 
     url(r'^follow/(?P<unit_id>.*)/(?P<channel>.*)/(?P<state>.*)/$', 'follow_unit',
         name='follow_unit'),
-        
+    url(r'^post/$', 'post', name='dispatch_post'),
+    url(r'^register/$', 'register', name='dispatches_register'),
     url(r'^$', 'index', name='responses_index'),
 
 

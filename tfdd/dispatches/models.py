@@ -1,13 +1,19 @@
-import datetime
+from datetime import datetime
 import logging
+import random
+import re
+import requests
+import string
 import traceback
 
+import dateutil.parser
+
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.localflavor.us.models import PhoneNumberField, USPostalCodeField
+from django.contrib.localflavor.us.models import PhoneNumberField
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import post_save
-
-import requests
 
 
 class Profile(models.Model):
@@ -26,6 +32,47 @@ class Profile(models.Model):
             profile, created = Profile.objects.get_or_create(user=instance)
 
 post_save.connect(Profile.create_user_profile, sender=User)
+
+
+class VerificationBase(models.Model):
+    code = models.CharField(max_length=6)
+    sent_at = models.DateTimeField()
+
+    class Meta:
+        abstract = True
+
+    def send(self):
+        raise NotImplemented()
+
+    @staticmethod
+    def random_code():
+        return ''.join(random.sample(string.digits, 6))
+
+    @classmethod
+    def create_with_unique_code(cls, value):
+        code = cls.random_code()
+        while cls.objects.filter(code=code).exists():
+            code = cls.random_code()
+        obj = cls.objects.create(
+            value=value, code=code, sent_at=datetime.datetime.now())
+        obj.send()
+        return obj
+
+
+class PhoneVerification(VerificationBase):
+    value = PhoneNumberField()
+
+    def send(self):
+        from dispatches.twilio_utils import send_msg
+        send_msg(self.value, 'Registration code %s' % self.code)
+
+
+class EmailVerification(VerificationBase):
+    value = models.EmailField()
+
+    def send(self):
+        send_mail('Registration', 'Registration code %s' % self.code,
+            'tfdd@tfdd.com', [self.value], fail_silently=True)
 
 
 class Station(models.Model):
@@ -69,20 +116,43 @@ class Dispatch(models.Model):
 
 
 class RawDispatch(models.Model):
-    dispatch = models.OneToOneField(Dispatch, related_name='raw', blank=True, null=True)
+    dispatch = models.OneToOneField(Dispatch, related_name='raw', blank=True,
+                                    null=True)
     text = models.TextField()
     received = models.DateTimeField(auto_now_add=True)
     sent = models.DateTimeField(blank=True, null=True)
-    
+    regex = re.compile(
+        r'.*DISPATCH INFO\s+CALL TYPE\s+(?P<call_type>.+)\s+'
+        r'\((?P<call_type_desc>.*)\s*\)\s+'
+        r'LOC\s+(?P<location>.+)\s+MP\s+(?P<map_page>.+)\s+'
+        r'DATE\s+(?P<date>\d+/\d+/\d+)\s+DIS\s+(?P<time>\d+)\s+'
+        r'UNIT\s+(?P<units>.+)\s+TF\s+(?P<tf>\d+)\s+END OF MESSAGE', re.S)
+
     def parse(self):
-        'TODO'
+        p = self.regex.match(self.text).groupdict()
+        if ';' in p['location']:
+            p['location'], p['notes'] = p['location'].split(';', 1)
+        for k, v in p.items():
+            p[k] = v.strip()
+        p['dispatched'] = dateutil.parser.parse(
+            p.pop('date') + ' ' + p.pop('time'))
+        units = []
+        for id in p.pop('units').split():
+            unit, created = Unit.objects.get_or_create(id=id)
+            units.append(unit)
+        self.dispatch, created = Dispatch.objects.get_or_create(**p)
+        if created or not self.dispatch.raw:
+            self.save()
+        self.dispatch.units.add(*units)
 
     def post(self):
         url = settings.DISPATCH_POST_URL
         logging.debug('posting raw dispatch to %s' % url)
         try:
-            requests.post(url, dict(text=self.text))
+            response = requests.post(url, dict(text=self.text))
         except:
             logging.error(traceback.format_exc())
         else:
-            self.sent = datetime.now()
+            if response.status_code == 202:
+                self.sent = datetime.now()
+            logging.error('status code %s from server' % response.status_code)

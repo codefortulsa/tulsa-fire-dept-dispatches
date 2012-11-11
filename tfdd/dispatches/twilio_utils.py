@@ -32,7 +32,7 @@ def dispatch_msg(dsp):
 
 
 
-def send_msg(to_num,msg_end,dispatch):
+def send_msg(to_num,msg_end,dispatch=None):
     dispatch_text=''
     
     if dispatch:
