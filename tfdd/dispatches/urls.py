@@ -7,7 +7,7 @@ urlpatterns = patterns(
     
     url(r'^send_text/','send_text'),
 
-    url(r'^follow/(?P<unit_id>.*)/$', 'follow_unit',
+    url(r'^follow/(?P<unit_id>.*)/(?P<channel>.*)/(?P<state>.*)/$', 'follow_unit',
         name='follow_unit'),
         
     url(r'^$', 'index', name='responses_index'),
