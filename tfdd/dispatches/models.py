@@ -23,17 +23,29 @@ post_save.connect(Profile.create_user_profile, sender=User)
 
 
 class Station(models.Model):
+    """A Fire Station with one or more Units"""
     id = models.CharField(max_length=3, primary_key=True)
     address = models.CharField(max_length=100, blank=True)
     zipcode = models.CharField(max_length=10, blank=True)
 
 
 class Unit(models.Model):
+    """A responder unit or designator"""
     id = models.CharField(max_length=10, primary_key=True)
     station = models.ForeignKey(Station, blank=True, null=True)
 
     def __unicode__(self):
         return self.id
+
+
+class UnitFollower(models.Model):
+    """A User who wants to be notified of dispatches to a Unit"""
+    user = models.ForeignKey(User)
+    unit = models.ForeignKey(Unit)
+    by_phone = models.BooleanField(
+        default=False, help_text='Notify user by phone (SMS)')
+    by_email = models.BooleanField(
+        default=False, help_text='Notify user by email')
 
 
 class Follower(models.Model):
