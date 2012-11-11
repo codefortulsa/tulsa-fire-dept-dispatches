@@ -28,7 +28,7 @@ class Dispatch(models.Model):
 
     class Meta:
         verbose_name_plural = 'Dispatches'
-        
+
 
 class RawDispatch(models.Model):
     dispatch = models.OneToOneField(Dispatch, related_name='raw')

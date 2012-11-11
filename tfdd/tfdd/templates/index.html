@@ -11,6 +11,14 @@
     <div data-role="page">
         <div data-role="header">
             <h1>Tulsa Fire Dept. Dispatches</h1>
+            	<div data-role="navbar">
+            		<ul>
+            			<li><a href="/dispatches/">Dispatches</a></li>
+            			<li><a href="#">Following</a></li>
+            			<li><a href="#">Settings</a></li>
+            		</ul>
+            	</div><!-- /navbar -->
+
         </div>
         <div data-role="content">	
             <ul data-role="listview" data-inset="true" data-filter="true">
@@ -22,10 +30,7 @@
                     <p><strong>Dispatched:</strong> {{dispatch.dispatched}}</p>
                     <p>Units:</p>
                     {% for unit in dispatch.units.all %}
-                            <p>
-                        <a href='/dispatches/follow/?unit={{unit.id}}'data-role="button" data-icon="star">Follow {{unit.id}}</a>
-                        
-                            </p>
+                            <a href='{% url follow_unit unit=unit.id %}' data-role="button" data-icon="star">Follow {{unit.id}}</a>
                     
                     {% endfor %}
                 </li>

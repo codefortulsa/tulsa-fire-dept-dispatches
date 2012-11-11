@@ -31,3 +31,6 @@ pip-log.txt
 
 # dev sqlite db
 tfdd.db
+
+# local_settings.py
+tfdd/tfdd/local_settings.py
