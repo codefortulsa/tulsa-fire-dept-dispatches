@@ -1,6 +1,8 @@
 Django==1.4.1
 South==0.7.6
+Werkzeug==0.8.3
 django-email-as-username==1.6.2
 django-extensions==0.9
 ipython==0.13
 pyserial==2.6
+wsgiref==0.1.2
