@@ -95,8 +95,10 @@ class RawDispatch(models.Model):
         url = settings.DISPATCH_POST_URL
         logging.debug('posting raw dispatch to %s' % url)
         try:
-            requests.post(url, dict(text=self.text))
+            response = requests.post(url, dict(text=self.text))
         except:
             logging.error(traceback.format_exc())
         else:
-            self.sent = datetime.now()
+            if response.status_code == 202:
+                self.sent = datetime.now()
+            logging.error('status code %s from server' % response.status_code)
