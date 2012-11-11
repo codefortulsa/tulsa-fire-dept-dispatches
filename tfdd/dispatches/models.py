@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models.expressions import ExpressionNode
 from django.db.models.signals import post_save
 
 
@@ -164,7 +165,7 @@ class RawDispatch(models.Model):
             units.append(unit)
         self.dispatch, created = Dispatch.objects.get_or_create(**p)
         if created or not self._default_manager.filter(
-                dispatch=self.dispatch).exists()
+                dispatch=self.dispatch).exists():
             self.save()
         self.dispatch.units.add(*units)
 
