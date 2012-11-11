@@ -30,4 +30,5 @@ class Command(BaseCommand):
                 logging.info('received dispatch')
                 raw_dispatch.save()
                 logging.debug(raw_dispatch.text)
+                raw_dispatch.post()
                 buf = ''
