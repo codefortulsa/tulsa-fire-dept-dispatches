@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^dispatches/', include('dispatches.urls')),
     url(r'^send_text/', include('dispatches.urls')),
+    url(r'^send_text/', include('dispatches.urls')),
+    url(r'^unit_select/', include('dispatches.urls')),
     url(r'^$', 'django.views.generic.simple.redirect_to',
         dict(url='/dispatches/', permanent=False)),
 )

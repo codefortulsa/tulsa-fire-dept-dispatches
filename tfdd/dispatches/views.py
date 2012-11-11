@@ -15,7 +15,7 @@ def index(request):
     return render_to_response('index.html', {'dispatches': dispatches})
 
 
-def follow_unit(request, unit_id):
+def old_follow_unit(request, unit_id):
     assert unit_id
     unit, created = Unit.objects.get_or_create(id=unit_id)
     if request.method == 'POST':
@@ -76,6 +76,31 @@ def register(request):
 
 
 
+def unit_select(request):
+    all_units = Unit.objects.all()
+    for unit in all_units.all():
+        follow_q = unit.unitfollower_set.filter(user=request.user)
+        if follow_q.exists():
+            follow = follow_q.get()
+            unit.by_phone = follow.by_phone
+            unit.by_email = follow.by_email
+    return render_to_response(
+        'unit_selection.html', RequestContext(request, {
+            'units': all_units}))
+
+def follow_unit(request, unit_id, channel, state):
+    assert channel in ['by_phone', 'by_email']
+    assert state in ['on', 'off']
+    unit, created = Unit.objects.get_or_create(id=unit_id)
+    follower, created = request.user.unitfollower_set.get_or_create(unit=unit)
+    setattr(follower, channel, state=='on')
+    follower.save()
+    return HttpResponse(
+        'User %s is now%sfollowing %s %s' %
+        (request.user, ' ' if state == 'on' else ' not ', unit, channel))
+        
+
+
 
 @csrf_exempt
 @require_POST
@@ -87,3 +112,4 @@ def post(request):
         return HttpResponse(status=ACCEPTED)
     else:
         return HttpResponseBadRequest()
+
