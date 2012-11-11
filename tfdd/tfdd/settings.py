@@ -3,7 +3,7 @@ import os
 
 base_dir = os.path.dirname(__file__)
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -44,7 +44,7 @@ USE_I18N = True
 USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = True
+USE_TZ = False
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -121,9 +121,15 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'django_extensions',
+    'emailusernames',
     'south',
     'dispatches',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'emailusernames.backends.EmailAuthBackend',
+)
+AUTH_PROFILE_MODULE = 'dispatches.Profile'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -154,8 +160,11 @@ LOGGING = {
     }
 }
 
+DISPATCH_POST_URL = 'http://tfdd.co/dispatches/post/'
+SERIAL_PORT = '/dev/ttyUSB0'
+SERIAL_BAUDRATE = 1200
+
 try:
     from local_settings import *
 except ImportError:
     pass
-
