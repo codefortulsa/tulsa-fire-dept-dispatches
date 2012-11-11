@@ -2,10 +2,11 @@ from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseRedirect)
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from dispatches.forms import FollowForm, RegisterForm, Send_Text
-from dispatches.models import Dispatch, Unit
+from dispatches.models import Dispatch, RawDispatch, Unit
 from twilio_utils import send_msg
 
 
@@ -74,16 +75,16 @@ def register(request):
         'register.html', RequestContext(request, {'form': form}))
 
 
-class HttpResponseAccepted(HttpResponse):
-    status = 202
 
 
+@csrf_exempt
 @require_POST
 def post(request):
     raw_dispatch = RawDispatch(text=request.POST.get('text'))
     if raw_dispatch.text:
         raw_dispatch.parse()
         raw_dispatch.save()
-        return HttpResponseAccepted()
+        ACCEPTED = 202
+        return HttpResponse(status=ACCEPTED)
     else:
         return HttpResponseBadRequest()
