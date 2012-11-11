@@ -16,6 +16,6 @@ class Command(BaseCommand):
         while 1:
             buf += s.read()
             if 'END OF MESSAGE' in buf:
-                RawDispatch.objects.create(text=buf)
-                self.stdout.write(buf)
+                raw_dispatch = RawDispatch(text=buf)
+                raw_dispatch.post()
                 buf = ''
