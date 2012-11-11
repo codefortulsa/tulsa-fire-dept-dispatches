@@ -16,6 +16,28 @@ from django.db import models
 from django.db.models.signals import post_save
 
 
+def update(instance, **kwargs):
+    using = kwargs.pop('using', '')
+    get_expression_nodes = kwargs.pop('get_expression_nodes', True)
+    updated = instance._default_manager.filter(pk=instance.pk).using(
+        using).update(**kwargs)
+    if not updated:
+        logging.error('update %s: %s failed' % (instance, kwargs))
+        return
+    expression_nodes = []
+    for attr, value in kwargs.items():
+        if isinstance(value, ExpressionNode):
+            expression_nodes.append(attr)
+        else:
+            setattr(instance, attr, value)
+    if get_expression_nodes and expression_nodes:
+        values = instance._default_manager.filter(pk=instance.pk).using(
+            using).values(*expression_nodes)[0]
+        for attr in expression_nodes:
+            setattr(instance, attr, values[attr])
+    return updated
+
+
 class Profile(models.Model):
     """Additional User data"""
     user = models.OneToOneField(User)
@@ -154,5 +176,5 @@ class RawDispatch(models.Model):
             logging.error(traceback.format_exc())
         else:
             if response.status_code == 202:
-                self.sent = datetime.now()
+                update(self, sent=datetime.now())
             logging.error('status code %s from server' % response.status_code)
