@@ -64,7 +64,7 @@ class VerifyEmailForm(forms.ModelForm):
 
     def save(self):
         assert self.instance
-        email = self.cleaned_data['value']
+        email = self.instance.value
         self.instance.delete()
         user = User.objects.get(email=email)
         user.profile.email_confirmed = True
@@ -87,7 +87,7 @@ class VerifyPhoneForm(forms.ModelForm):
 
     def save(self):
         assert self.instance
-        phone = self.cleaned_data['value']
+        phone = self.instance.value
         self.instance.delete()
         user = User.objects.get(profile__phone=phone)
         user.profile.phone_confirmed = True
