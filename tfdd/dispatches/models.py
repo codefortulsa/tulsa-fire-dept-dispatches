@@ -69,7 +69,7 @@ class Dispatch(models.Model):
 
 
 class RawDispatch(models.Model):
-    dispatch = models.OneToOneField(Dispatch, related_name='raw')
+    dispatch = models.OneToOneField(Dispatch, related_name='raw', blank=True, null=True)
     text = models.TextField()
     received = models.DateTimeField(auto_now_add=True)
     sent = models.DateTimeField(blank=True, null=True)
