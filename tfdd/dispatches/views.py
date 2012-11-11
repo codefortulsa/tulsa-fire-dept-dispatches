@@ -4,8 +4,9 @@ from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 from django.views.decorators.http import require_POST
 
-from dispatches.forms import FollowForm
+from dispatches.forms import FollowForm, RegisterForm, Send_Text
 from dispatches.models import Dispatch, Unit
+from twilio_utils import send_msg
 
 
 def index(request):
@@ -33,6 +34,30 @@ def follow_unit(request, unit_id):
 
     return render_to_response('follow.html', c)
 
+
+def send_text(request):
+    
+    if request.method=='POST':
+        
+        form = Send_Text(request.POST)
+        
+        if form.is_valid():
+        
+            this_phone=form.cleaned_data['to_phone_number']
+            this_msg=form.cleaned_data.get('msg_ending')
+            this_dsp=form.cleaned_data.get('dispatch')
+            send_msg(to_num=this_phone,msg_end=this_msg,dispatch=this_dsp)
+     
+            return redirect('responses_index') # Redirect after POST
+            
+    else:
+        form = Send_Text()
+        
+        c = RequestContext(request, {
+            'form': form,
+        })
+
+        return render_to_response('send_text.html', c)
 
 def register(request):
     if request.user.is_authenticated():

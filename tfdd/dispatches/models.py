@@ -3,7 +3,7 @@ import logging
 import traceback
 
 from django.contrib.auth.models import User
-from django.contrib.localflavor.us.models import PhoneNumberField, USPostalCodeField
+from django.contrib.localflavor.us.models import PhoneNumberField
 from django.db import models
 from django.db.models.signals import post_save
 
@@ -26,6 +26,18 @@ class Profile(models.Model):
             profile, created = Profile.objects.get_or_create(user=instance)
 
 post_save.connect(Profile.create_user_profile, sender=User)
+
+
+#class PhoneVerifications(models.Model):
+#    phone = PhoneNumberField()
+#    code = models.CharField(max_length=6)
+#    sent_at = models.DateTimeField()
+#
+#
+#class EmailVerifications(models.Model):
+#    email = models.EmailField()
+#    code = models.CharField(max_length=6)
+#    sent_at = models.DateTimeField()
 
 
 class Station(models.Model):

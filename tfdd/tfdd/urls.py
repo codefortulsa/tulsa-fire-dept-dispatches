@@ -14,4 +14,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^dispatches/', include('dispatches.urls')),
+    url(r'^send_text/',include('dispatches.urls'))
 )
