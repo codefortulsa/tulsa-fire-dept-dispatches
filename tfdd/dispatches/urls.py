@@ -11,7 +11,7 @@ urlpatterns = patterns(
     url(r'^post/$', 'post', name='dispatch_post'),
     url(r'^register/$', 'register', name='dispatches_register'),
     url(r'^login/$', direct_to_template, {'template': 'login.html'}, name='login'),
-    url(r'^following/$', direct_to_template, {'template': 'following.html'}, name='following'),
+    url(r'^following/$', 'following', name='following'),
     url(r'^settings/$', direct_to_template, {'template': 'settings.html'}, name='settings'),
     url(r'^$', 'index', name='dispatches'),
 )

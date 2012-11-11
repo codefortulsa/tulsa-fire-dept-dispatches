@@ -18,6 +18,7 @@ def index(request):
         {'dispatches': dispatches}))
 
 def following(request):
+    
     dispatches = Dispatch.objects.order_by('-dispatched')[:10]
     return render_to_response('following.html', RequestContext(request, 
         {'dispatches': dispatches}))
