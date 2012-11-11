@@ -142,6 +142,7 @@ class Dispatch(models.Model):
     notes = models.CharField(blank=True, max_length=255)
     tf = models.IntegerField()
     units = models.ManyToManyField(Unit, related_name='dispatches')
+    MEDICAL_CALL_TYPES = ('ME', 'MEM', 'MEP', 'CARDIAC')
 
     class Meta:
         verbose_name_plural = 'Dispatches'
