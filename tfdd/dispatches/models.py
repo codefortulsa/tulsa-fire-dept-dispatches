@@ -1,14 +1,16 @@
 from datetime import datetime
 import logging
+import random
+import requests
+import string
 import traceback
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import post_save
-
-import requests
 
 
 class Profile(models.Model):
@@ -29,16 +31,45 @@ class Profile(models.Model):
 post_save.connect(Profile.create_user_profile, sender=User)
 
 
-#class PhoneVerifications(models.Model):
-#    phone = PhoneNumberField()
-#    code = models.CharField(max_length=6)
-#    sent_at = models.DateTimeField()
-#
-#
-#class EmailVerifications(models.Model):
-#    email = models.EmailField()
-#    code = models.CharField(max_length=6)
-#    sent_at = models.DateTimeField()
+class VerificationBase(models.Model):
+    code = models.CharField(max_length=6)
+    sent_at = models.DateTimeField()
+
+    class Meta:
+        abstract = True
+
+    def send(self):
+        raise NotImplemented()
+
+    @staticmethod
+    def random_code():
+        return ''.join(random.sample(string.digits, 6))
+
+    @classmethod
+    def create_with_unique_code(cls, value):
+        code = cls.random_code()
+        while cls.objects.filter(code=code).exists():
+            code = cls.random_code()
+        obj = cls.objects.create(
+            value=value, code=code, sent_at=datetime.datetime.now())
+        obj.send()
+        return obj
+
+
+class PhoneVerification(VerificationBase):
+    value = PhoneNumberField()
+
+    def send(self):
+        from dispatches.twilio_utils import send_msg
+        send_msg(self.value, 'Registration code %s' % self.code)
+
+
+class EmailVerification(VerificationBase):
+    value = models.EmailField()
+
+    def send(self):
+        send_mail('Registration', 'Registration code %s' % self.code,
+            'tfdd@tfdd.com', [self.value], fail_silently=True)
 
 
 class Station(models.Model):

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
 from dispatches.models import (
-    Dispatch, Profile, RawDispatch, Station, Unit, UnitFollower)
+    Dispatch, PhoneVerification, EmailVerification, Profile, RawDispatch, Station, Unit, UnitFollower)
 
 admin.site.unregister(User)
 
@@ -22,3 +22,5 @@ admin.site.register(Station)
 admin.site.register(Unit)
 admin.site.register(UnitFollower)
 admin.site.register(User, UserProfileAdmin)
+admin.site.register(PhoneVerification)
+admin.site.register(EmailVerification)
