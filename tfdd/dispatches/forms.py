@@ -48,3 +48,49 @@ class RegisterForm(forms.Form):
         ev = EmailVerification.create_with_unique_code(email)
         user.save()
 
+class VerifyEmailForm(forms.ModelForm):
+
+    class Meta:
+        model = EmailVerification
+        fields = ('code',)
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        try:
+            self.instance = EmailVerification.objects.get(code=code)
+        except EmailVerification.DoesNotExist:
+            raise ValidationError('Unknown code')
+        return code
+
+    def save(self):
+        assert self.instance
+        email = form.cleaned_data['value']
+        self.instance.delete()
+        user = User.objects.get(email=email)
+        user.profile.email_confirmed = True
+        user.profile.save()
+        return user
+
+class VerifyPhoneForm(forms.ModelForm):
+
+    class Meta:
+        model = PhoneVerification
+        fields = ('code',)
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        try:
+            self.instance = PhoneVerification.objects.get(code=code)
+        except PhoneVerification.DoesNotExist:
+            raise ValidationError('Unknown code')
+        return code
+
+    def save(self):
+        assert self.instance
+        phone = form.cleaned_data['value']
+        self.instance.delete()
+        user = User.objects.get(profile__phone=phone)
+        user.profile.phone_confirmed = True
+        user.profile.save()
+        return user
+

@@ -165,6 +165,7 @@ SERIAL_PORT = '/dev/ttyUSB0'
 SERIAL_BAUDRATE = 1200
 TWILIO_ACCOUNT = 'override in local_settings'
 TWILIO_TOKEN = 'override in local_settings'
+BASE_URL = 'http://tfdd.co'
 
 try:
     from local_settings import *

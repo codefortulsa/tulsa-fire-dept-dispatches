@@ -26,9 +26,16 @@
         </div>
         <div data-role="content">
             <div class='messages'>
+                {% comment %}
                 {% if user.is_authenticated %}
-                    <p>Verification message goes here...</p>
+                    {% if not user.profile.email_verified %}
+                    <p>Please verify your email</p>
+                    {% endif %}
+                    {% if user.profile.phone and not user.profile.phone_verified %}
+                    <p>Please verify your phone number</p>
+                    {% endif %}
                 {% endif %}
+                {% endcomment %}
                 <ul class="messages">
                 {% for message in messages %}
                     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
