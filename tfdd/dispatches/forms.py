@@ -8,7 +8,6 @@ class FollowForm(forms.Form):
 class Send_Text(forms.Form):
     to_phone_number = forms.CharField(max_length=20)
     msg_ending=forms.CharField(max_length=50)
-    phone_number = forms.CharField(max_length=20)
 
 class RegisterForm(forms.Form):
     first_name = forms.CharField(max_length=30)
