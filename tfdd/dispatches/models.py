@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 import random
+import re
 import requests
 import string
 import traceback
@@ -118,9 +119,14 @@ class RawDispatch(models.Model):
     text = models.TextField()
     received = models.DateTimeField(auto_now_add=True)
     sent = models.DateTimeField(blank=True, null=True)
+    regex = re.compile(
+        r'.*DISPATCH INFO\s+CALL TYPE\s+(?P<call_type>.+)\s+'
+        r'LOC\s+(?P<location>.+)\s+MP\s+(?P<map_page>.+)\s+'
+        r'DATE\s+(?P<date>\d+/\d+/\d+)\s+DIS\s+(?P<dispatch_time>\d+)\s+'
+        r'UNIT\s+(?P<units>.+)\s+TF\s+(?P<tf_id>\d+)\s+END OF MESSAGE', re.S)
 
     def parse(self):
-        'TODO'
+        return self.regex.findall(self.text)
 
     def post(self):
         url = settings.DISPATCH_POST_URL
