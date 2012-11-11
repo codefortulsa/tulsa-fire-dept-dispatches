@@ -2,6 +2,8 @@ from django.conf.urls import url, patterns
 
 urlpatterns = patterns(
     'dispatches.views',
+
+    url(r'^unit_select/','unit_select'),
     
     url(r'^send_text/','send_text'),
 
@@ -9,4 +11,6 @@ urlpatterns = patterns(
         name='follow_unit'),
         
     url(r'^$', 'index', name='responses_index'),
+
+
 )

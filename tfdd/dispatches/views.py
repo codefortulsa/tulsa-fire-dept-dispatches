@@ -71,3 +71,8 @@ def register(request):
     return render_to_response(
         'register.html', RequestContext(request, {'form': form}))
 
+
+def unit_select(request):
+    all_units = Unit.objects.all()
+    return render_to_response(
+        'unit_selection.html', RequestContext(request, {'units': all_units}))

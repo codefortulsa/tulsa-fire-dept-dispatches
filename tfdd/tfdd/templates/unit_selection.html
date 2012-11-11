@@ -1,0 +1,63 @@
+{% spaceless %}<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>Select Unit</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+</head> 
+<body>
+    <div data-role="page">
+        <div data-role="header">
+            <h1>
+                Select a unit
+            </h1>
+        </div>
+        <div data-role="content">
+            <p>
+                Units:
+            </p>
+            <div data-role="collapsible-set">
+            {% for unit in units %}
+                <div data-role="collapsible" >
+                    <h2> {{unit.id}}</h2>
+
+                    <div class="containing-element">
+                        
+                        <div class="ui-grid-a">
+                            <div class="ui-block-a">
+                                <label for="flip-min">Send Text</label> 
+                                <select name="flip-min" id="flip-min" data-role="slider">
+                                    <option value="off">Off</option>
+                                    <option value="on">On</option>
+                                </select>
+                            </div>
+                        	
+                            <div class="ui-block-b">
+                                <label for="flip-min">Send Email</label> 
+                                <select name="flip-min" id="flip-min" data-role="slider">
+                                    <option value="off">Off</option>
+                                    <option value="on">On</option>
+                                </select>
+                            </div>
+                        </div><!-- /grid-a -->
+                        
+                        
+                        
+
+                    	
+                    	
+                    </div>
+
+
+
+
+                </div>
+            {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>{% endspaceless %}
