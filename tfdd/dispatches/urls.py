@@ -7,5 +7,5 @@ urlpatterns = patterns(
         name='follow_unit'),
     url(r'^post/$', 'post', name='dispatch_post'),
     url(r'^register/$', 'register', name='dispatches_register'),
-    url(r'^$', 'index', name='responses_index'),
+    url(r'^$', 'index', name='dispatches'),
 )
