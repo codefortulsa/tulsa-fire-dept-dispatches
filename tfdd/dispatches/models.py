@@ -1,7 +1,13 @@
+import datetime
+import logging
+import traceback
+
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField, USPostalCodeField
 from django.db import models
 from django.db.models.signals import post_save
+
+import requests
 
 
 class Profile(models.Model):
@@ -72,4 +78,11 @@ class RawDispatch(models.Model):
         'TODO'
 
     def post(self):
-        'TODO' 
+        url = settings.DISPATCH_POST_URL
+        logging.debug('posting raw dispatch to %s' % url)
+        try:
+            requests.post(url, dict(text=self.text))
+        except:
+            logging.error(traceback.format_exc())
+        else:
+            self.sent = datetime.now()

@@ -1,21 +1,33 @@
+import logging 
+
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from serial import Serial
 
 from dispatches.models import RawDispatch
 
-class Command(BaseCommand):
-    args = 'port=/dev/ttyUSB0, baudrate=1200, bytesize=8, parity=\'N\', '
-           'stopbits=1, timeout=None, xonxoff=False, rtscts=False, '
-           'writeTimeout=None, dsrdtr=True, interCharTimeout=None'
-    help = 'Reads dispatches from the specified serial port'
 
+if settings.DEBUG:
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
+                        level=logging.DEBUG)
+else:
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
+                        level=logging.INFO)
+
+
+class Command(BaseCommand):
+    help = 'Reads dispatches from the specified serial port'
     def handle(self, *args, **options):
-        options.setdefault('port', '/dev/ttyUSB0')
-        s = Serial(*args, **options)
+        port = settings.SERIAL_PORT
+        baudrate = settings.SERIAL_BAUDRATE
+        s = Serial(port, baudrate=baudrate)
+        logging.info('listening on %s at %s baud' % (port, baudrate))
         buf = ''
         while 1:
             buf += s.read()
             if 'END OF MESSAGE' in buf:
                 raw_dispatch = RawDispatch(text=buf)
-                raw_dispatch.post()
+                logging.info('received dispatch')
+                raw_dispatch.save()
+                logging.debug(raw_dispatch.text)
                 buf = ''
