@@ -163,7 +163,8 @@ class RawDispatch(models.Model):
             unit, created = Unit.objects.get_or_create(id=id)
             units.append(unit)
         self.dispatch, created = Dispatch.objects.get_or_create(**p)
-        if created or not self.dispatch.raw:
+        if created or not self._default_manager.filter(
+                dispatch=self.dispatch).exists()
             self.save()
         self.dispatch.units.add(*units)
 
