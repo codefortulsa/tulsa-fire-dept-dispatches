@@ -34,3 +34,6 @@ tfdd.db
 
 # local_settings.py
 tfdd/tfdd/local_settings.py
+
+# populated with ./manage.py collectstatic
+tfdd/static

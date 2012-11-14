@@ -3,7 +3,8 @@
 <head>
     <title>{% block title %}Tulsa Fire Dispatch{% endblock %}</title> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <link rel="stylesheet" href="/themes/sarah_black2.min.css" />
+    {% load static from staticfiles %}
+    <link rel="stylesheet" href="{% static "themes/sarah_black2.min.css" %}" />
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile.structure-1.2.0.min.css" />
     <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
@@ -11,7 +12,7 @@
 <body>
     <div data-role="page">
         <div data-role="header">
-            <img src="/img/logo.png" alt="An awesome image" />
+            <img src="{% static "img/logo.png" %}" alt="Tulsa Fire Dept. Dispatches" />
             <div data-role="navbar">
                 <ul>
                     <li><a href="{% url dispatches %}">Dispatches</a></li>                    
