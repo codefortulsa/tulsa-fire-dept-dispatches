@@ -3,45 +3,57 @@
 {% block content %}
 
 <script>
+    
     $(document).bind('pageinit',function() {
         $('select[name*="flip-min"]').on( 'slidestop', function( event ) { 
             var urls = $(this).data('state-urls');
             var state = this.value;
             $.ajax({url: urls[state]});
         });
-    });
     
+        $("#unit_list").listview('option', 'filterCallback',
+            function( text, searchValue, item ){
+                return !RegExp(searchValue, "g").test(text.toString().toLowerCase());
+            });
+        
+    });//end of page init
 </script>
-<p>
-    Units:
-</p>
-<div data-role="collapsible-set">
-{% for unit in units %}
-    <div data-role="collapsible" >
-        <h1> {{unit.id}}</h1>
 
-        <div class="containing-element">
-            <div class="ui-grid-a">
-                <div class="ui-block-a">
-                    <label for="flip-min">Send Text</label> 
-                    <select data-state-urls='{"on":"{% url follow_unit unit.id 'by_phone' 'on' %}","off":"{% url follow_unit unit.id 'by_phone' 'off' %}"}'
-                    
-                    name="flip-min" id="flip-min" data-role="slider">
-                        <option value="off"{% if not unit.by_phone %} selected{% endif %}>Off</option>
-                        <option value="on"{% if unit.by_phone %} selected{% endif %}>On</option>
-                    </select>
-                </div>
-                <div class="ui-block-b">
-                    <label for="flip-min">Send Email</label> 
-                    
-                    <select data-state-urls='{"on":"{% url follow_unit unit.id 'by_email' 'on' %}","off":"{% url follow_unit unit.id 'by_email' 'off' %}"}'
-                    name="flip-min" id="flip-min" data-role="slider">
-                        <option value="off"{% if not unit.by_email %} selected{% endif %}>Off</option>
-                        <option value="on"{% if unit.by_email %} selected{% endif %}>On</option>
-                    </select>
-                </div>
-            </div><!-- /grid-a -->
-        </div>
-    </div>
+<div class="ui-grid-solo">
+<p>
+    You can follow units by text or email
+</p>
+</div>
+<ul id="unit_list" data-role="listview" data-filter="true"> 
+{% for unit in units %}
+    <li  data-filtertext="{{unit.id}}">
+        <div class="ui-grid-b">
+
+            <div class="ui-block-a">
+                {{unit.id}}
+            </div>
+                
+            <div class="ui-block-b">
+
+                <label for="flip-mini">Send Text</label> 
+                <select data-state-urls='{"on":"{% url follow_unit unit.id 'by_phone' 'on' %}","off":"{% url follow_unit unit.id 'by_phone' 'off' %}"}'
+                name="flip-mini" id="flip-mini" data-role="slider" data-mini="true">
+                    <option value="off"{% if not unit.by_phone %} selected{% endif %}>Off</option>
+                    <option value="on"{% if unit.by_phone %} selected{% endif %}>On</option>
+                </select>
+            </div>
+                
+            <div class="ui-block-c">
+                <label for="flip-mini">Send Email</label> 
+                
+                <select data-state-urls='{"on":"{% url follow_unit unit.id 'by_email' 'on' %}","off":"{% url follow_unit unit.id 'by_email' 'off' %}"}'
+                name="flip-mini" id="flip-mini" data-role="slider" data-mini="true">
+                    <option value="off"{% if not unit.by_email %} selected{% endif %}>Off</option>
+                    <option value="on"{% if unit.by_email %} selected{% endif %}>On</option>
+                </select>
+            </div>
+        </div><!-- /grid-b -->
+    </li>
 {% endfor %}
+</ul>
 {% endblock content %}
