@@ -96,7 +96,7 @@ def register_phone(request):
 
 def unit_select(request):
     if not request.user.is_authenticated():
-        return redirect('responses_index')
+        return redirect('dispatches')
     all_units = list(Unit.objects.order_by('id'))
     for unit in all_units:
         follow_q = unit.unitfollower_set.filter(user=request.user)
