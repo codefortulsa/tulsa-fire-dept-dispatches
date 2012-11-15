@@ -24,7 +24,7 @@ def index(request):
 
 def following(request):
     dispatches = Dispatch.objects.filter(
-        units__unitfollower__user=request.user).order_by('-dispatched')[:10]
+        units__unitfollower__user=request.user.id).order_by('-dispatched')[:10]
     return render_to_response('following.html', RequestContext(request, 
         {'dispatches': dispatches}))
 
