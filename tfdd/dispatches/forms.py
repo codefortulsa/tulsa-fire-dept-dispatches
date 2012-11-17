@@ -20,15 +20,15 @@ class RegisterForm(forms.Form):
     password2 = forms.CharField(label='Password Again', widget=forms.PasswordInput)
 
     def clean_email(self):
-        email = self.cleaned_data['email']
-        if User.objects.filter(email=email).exists():
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email=email).exists():
             raise forms.ValidationError('There is already a user with that email.')
         return email
 
     def clean(self):
-        password = self.cleaned_data['password']
-        password2 = self.cleaned_data['password2']
-        if password != password2:
+        password = self.cleaned_data.get('password')
+        password2 = self.cleaned_data.get('password2')
+        if password and password2 and password != password2:
             raise forms.ValidationError('Passwords do not match.')
         return self.cleaned_data
 
