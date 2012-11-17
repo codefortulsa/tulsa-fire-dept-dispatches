@@ -3,6 +3,7 @@ import traceback
 
 from django.contrib.auth.views import login as auth_login
 from django.contrib.auth.views import logout as auth_logout
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render_to_response
@@ -11,47 +12,35 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from emailusernames.forms import EmailAuthenticationForm
 
-from dispatches.forms import (FollowForm, RegisterForm, Send_Text, VerifyEmailForm, 
-VerifyPhoneForm, UpdateSettings)
+from dispatches.forms import (
+    RegisterForm, VerifyEmailForm, VerifyPhoneForm,
+    UpdateSettings)
 from dispatches.models import Dispatch, RawDispatch, Unit
-from twilio_utils import send_msg
 
 
 def index(request):
     dispatches = Dispatch.objects.order_by('-dispatched')[:10]
-    return render_to_response('index.html', RequestContext(request, 
-        {'dispatches': dispatches}))
+    return render_to_response(
+        'index.html', RequestContext(request, dict(dispatches=dispatches)))
 
+
+@login_required
 def following(request):
     dispatches = Dispatch.objects.filter(
         units__unitfollower__user=request.user.id).order_by('-dispatched')[:10]
-    return render_to_response('following.html', RequestContext(request, 
-        {'dispatches': dispatches}))
+    return render_to_response(
+        'following.html', RequestContext(request, dict(dispatches=dispatches)))
 
-
-def send_text(request):
-    if request.method == 'POST':
-        form = Send_Text(request.POST)
-        if form.is_valid():
-            this_phone = form.cleaned_data['to_phone_number']
-            this_msg = form.cleaned_data.get('msg_ending')
-            this_dsp = form.cleaned_data.get('dispatch')
-            send_msg(to_num=this_phone, msg_end=this_msg, dispatch=this_dsp)
-            return redirect('dispatches')  # Redirect after POST
-    else:
-        form = Send_Text()
-        c = RequestContext(request, {
-            'form': form,
-        })
-
-        return render_to_response('send_text.html', c)
 
 def login(request):
     return auth_login(
-        request, template_name='login.html', authentication_form=EmailAuthenticationForm)
+        request, template_name='login.html',
+        authentication_form=EmailAuthenticationForm)
+
 
 def logout(request):
-    return auth_logout( request, next_page=reverse('dispatches'))
+    return auth_logout(request, next_page=reverse('dispatches'))
+
 
 def register(request):
     if request.user.is_authenticated():
@@ -86,7 +75,7 @@ def register_phone(request):
     if 'code' in request.REQUEST:
         form = VerifyPhoneForm(request.REQUEST)
         if form.is_valid():
-            user = form.save()
+            form.save()
             return redirect('dispatches')
     else:
         form = VerifyPhoneForm()
@@ -94,6 +83,7 @@ def register_phone(request):
         'register_phone.html', RequestContext(request, {'form': form}))
 
 
+@login_required
 def unit_select(request):
     if not request.user.is_authenticated():
         return redirect('dispatches')
@@ -109,6 +99,7 @@ def unit_select(request):
             'units': all_units}))
 
 
+@login_required
 def follow_unit(request, unit_id, channel, state):
     assert channel in ['by_phone', 'by_email']
     assert state in ['on', 'off']
@@ -137,16 +128,14 @@ def post(request):
         return HttpResponseBadRequest()
 
 
+@login_required
 def update_settings(request):
     if request.method == 'POST':
-        form = UpdateSettings(request.POST,instance=request.user)
+        form = UpdateSettings(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
             return redirect('dispatches')  # Redirect after POST
     else:
-        form = UpdateSettings(instance=request.user)
-        c = RequestContext(request, {
-            'form': form,
-        })
-
+        c = RequestContext(
+            request, dict(form=UpdateSettings(instance=request.user)))
         return render_to_response('settings.html', c)
