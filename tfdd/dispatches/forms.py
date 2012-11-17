@@ -4,12 +4,10 @@ from django.contrib.localflavor.us.forms import USPhoneNumberField
 
 from dispatches.models import EmailVerification, PhoneVerification
 
-class FollowForm(forms.Form):
-     phone_number = forms.CharField(max_length=20)
 
-class Send_Text(forms.Form):
-    to_phone_number = forms.CharField(max_length=20)
-    msg_ending=forms.CharField(max_length=50)
+class FollowForm(forms.Form):
+    phone_number = forms.CharField(max_length=20)
+
 
 class RegisterForm(forms.Form):
     first_name = forms.CharField(max_length=30)
@@ -17,12 +15,14 @@ class RegisterForm(forms.Form):
     email = forms.EmailField()
     phone = USPhoneNumberField(required=False)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password Again', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password Again',
+                                widget=forms.PasswordInput)
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email and User.objects.filter(email=email).exists():
-            raise forms.ValidationError('There is already a user with that email.')
+            raise forms.ValidationError(
+                'There is already a user with that email.')
         return email
 
     def clean(self):
@@ -44,9 +44,10 @@ class RegisterForm(forms.Form):
         if phone:
             user.profile.phone = phone
             user.profile.save()
-            pv = PhoneVerification.create_with_unique_code(phone)
-        ev = EmailVerification.create_with_unique_code(email)
+            PhoneVerification.create_with_unique_code(phone)
+        EmailVerification.create_with_unique_code(email)
         user.save()
+
 
 class VerifyEmailForm(forms.ModelForm):
 
@@ -71,6 +72,7 @@ class VerifyEmailForm(forms.ModelForm):
         user.profile.save()
         return user
 
+
 class VerifyPhoneForm(forms.ModelForm):
 
     class Meta:
@@ -94,17 +96,15 @@ class VerifyPhoneForm(forms.ModelForm):
         user.profile.save()
         return user
 
+
 class UpdateSettings(forms.ModelForm):
     phone = USPhoneNumberField(required=False)
 
     class Meta:
         model = User
-        fields =('email',)
+        fields = ('email',)
 
     def __init__(self, *args, **kwargs):
         super(UpdateSettings, self).__init__(*args, **kwargs)
         if self.instance:
             self.initial['phone'] = self.instance.profile.phone
-
-    def save(self):
-        user = super(UpdateSettings, self).save()
