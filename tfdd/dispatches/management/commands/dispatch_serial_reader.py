@@ -8,11 +8,12 @@ from dispatches.models import RawDispatch
 
 
 if settings.DEBUG:
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
-                        level=logging.DEBUG)
+    LOGLEVEL = logging.DEBUG
 else:
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
-                        level=logging.INFO)
+    LOGLEVEL = logging.INFO
+
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
+                    level=LOGLEVEL)
 
 
 class Command(BaseCommand):
