@@ -32,6 +32,9 @@ def following(request):
         'following.html', RequestContext(request, dict(dispatches=dispatches)))
 
 
+def about(request):
+    return render_to_response('about.html')
+    
 def login(request):
     return auth_login(
         request, template_name='login.html',

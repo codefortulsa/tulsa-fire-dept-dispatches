@@ -15,5 +15,7 @@ urlpatterns = patterns(
     url(r'^settings/$', 'update_settings', name='settings'),
     url(r'^register/phone/$', 'register_phone', name='register_phone'),
     url(r'^register/email/$', 'register_email', name='register_email'),
+    url(r'^about/$', 'about',name='about'),
     url(r'^$', 'index', name='dispatches'),
+    
 )

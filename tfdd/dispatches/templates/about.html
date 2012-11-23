@@ -1,0 +1,50 @@
+<!DOCTYPE html> 
+<html>
+<head>
+{% load static from staticfiles %}  
+<link rel="stylesheet" href="{% static "themes/tfdd_snips.css" %}" />    
+    
+</head>
+<body>
+
+    <div data-role="page" id="about">
+        <div data-theme="c" data-role="header">
+            <h3 class="tfdd_img">
+                About tfdd.co
+            </h3>
+            <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+        </div>
+        <div data-role="content">
+            <h3>Tulsa Fire Department Dispatch</h3>
+            <p>
+            The TFDD application was created to help firefighters save critical time receiving and using 
+            dispatch information.  The current version allows any registered user to receive text messages or email
+            regarding the units they need to know about.</p>
+            <p>This application was created with donated time from a team of developers participating in <a target="_blank" href="http://tulsa.startupweekend.org">StartUp Weekend</a> on November 9, 2012.  
+                It continues to run thanks to these folks:</p>
+            <ul>
+                <li>Text messaging donated by  <a target="_blank" href="http://tulsawebdevs.org/">Tulsa Web Devs</a></li>
+                <li>Free hosting by <a target="_blank" href="http://www.isocentric.com/">Isocentric</a></li>
+            </ul>
+            <h3>Background</h3>
+           
+            <p>Like many communities, Tulsa has central emergency dispatching. When someone calls 911, the operator gets the details of the incident, including name and address, and enters it into the system. There is a Tulsa Fire Department dispatcher listening in on the call, as well as a Police and EMS dispatcher. If it sounds like it is in the TFD's wheelhouse, the dispatcher may make initial radio contact with the likely station, while entering data into their own system. When they do decide to dispatch the call, the details are sent over a radio modem, and then they repeat the dispatch by voice.</p>
+
+            <p>Often, the fire fighting crew is already in motion from the initial voice contact. The data dispatch will print the details to an attached printer, as well as turn on the station lights and alarm and open the garage door. The details include a map page, which directs them to a specific section of a printed binder with streets and hydrant locations (curated by the city).</p>
+
+            <p>Sometimes, they can't wait for the printout, but get the details read over the radio. One of the fire fighters scanned the map book as a set of PDFs and put it on his iPad, so he could more easily access the map. This gave one of the chiefs the idea for the project - what if the fire fighters and others in the TFD could get the dispatches on their mobile devices? What if it was easy to get dispatch data to the reporter that just called about the truck zooming by?</p>
+
+
+           <h3>How we did it</h3>
+           
+           <p>Our project uses a RaspberryPi to get this dispatch data onto the web. The printer was disconnected, and the device connected in its place. Every station gets and prints the same dispatches - we used a radio at a training facility where the printer was usually turned off anyway. Once we have the data, we send it over the center's wifi to the tfdd.co server. We parse out the unit w/o interpreting them - TFD insiders know that E21 is station 21's EMSA unit, L21 is their ladder truck, SQ21 is usually a truck, and C641 is one of the chiefs. We send an SMS and email for the incident, and update the website.</p>
+
+           <p>The RaspberryPi, wifi equipment, and cables are donated by devs. http://tfdd.co is hosted in Isocentric, which is donating the hosting and bandwidth. Google is sending the emails, and Luke Crouch's Twillio account (topped up with some donated credits) is sending the SMS.</p>
+        </div>
+    </div>
+
+
+    
+</body>    
+    
+</html>
