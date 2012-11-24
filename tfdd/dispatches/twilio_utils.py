@@ -22,9 +22,11 @@ def send_msg(to_num, msg_end=None, dispatch=None):
 
     if msg_end:
         dispatch_text="%s %s" % (dispatch_text,msg_end)
-
-    message = client.sms.messages.create(
-        to=to_num, 
-        from_="+19185508625",
-        body=dispatch_text)
-
+    
+    try:
+        message = client.sms.messages.create(
+            to=to_num, 
+            from_="+19185508625",
+            body=dispatch_text)
+    except:
+        pass
