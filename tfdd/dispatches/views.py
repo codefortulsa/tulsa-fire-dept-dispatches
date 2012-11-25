@@ -26,7 +26,7 @@ def index(request):
 @login_required
 def following(request):
     dispatches = Dispatch.objects.filter(
-        units__unitfollower__user=request.user.id).order_by('-dispatched')[:10] 
+        units__unitfollower__user=request.user.id).order_by('-dispatched')[:10]
     return render_to_response(
         'following.html', RequestContext(request, dict(dispatches=dispatches)))
 
@@ -34,7 +34,7 @@ def following(request):
 def about(request):
     return render_to_response('about.html')
 
-    
+
 def login(request):
     return auth_login(
         request, template_name='login.html',
@@ -98,9 +98,8 @@ def unit_select(request):
             unit.by_phone = follow.by_phone
             unit.by_email = follow.by_email
             # remove UnitFollower if no notifications
-            if follow.by_phone==False and follow.by_email==False:
+            if not follow.by_phone and not follow.by_email:
                 follow.delete()
-            
     return render_to_response(
         'unit_selection.html', RequestContext(request, {
             'units': all_units}))
