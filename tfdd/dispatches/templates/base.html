@@ -32,9 +32,9 @@
                 
             <div data-role="navbar">
                 <ul>
-                    <li><a href="{% url dispatches %}">Dispatches</a></li>                    
+                    <li><a href="{% url dispatches %}" data-ajax="false">Dispatches</a></li>                    
                     {% if user.is_authenticated %}
-                    <li selected><a href="{% url following %}">Following</a></li>
+                    <li><a href="{% url following %}" data-ajax="false">Following</a></li>
                     <li><a href="{% url settings %}">Settings</a>
                     </li>
 
