@@ -14,7 +14,7 @@ from emailusernames.forms import EmailAuthenticationForm
 
 from .forms import (RegisterForm, VerifyEmailForm, VerifyPhoneForm,
                     UpdateSettings)
-from .models import Dispatch, RawDispatch, Unit
+from .models import Dispatch, RawDispatch, Unit, UnitFollower
 
 
 def index(request):
@@ -35,9 +35,14 @@ def following(request):
 def unit_detail(request,unit_id):
     dispatches = Dispatch.objects.filter(
         units__id=unit_id).order_by('-dispatched')[:10]
+    followers=UnitFollower.objects.filter(unit=unit_id).all()
         
     return render_to_response(
-        'unit_dispatches.html', RequestContext(request, {'unit_id':unit_id, 'dispatches':dispatches}))
+        'unit_dispatches.html', RequestContext(request, 
+            {'unit_id':unit_id
+            ,'dispatches':dispatches
+            ,'followers':followers
+            }))
 
 
 def about(request):

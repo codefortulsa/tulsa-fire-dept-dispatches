@@ -1,4 +1,3 @@
-
 <!DOCTYPE html> 
 <html>
 <head>
@@ -17,7 +16,20 @@
         </div>
         <div data-role="content">
 
-        <ul  data-role="listview" data-inset="true" >{% for dispatch in dispatches %}
+        {% if user.is_staff %}
+            <legend>Followers of this unit</legend>
+            <ul  data-role="listview" data-inset="true" >
+            {% for follower in followers %}
+                <li>
+                    <p>{{follower.user}}</p>
+                </li>
+
+            {% endfor %}
+            </ul>
+        {% endif  %}
+
+        <ul  data-role="listview" data-inset="true" >
+        {% for dispatch in dispatches %}
             <li>
                 <h2>{{dispatch.call_type_desc}}</h2>
                 <h3>{{dispatch.location}}</h3>
@@ -29,5 +41,9 @@
                 <p>{{dispatch.dispatched}}</p>
             </li>
 
-        {% endfor %}</ul>
-
+        {% endfor %}
+        </ul>
+     </div>      <!-- end of content  -->
+     </div><!-- end of page -->
+</body>
+</html>
