@@ -165,6 +165,7 @@ SERIAL_PORT = '/dev/ttyUSB0'
 SERIAL_BAUDRATE = 1200
 TWILIO_ACCOUNT = 'override in local_settings'
 TWILIO_TOKEN = 'override in local_settings'
+TWILIO_FROM = 'override in local_settings'
 BASE_URL = 'http://tfdd.co'
 LOGIN_REDIRECT_URL = '/dispatches/'
 
