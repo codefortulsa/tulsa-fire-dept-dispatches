@@ -14,32 +14,9 @@ from django.contrib.localflavor.us.models import PhoneNumberField
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.expressions import ExpressionNode
 from django.db.models.signals import post_save
 
-from twilio_utils import send_msg, dispatch_msg
-
-
-def update(instance, **kwargs):
-    using = kwargs.pop('using', '')
-    get_expression_nodes = kwargs.pop('get_expression_nodes', True)
-    updated = instance._default_manager.filter(pk=instance.pk).using(
-        using).update(**kwargs)
-    if not updated:
-        logging.error('update %s: %s failed' % (instance, kwargs))
-        return
-    expression_nodes = []
-    for attr, value in kwargs.items():
-        if isinstance(value, ExpressionNode):
-            expression_nodes.append(attr)
-        else:
-            setattr(instance, attr, value)
-    if get_expression_nodes and expression_nodes:
-        values = instance._default_manager.filter(pk=instance.pk).using(
-            using).values(*expression_nodes)[0]
-        for attr in expression_nodes:
-            setattr(instance, attr, values[attr])
-    return updated
+from .utils import dispatch_msg, send_msg, update 
 
 
 class Profile(models.Model):
@@ -89,7 +66,6 @@ class PhoneVerification(VerificationBase):
     value = PhoneNumberField()
 
     def send(self):
-        from dispatches.twilio_utils import send_msg
         send_msg(
             self.value,
             'To verify your phone w/ tfdd.co, please visit %s%s?code=%s .' % (

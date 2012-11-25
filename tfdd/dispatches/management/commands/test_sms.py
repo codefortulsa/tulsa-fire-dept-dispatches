@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from dispatches.twilio_utils import send_msg, dispatch_msg
+from dispatches.utils import send_msg
 
 class Command(BaseCommand):
     help = 'Test twilio utils'
