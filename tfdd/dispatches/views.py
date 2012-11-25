@@ -31,6 +31,15 @@ def following(request):
         'following.html', RequestContext(request, dict(dispatches=dispatches)))
 
 
+@login_required
+def unit_detail(request,unit_id):
+    dispatches = Dispatch.objects.filter(
+        units__id=unit_id).order_by('-dispatched')[:10]
+        
+    return render_to_response(
+        'unit_dispatches.html', RequestContext(request, {'unit_id':unit_id, 'dispatches':dispatches}))
+
+
 def about(request):
     return render_to_response('about.html')
 

@@ -1,0 +1,33 @@
+
+<!DOCTYPE html> 
+<html>
+<head>
+
+{% include "resources.html"%}
+    
+</head>
+<body>
+
+    <div data-role="page" id="about">
+        <div data-theme="c" data-role="header">
+            <h3 class="tfdd_img">
+                {{unit_id}} dispatches
+            </h3>
+            <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+        </div>
+        <div data-role="content">
+
+        <ul  data-role="listview" data-inset="true" >{% for dispatch in dispatches %}
+            <li>
+                <h2>{{dispatch.call_type_desc}}</h2>
+                <h3>{{dispatch.location}}</h3>
+                <h3>Map Page: {{dispatch.map_page}}</h3>
+                <h3>Unit:
+                {% for unit in dispatch.units.all %}
+                    {{unit.id}}&nbsp;
+                {% endfor %}</h3>
+                <p>{{dispatch.dispatched}}</p>
+            </li>
+
+        {% endfor %}</ul>
+
