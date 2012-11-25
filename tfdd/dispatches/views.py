@@ -12,10 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from emailusernames.forms import EmailAuthenticationForm
 
-from dispatches.forms import (
-    RegisterForm, VerifyEmailForm, VerifyPhoneForm,
-    UpdateSettings)
-from dispatches.models import Dispatch, RawDispatch, Unit
+from .forms import (RegisterForm, VerifyEmailForm, VerifyPhoneForm,
+                    UpdateSettings)
+from .models import Dispatch, RawDispatch, Unit
 
 
 def index(request):
