@@ -27,13 +27,14 @@ def index(request):
 @login_required
 def following(request):
     dispatches = Dispatch.objects.filter(
-        units__unitfollower__user=request.user.id).order_by('-dispatched')[:10]
+        units__unitfollower__user=request.user.id).order_by('-dispatched')[:10] 
     return render_to_response(
         'following.html', RequestContext(request, dict(dispatches=dispatches)))
 
 
 def about(request):
     return render_to_response('about.html')
+
     
 def login(request):
     return auth_login(
@@ -97,6 +98,10 @@ def unit_select(request):
             follow = follow_q.get()
             unit.by_phone = follow.by_phone
             unit.by_email = follow.by_email
+            # remove UnitFollower if no notifications
+            if follow.by_phone==False and follow.by_email==False:
+                follow.delete()
+            
     return render_to_response(
         'unit_selection.html', RequestContext(request, {
             'units': all_units}))
@@ -110,6 +115,7 @@ def follow_unit(request, unit_id, channel, state):
     follower, created = request.user.unitfollower_set.get_or_create(unit=unit)
     setattr(follower, channel, state == 'on')
     follower.save()
+
     return HttpResponse(
         'User %s is now%sfollowing %s %s' %
         (request.user, ' ' if state == 'on' else ' not ', unit, channel))
