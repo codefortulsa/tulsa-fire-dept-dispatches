@@ -31,7 +31,7 @@ def following(request):
         'following.html', RequestContext(request, dict(dispatches=dispatches)))
 
 
-@login_required
+@login_required(login_url='/dispatches/login/')
 def unit_detail(request,unit_id):
     dispatches = Dispatch.objects.filter(
         units__id=unit_id).order_by('-dispatched')[:10]

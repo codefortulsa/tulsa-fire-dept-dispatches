@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
+
+
 <ul  data-role="listview" data-inset="true" >
 {% for dispatch in dispatches %}
     <li>
@@ -14,6 +16,7 @@
             {% for unit in dispatch.units.all %}
                 <a href="{% url unit_detail unit.id %}"
                 data-role="button" data-inline="true" data-mini="true"
+                data-transition="slide"
                 >{{unit.id}}</a>
 
             {% endfor %}
@@ -24,4 +27,6 @@
     </li>
 {% endfor %}
 </ul>
+
+
 {% endblock content %}
