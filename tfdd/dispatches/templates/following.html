@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 <p><i>These are dispatches for the units you are following</i></p>
-<a href="/dispatches/unit_select" data-prefetch>Follow more units...</a>
+<a href="/dispatches/unit_select" 
+    data-prefetch
+    data-transition="pop"
+    data-direction="reverse"
+    >Follow more units...</a>
+    
 {% include "dispatch_list.html"  %}
 
 {% endblock content %}

@@ -1,0 +1,34 @@
+<ul data-role="listview" data-inset="true" >
+{% for dispatch in dispatches %}
+    <li>
+        <h2>{{dispatch.call_type_desc}}</h2>
+
+
+        {% if user.is_authenticated  %}
+            <h3>{{dispatch.location}}</h3>
+        {% else%}
+
+            {# TODO: add permission for medical call types #}
+            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+                <h3>{{dispatch.location}}</h3>
+            {% endif %}
+        {% endif %}
+        
+        <h3>Map Page: {{dispatch.map_page}}</h3>
+        <h3>Unit{{ dispatch.units.count|pluralize }} dispatched:</h3>   
+            <div data-role="controlgroup" data-type="horizontal">
+            {% for unit in dispatch.units.all %}
+                <a href="{% url unit_detail unit.id %}"
+                data-role="button" data-inline="true" data-mini="true"
+                data-transition="slide"
+                >{{unit.id}}</a>
+
+            {% endfor %}
+            </div>    
+    
+        <p>{{dispatch.dispatched}}</p>
+    
+    
+    </li>
+{% endfor %}
+</ul>
