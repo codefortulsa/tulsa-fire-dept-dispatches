@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.db.models import Max
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from emailusernames.forms import EmailAuthenticationForm
@@ -44,6 +45,25 @@ def unit_detail(request,unit_id):
             ,'followers':followers
             }))
 
+
+
+@login_required
+def dispatch_by_tf(request, tf_start, how_many):
+    
+    tf_start=int(tf_start)
+    if tf_start==0:
+        max_tf=Dispatch.objects.aggregate(Max('tf'))
+        tf_start=max_tf['tf__max']
+        
+    tf_end=tf_start-int(how_many)+1
+        
+    try:            
+        dispatches = Dispatch.objects.filter(
+            tf__range=(tf_end,tf_start)).order_by('-dispatched')
+        return render_to_response(
+            'dispatch_list.html', RequestContext(request, dict(dispatches=dispatches)))
+    except:
+        pass
 
 def about(request):
     return render_to_response('about.html')

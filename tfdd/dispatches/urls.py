@@ -13,6 +13,8 @@ urlpatterns = patterns(
     url(r'^logout/$', 'logout', name='logout'),
     url(r'^following/$', 'following', name='following'),
     url(r'^unit_detail/(?P<unit_id>.*)/$', 'unit_detail', name='unit_detail'),
+    url(r'^by_tf/(?P<tf_start>.*)/(?P<how_many>.*)/$', 'dispatch_by_tf',
+        name='dispatch_by_tf'),
     url(r'^settings/$', 'update_settings', name='settings'),
     url(r'^register/phone/$', 'register_phone', name='register_phone'),
     url(r'^register/email/$', 'register_email', name='register_email'),
