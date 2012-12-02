@@ -7,7 +7,7 @@
 </head>
 <body>
 
-    <div data-role="page" id="about">
+    <div class="dispatch_page" data-role="page" id="about">
         <div data-theme="c" data-role="header">
             <h3 class="tfdd_img">
                 {{unit_id}} dispatches
@@ -29,6 +29,7 @@
         {% endif  %}
 
         <legend>Recent dispatches</legend>
+        
         {% include "dispatch_list.html" %}
         
      </div>      <!-- end of content  -->

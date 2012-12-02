@@ -14,14 +14,12 @@
     <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
     
-<script>    
-$(this.id).is(":visible")    
-    
-</script>
+
+
 
 </head>
 <body>
-    <div data-role="page">
+    <div class="dispatch_page" data-role="page">
             
         <div data-role="header">
             
@@ -30,7 +28,8 @@ $(this.id).is(":visible")
                 </div>
                 <div class="tfdd_about">
                     <a href="{% url about %}" 
-                    data-prefetch data-icon="info"
+                    data-prefetch 
+                    data-icon="info"
                     data-role="button"
                     data-transition="flip"
                     >About</a>
@@ -39,14 +38,20 @@ $(this.id).is(":visible")
                 
             <div data-role="navbar">
                 <ul>
-                    <li><a href="{% url dispatches %}" data-ajax="false">Dispatches</a></li>                    
+                    <li><a href="{% url dispatches %}" 
+                         data-ajax="false">Dispatches</a></li>                    
                     {% if user.is_authenticated %}
-                    <li><a href="{% url following %}" data-ajax="false">Following</a></li>
-                    <li><a href="{% url settings %}">Settings</a>
+                    <li><a href="{% url following %}" 
+                        data-ajax="false"
+                        >Following</a></li>
+                    <li><a href="{% url settings %}"
+                        >Settings</a>
                     </li>
 
                     {% else %}
-                    <li><a href="{% url login %}">Login</a></li>
+                    <li><a href="{% url login %}"
+                        data-prefetch 
+                        >Login</a></li>
                     {% endif %}
 
                 </ul>
@@ -71,12 +76,17 @@ $(this.id).is(":visible")
                     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                 {% endfor %}
                 </ul>
-            </div>
+            </div>    <!-- End of messages -->
+            
+            
+            
             {% block content %}
             <p> Content goes here </p>
             {% endblock %}
-        </div>
-    </div>
+
+        </div>    <!-- End of content -->
+        
+    </div><!-- End of page -->
 
 </body>
 </html>{% endspaceless %}

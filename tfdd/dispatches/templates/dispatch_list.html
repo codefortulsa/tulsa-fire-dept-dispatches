@@ -1,33 +1,72 @@
-<ul data-role="listview" data-inset="true" >
-{% for dispatch in dispatches %}
-    <li data-tfdd_tf={{dispatch.tf}}>
+
+<script>
+    $(document).bind('pageinit',function() {        
+        $(window).scroll(function(event) {
+                var distance = ($(window).scrollTop() + $(window).height()) - $('.dispatch').last().offset().top;
+                if (distance > -200) {
+                    last_tf = $('.dispatch').last().data("tfdd-tf");
+                    $.ajax({
+                        url: $('.dispatch').last().data("tf-url"),
+                        success: function(data){
+                            last_in_list=$('.dispatch').last().data("tfdd-tf");
+                            last_in_data=$("li", data).last().data("tfdd-tf");
+
+                            if (last_in_list!=last_in_data){
+                                $(".dispatch_listview").append($("li", data)).listview('refresh').trigger( "create" );
+                            }
+                        
+                        }
+                    })
+                }
+        });
+    });//end of page init
+</script>
+
+    
+    <ul class="dispatch_listview"
+        data-role="listview" 
+        data-inset="true" 
+        >
+
+    {% for dispatch in dispatches %}
+        <li class="dispatch"
+            data-tf-url="{% url dispatch_list dispatch.tf 3 dispatch_filter %}"
+            data-tfdd-tf="{{dispatch.tf}}" >
+        
         <h2>{{dispatch.call_type_desc}}</h2>
 
-
-        {% if user.is_authenticated  %}
-            <h3>{{dispatch.location}}</h3>
-        {% else%}
-
-            {# TODO: add permission for medical call types #}
-            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+            {% if user.is_authenticated  %}
                 <h3>{{dispatch.location}}</h3>
-            {% endif %}
-        {% endif %}
-        <h3>Map Page: {{dispatch.map_page}}</h3>
-        <h3>Unit{{ dispatch.units.count|pluralize }} dispatched:</h3>   
-            <div data-role="controlgroup" data-type="horizontal">
-            {% for unit in dispatch.units.all %}
-                <a href="{% url unit_detail unit.id %}"
-                data-role="button" data-inline="true" data-mini="true"
-                data-transition="slide"
-                >{{unit.id}}</a>
+            {% else%}
 
-            {% endfor %}
-            </div>    
+                {# TODO: add permission for medical call types #}
+                {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+                    <h3>{{dispatch.location}}</h3>
+                {% endif %}
+
+            {% endif %}
+
+            <h3>Map Page: {{dispatch.map_page}}</h3>
+            <h3>Unit{{ dispatch.units.count|pluralize }} dispatched:</h3>   
+                <div class="unit_list" 
+                    data-role="controlgroup" 
+                    data-type="horizontal">
+                {% for unit in dispatch.units.all %}
+                    <a href="{% url unit_detail unit.id %}"
+                        class="unit_button"
+                        data-role="button" 
+                        data-inline="true" 
+                        data-mini="true"
+                        data-transition="slide"
+                    >{{unit.id}}</a>
+
+                {% endfor %}
+                </div>    
     
-        <p>{{dispatch.dispatched}}</p>
+            <p>{{dispatch.dispatched}}</p>
     
+        </li>
+    {% endfor %}
+    </ul>
     
-    </li>
-{% endfor %}
-</ul>
+  

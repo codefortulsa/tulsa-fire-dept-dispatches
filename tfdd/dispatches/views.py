@@ -18,52 +18,66 @@ from .forms import (RegisterForm, VerifyEmailForm, VerifyPhoneForm,
 from .models import Dispatch, RawDispatch, Unit, UnitFollower
 
 
-def index(request):
-    dispatches = Dispatch.objects.order_by('-dispatched')[:10]
-    return render_to_response(
-        'index.html', RequestContext(request, dict(dispatches=dispatches)))
+@login_required
+def dispatch_list(request, start_tf=0, how_many=10, dispatch_filter={}):
+
+    try:
+        dispatch_filter=eval(dispatch_filter)
+    except:
+        dispatch_filter={}
+  
+    try:
+        start_tf=int(start_tf)
+    except:
+        start_tf=0
+        
+    if start_tf==0:
+        max_tf=Dispatch.objects.aggregate(Max('tf'))
+        dispatch_filter['tf']=max_tf
+    else:
+        dispatch_filter['tf__lt']=start_tf        
+    
+    try:            
+        dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:how_many]
+        return render_to_response(
+            'dispatch_list.html', RequestContext(request, 
+                dict(dispatches=dispatches,
+                     dispatch_filter=dispatch_filter)))
+    except:
+        return HttpResponseBadRequest()
+
+
+def index(request,*args):
+    dispatches = Dispatch.objects.order_by('-dispatched')[:5]            
+    return render_to_response('index.html', RequestContext(request,
+    dict(dispatches=dispatches)))
 
 
 @login_required
-def following(request):
-    dispatches = Dispatch.objects.filter(
-        units__unitfollower__user=request.user.id).order_by('-dispatched')[:10]
-    return render_to_response(
-        'following.html', RequestContext(request, dict(dispatches=dispatches)))
+def following(request,):
+    dispatch_filter = dict(units__unitfollower__user = request.user.id)
+    dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:5]
+    return render_to_response('following.html', 
+        RequestContext(request, 
+            dict(dispatches=dispatches,
+                 dispatch_filter=dispatch_filter
+            )))
 
 
 @login_required(login_url='/dispatches/login/')
 def unit_detail(request,unit_id):
-    dispatches = Dispatch.objects.filter(
-        units__id=unit_id).order_by('-dispatched')[:10]
-    followers=UnitFollower.objects.filter(unit=unit_id).all()
-        
+    dispatch_filter = dict(units__id=unit_id)
+    dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:5]
+    followers=UnitFollower.objects.filter(unit=unit_id)
+
     return render_to_response(
         'unit_dispatches.html', RequestContext(request, 
             {'unit_id':unit_id
             ,'dispatches':dispatches
             ,'followers':followers
-            }))
+            ,'dispatch_filter':dispatch_filter
+            }))        
 
-
-
-@login_required
-def dispatch_by_tf(request, tf_start, how_many):
-    
-    tf_start=int(tf_start)
-    if tf_start==0:
-        max_tf=Dispatch.objects.aggregate(Max('tf'))
-        tf_start=max_tf['tf__max']
-        
-    tf_end=tf_start-int(how_many)+1
-        
-    try:            
-        dispatches = Dispatch.objects.filter(
-            tf__range=(tf_end,tf_start)).order_by('-dispatched')
-        return render_to_response(
-            'dispatch_list.html', RequestContext(request, dict(dispatches=dispatches)))
-    except:
-        pass
 
 def about(request):
     return render_to_response('about.html')
