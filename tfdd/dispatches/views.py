@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
-from django.db.models import Max
+from django.db.models import Max,Count
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from emailusernames.forms import EmailAuthenticationForm
@@ -45,6 +45,38 @@ def dispatch_list(request, start_tf=0, how_many=10, dispatch_filter={}):
                      dispatch_filter=dispatch_filter)))
     except:
         return HttpResponseBadRequest()
+
+@login_required
+def check_for_update(request, start_tf=0, dispatch_filter={}):
+
+    try:
+        dispatch_filter=eval(dispatch_filter)
+    except:
+        dispatch_filter={}
+  
+    try:
+        start_tf=int(start_tf)
+    except:
+        return HttpResponseBadRequest()
+        
+    update_filter=dispatch_filter.copy()
+    update_filter['tf__gt']=start_tf        
+    
+    # try:            
+    dispatches = Dispatch.objects.filter(**update_filter).order_by('-dispatched')
+
+    if dispatches.count() > 0:
+        return render_to_response(
+            'dispatch_list.html', RequestContext(request, 
+                dict(dispatches=dispatches,
+                     update_filter=update_filter,
+                     dispatch_filter=dispatch_filter)))
+    else:
+        return HttpResponseBadRequest()
+
+    # except:
+    #     return HttpResponseBadRequest()
+
 
 
 def index(request,*args):

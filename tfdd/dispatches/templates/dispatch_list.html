@@ -1,12 +1,14 @@
-
+{% if user.is_authenticated %}
 <script>
-    $(document).bind('pageinit',function() {        
+    $(document).bind('pageinit',function() {     
+                
+                                 
         $(window).scroll(function(event) {
                 var distance = ($(window).scrollTop() + $(window).height()) - $('.dispatch').last().offset().top;
                 if (distance > -200) {
                     last_tf = $('.dispatch').last().data("tfdd-tf");
                     $.ajax({
-                        url: $('.dispatch').last().data("tf-url"),
+                        url: $('.dispatch').last().data("tf-more-url"),
                         success: function(data){
                             last_in_list=$('.dispatch').last().data("tfdd-tf");
                             last_in_data=$("li", data).last().data("tfdd-tf");
@@ -19,54 +21,85 @@
                     })
                 }
         });
+                
+        
     });//end of page init
 </script>
+{% endif %}
 
+<ul class="dispatch_listview"
+    data-role="listview" 
+    data-inset="true" 
+    >
+{% for dispatch in dispatches %}
+    <li class="dispatch"
+        data-tf-update-url="{% url check_for_update dispatch.tf dispatch_filter %}"
+        data-tf-more-url="{% url dispatch_list dispatch.tf 3 dispatch_filter %}"
+        data-tfdd-tf="{{dispatch.tf}}" >
+            
     
-    <ul class="dispatch_listview"
-        data-role="listview" 
-        data-inset="true" 
-        >
+    <h2>{{dispatch.call_type_desc}}</h2>
 
-    {% for dispatch in dispatches %}
-        <li class="dispatch"
-            data-tf-url="{% url dispatch_list dispatch.tf 3 dispatch_filter %}"
-            data-tfdd-tf="{{dispatch.tf}}" >
-        
-        <h2>{{dispatch.call_type_desc}}</h2>
+        {% if user.is_authenticated  %}
+            <h3>{{dispatch.location}}</h3>
+        {% else%}
 
-            {% if user.is_authenticated  %}
+            {# TODO: add permission for medical call types #}
+            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
                 <h3>{{dispatch.location}}</h3>
-            {% else%}
-
-                {# TODO: add permission for medical call types #}
-                {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
-                    <h3>{{dispatch.location}}</h3>
-                {% endif %}
-
             {% endif %}
 
-            <h3>Map Page: {{dispatch.map_page}}</h3>
-            <h3>Unit{{ dispatch.units.count|pluralize }} dispatched:</h3>   
-                <div class="unit_list" 
-                    data-role="controlgroup" 
-                    data-type="horizontal">
-                {% for unit in dispatch.units.all %}
-                    <a href="{% url unit_detail unit.id %}"
-                        class="unit_button"
-                        data-role="button" 
-                        data-inline="true" 
-                        data-mini="true"
-                        data-transition="slide"
-                    >{{unit.id}}</a>
+        {% endif %}
 
-                {% endfor %}
-                </div>    
+        <h3>Map Page: {{dispatch.map_page}}</h3>
+        <h3>Unit{{ dispatch.units.count|pluralize }} dispatched:</h3>   
+            <div class="unit_list" 
+                data-role="controlgroup" 
+                data-type="horizontal">
+            {% for unit in dispatch.units.all %}
+                <a href="{% url unit_detail unit.id %}"
+                    class="unit_button"
+                    data-role="button" 
+                    data-inline="true" 
+                    data-mini="true"
+                    data-transition="slide"
+                >{{unit.id}}</a>
+
+            {% endfor %}
+            </div>    
+
+        <p>{{dispatch.dispatched}}</p>
+
+    </li>
+{% endfor %}
+</ul>
+
+{% if user.is_authenticated %}    
+<script>
     
-            <p>{{dispatch.dispatched}}</p>
+    function UpdateCheck (){
+ 
+             first_one = $('.dispatch').data("tfdd-tf");
+             
+             console.log("URL: "+ $('.dispatch').data("tf-update-url"));
+             
+             $.ajax({
+                 url: $('.dispatch').data("tf-update-url"),
+                 success: function(data){
+                         $.mobile.loading( 'show', {
+                         	text: 'Incoming Dispatch',
+                         	textVisible: true,
+                         });
+                         setTimeout(function() {
+                             $(".dispatch_listview").prepend($("li", data)).listview('refresh').trigger( "create" );
+                             $.mobile.loading( 'hide');}, 750);
+                 }
+             })
+                             
+         };
     
-        </li>
-    {% endfor %}
-    </ul>
-    
-  
+    setInterval(function() {UpdateCheck(true);}, 4000);
+
+        
+</script>  
+{% endif %}

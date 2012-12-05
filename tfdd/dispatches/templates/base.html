@@ -56,6 +56,17 @@
 
                 </ul>
             </div><!-- /navbar -->
+            
+{% if user.is_authenticated %}
+            <div data-role="navbar">
+                <div class="image">
+                    <div class="overlay">  
+                        Listening for new dispatches...
+                    </div>
+                </div>
+            </div>
+ {% endif %}  
+          
         </div><!--  /header -->
 
 
@@ -88,5 +99,31 @@
         
     </div><!-- End of page -->
 
+{% if user.is_authenticated %}
+
+<script>
+    
+    moveIncr=1
+    moveSpeed=20
+
+    function moveGrad(i){
+        if(i>100){
+            moveIncr=-1;        
+        }
+        if (i<-15){
+        moveIncr=1;
+        }
+
+        $('.overlay').css({backgroundImage:"-webkit-linear-gradient(left, rgba(0,0,0,0.8) "+i+"%, rgba(0,0,0,0.2) "+(i+5)+"%, rgba(0,0,0,0.8) "+(i+10)+"%)"});
+
+        setTimeout(function(){
+            moveGrad(i+moveIncr);
+        },moveSpeed)
+    };
+    
+    setTimeout(function(){moveGrad(-10);},moveSpeed);
+    
+</script>
+{% endif %}
 </body>
 </html>{% endspaceless %}
