@@ -14,9 +14,6 @@
     <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
     
-
-
-
 </head>
 <body>
     <div class="dispatch_page" data-role="page">
@@ -26,30 +23,30 @@
                 <div class="tfdd_logo">
                     <img  src="{% static "img/logo.png" %}" alt="Tulsa Fire Dept. Dispatches" />
                 </div>
-                <div class="tfdd_about">
-                    <a href="{% url about %}" 
-                    data-prefetch 
-                    data-icon="info"
-                    data-role="button"
+                <a href="{% url about %}"
+                    data-icon="info" 
                     data-transition="flip"
-                    >About</a>
-                </div>
+                    class="ui-btn-right">About</a>
+
                 
                 
-            <div data-role="navbar">
+            <div    data-role="navbar" >
                 <ul>
                     <li><a href="{% url dispatches %}" 
-                         data-ajax="false">Dispatches</a></li>                    
+                        data-transition="none"
+                        >Dispatches</a></li>                    
                     {% if user.is_authenticated %}
-                    <li><a href="{% url following %}" 
-                        data-ajax="false"
+                    <li><a href="{% url following %}"
+                        data-transition="none" 
                         >Following</a></li>
                     <li><a href="{% url settings %}"
+                        data-transition="none"
                         >Settings</a>
                     </li>
 
                     {% else %}
                     <li><a href="{% url login %}"
+                        data-transition="none"
                         data-prefetch 
                         >Login</a></li>
                     {% endif %}
@@ -58,13 +55,11 @@
             </div><!-- /navbar -->
             
 {% if user.is_authenticated %}
-            <div data-role="navbar">
-                <div class="image">
-                    <div class="overlay">  
-                        Listening for new dispatches...
-                    </div>
+        <div class="tfdd_listen" data-role="navbar">
+                <div class="cylon_eye">
+                    Listening for dispatches
                 </div>
-            </div>
+        </div>
  {% endif %}  
           
         </div><!--  /header -->
@@ -103,27 +98,50 @@
 
 <script>
     
+    
+    function UpdateCheck (){
+
+        $(".dispatch_listview").each(function(index,dispatch_listview){
+             $.ajax({
+                 url: $(dispatch_listview.children[0]).data("tf-update-url"),
+                 success: function(data){
+                         $('.tfdd_listen').css("background-color","green");
+                         $.mobile.loading( 'show', {
+                         	text: 'Incoming Dispatch',
+                         	textVisible: true,
+                         });
+                         setTimeout(function() {
+                             $(dispatch_listview).prepend($("li", data)).listview('refresh').trigger( "create" );
+                             $.mobile.loading( 'hide');
+                             $('.tfdd_listen').css("background-color","red");
+                             }, 750);
+                 }
+             })
+          });                   
+         };
+
+    setInterval(function() {UpdateCheck(true);}, 4000);
+
     moveIncr=1
     moveSpeed=20
 
-    function moveGrad(i){
+    function moveEye(i){
         if(i>100){
             moveIncr=-1;        
         }
-        if (i<-15){
+        if (i<-10){
         moveIncr=1;
         }
 
-        $('.overlay').css({backgroundImage:"-webkit-linear-gradient(left, rgba(0,0,0,0.8) "+i+"%, rgba(0,0,0,0.2) "+(i+5)+"%, rgba(0,0,0,0.8) "+(i+10)+"%)"});
+        $('.cylon_eye').css({backgroundImage:"-webkit-linear-gradient(left, rgba(0,0,0,0.8) "+i+"%, rgba(0,0,0,0.2) "+(i+5)+"%, rgba(0,0,0,0.8) "+(i+10)+"%)"});
 
-        setTimeout(function(){
-            moveGrad(i+moveIncr);
-        },moveSpeed)
+        setTimeout(function(){moveEye(i+moveIncr);},moveSpeed)
     };
     
-    setTimeout(function(){moveGrad(-10);},moveSpeed);
-    
+    setTimeout(function(){moveEye(-10);},moveSpeed);
+
 </script>
 {% endif %}
+
 </body>
 </html>{% endspaceless %}

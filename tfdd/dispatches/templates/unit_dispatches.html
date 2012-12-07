@@ -18,7 +18,8 @@
 
         {% if user.is_staff %}
             <legend>Followers of this unit</legend>
-            <ul  data-role="listview" data-inset="true" >
+            <ul  data-role="listview" 
+                data-inset="true" >
             {% for follower in followers %}
                 <li>
                     <p>{{follower.user}}</p>

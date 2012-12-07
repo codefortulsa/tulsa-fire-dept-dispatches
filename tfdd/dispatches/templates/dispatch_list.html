@@ -4,9 +4,10 @@
                 
                                  
         $(window).scroll(function(event) {
-                var distance = ($(window).scrollTop() + $(window).height()) - $('.dispatch').last().offset().top;
-                if (distance > -200) {
-                    last_tf = $('.dispatch').last().data("tfdd-tf");
+                var last_dispatch=$('.dispatch').last();
+                var distance = ($(window).scrollTop() + $(window).height()) - last_dispatch.last().offset().top;
+                if (distance > -last_dispatch.height()) {
+                    last_tf = last_dispatch.data("tfdd-tf");
                     $.ajax({
                         url: $('.dispatch').last().data("tf-more-url"),
                         success: function(data){
@@ -16,6 +17,7 @@
                             if (last_in_list!=last_in_data){
                                 $(".dispatch_listview").append($("li", data)).listview('refresh').trigger( "create" );
                             }
+
                         
                         }
                     })
@@ -75,31 +77,5 @@
 </ul>
 
 {% if user.is_authenticated %}    
-<script>
-    
-    function UpdateCheck (){
- 
-             first_one = $('.dispatch').data("tfdd-tf");
-             
-             console.log("URL: "+ $('.dispatch').data("tf-update-url"));
-             
-             $.ajax({
-                 url: $('.dispatch').data("tf-update-url"),
-                 success: function(data){
-                         $.mobile.loading( 'show', {
-                         	text: 'Incoming Dispatch',
-                         	textVisible: true,
-                         });
-                         setTimeout(function() {
-                             $(".dispatch_listview").prepend($("li", data)).listview('refresh').trigger( "create" );
-                             $.mobile.loading( 'hide');}, 750);
-                 }
-             })
-                             
-         };
-    
-    setInterval(function() {UpdateCheck(true);}, 4000);
 
-        
-</script>  
 {% endif %}

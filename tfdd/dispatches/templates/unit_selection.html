@@ -1,7 +1,9 @@
-{% extends 'base.html' %}
-{% block title %}Select a unit{% endblock %}
-{% block content %}
+<!DOCTYPE html> 
+<html>
+<head>
 
+{% include "resources.html"%}
+    
 <script>
     
     $(document).bind('pageinit',function() {
@@ -20,39 +22,47 @@
     });//end of page init
 </script>
 
-<div class="ui-grid-solo">
-    <legend>You can follow units by text or email</legend>
-    </br>
-</div>
-<form>
-    <ul id="unit_list" data-role="listview" data-filter="true" > 
-    {% for unit in units %}
-        <li  data-filtertext="{{unit.id}}">
-            <legend>
+
+</head>
+
+
+<body>
+    <div class="dispatch_page" data-role="page" id="about">
+        <div data-theme="c" data-role="header">
+            <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+        </div>
+        <div data-role="content">
+            <p><i>You can follow units by text or email</i></p>
+        <form>
+            <ul id="unit_list" data-role="listview" data-filter="true" > 
+            {% for unit in units %}
+                <li  data-filtertext="{{unit.id}}">
+                    <legend>
     
-                {{unit.id}}
+                        {{unit.id}}
     
-            </legend>   
+                    </legend>   
         
-            <div data-role="fieldcontain" >
-                <fieldset data-role="controlgroup" data-type="horizontal">
+                    <div data-role="fieldcontain" >
+                        <fieldset data-role="controlgroup" data-type="horizontal">
                 
-             	   <label for="by_phone">Send Text</label><input type="checkbox" 
-            	   data-state-urls='{"true":"{% url follow_unit unit.id 'by_phone' 'on' %}","false":"{% url follow_unit unit.id 'by_phone' 'off' %}"}'
-            	   {% if unit.by_phone %} checked {% endif %}
-            	   name="by_phone" id="by_phone" class="custom" data-mini="true"/>
+                     	   <label for="by_phone">Send Text</label><input type="checkbox" 
+                    	   data-state-urls='{"true":"{% url follow_unit unit.id 'by_phone' 'on' %}","false":"{% url follow_unit unit.id 'by_phone' 'off' %}"}'
+                    	   {% if unit.by_phone %} checked {% endif %}
+                    	   name="by_phone" id="by_phone" class="custom" data-mini="true"/>
 
-            	   <label for="by_email">Send Email</label><input type="checkbox" 
-            	   data-state-urls='{"true":"{% url follow_unit unit.id 'by_email' 'on' %}","false":"{% url follow_unit unit.id 'by_email' 'off' %}"}'
-                   {% if unit.by_email %} checked {% endif %}
-            	   name="by_email" id="by_email" class="custom" data-mini="true"/>
+                    	   <label for="by_email">Send Email</label><input type="checkbox" 
+                    	   data-state-urls='{"true":"{% url follow_unit unit.id 'by_email' 'on' %}","false":"{% url follow_unit unit.id 'by_email' 'off' %}"}'
+                           {% if unit.by_email %} checked {% endif %}
+                    	   name="by_email" id="by_email" class="custom" data-mini="true"/>
     	   
     	   
-                </fieldset>
-            </div>
-        </li>
+                        </fieldset>
+                    </div>
+                </li>
 
-{% endfor %}
-    </ul>
-</form>
-{% endblock content %}
+        {% endfor %}
+            </ul>
+        </form>
+    </content>
+</body>
