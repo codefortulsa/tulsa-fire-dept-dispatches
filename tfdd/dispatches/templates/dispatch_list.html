@@ -1,32 +1,26 @@
 {% if user.is_authenticated %}
-<script>
-    $(document).bind('pageinit',function() {     
-                
-                                 
-        $(window).scroll(function(event) {
-                var last_dispatch=$('.dispatch').last();
-                var distance = ($(window).scrollTop() + $(window).height()) - last_dispatch.last().offset().top;
-                if (distance > -last_dispatch.height()) {
-                    last_tf = last_dispatch.data("tfdd-tf");
-                    $.ajax({
-                        url: $('.dispatch').last().data("tf-more-url"),
-                        success: function(data){
-                            last_in_list=$('.dispatch').last().data("tfdd-tf");
-                            last_in_data=$("li", data).last().data("tfdd-tf");
+    <script>
+        $(document).bind('pageinit',function() {     
+            $(window).scroll(function(event) {
+                    var last_dispatch=$('.dispatch').last();
+                    var distance = ($(window).scrollTop() + $(window).height()) - last_dispatch.last().offset().top;
+                    if (distance > -last_dispatch.height()) {
+                        last_tf = last_dispatch.data("tfdd-tf");
+                        $.ajax({
+                            url: $('.dispatch').last().data("tf-more-url"),
+                            success: function(data){
+                                last_in_list=$('.dispatch').last().data("tfdd-tf");
+                                last_in_data=$("li", data).last().data("tfdd-tf");
 
-                            if (last_in_list!=last_in_data){
-                                $(".dispatch_listview").append($("li", data)).listview('refresh').trigger( "create" );
+                                if (last_in_list!=last_in_data){
+                                    $(".dispatch_listview").append($("li", data)).listview('refresh').trigger( "create" );
+                                }             
                             }
-
-                        
-                        }
-                    })
-                }
-        });
-                
-        
-    });//end of page init
-</script>
+                        })
+                    }
+            });       
+        });//end of page init
+    </script>
 {% endif %}
 
 <ul class="dispatch_listview"
@@ -40,10 +34,19 @@
         data-tfdd-tf="{{dispatch.tf}}" >
             
     
-    <h2>{{dispatch.call_type_desc}}</h2>
+        <h2>{{dispatch.call_type_desc}}</h2>
 
         {% if user.is_authenticated  %}
-            <h3>{{dispatch.location}}</h3>
+            <div>
+                <a href="{% url dispatch_location dispatch.location %}"
+                data-role="button"
+                data-icon="search" 
+                data-iconpos="right" 
+                data-inline="true"
+                data-transition="slide"
+                >{{dispatch.location}}</a>
+            </div>
+            
         {% else%}
 
             {# TODO: add permission for medical call types #}

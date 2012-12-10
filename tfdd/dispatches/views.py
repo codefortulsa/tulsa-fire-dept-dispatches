@@ -77,6 +77,12 @@ def check_for_update(request, start_tf=0, dispatch_filter={}):
     # except:
     #     return HttpResponseBadRequest()
 
+@login_required
+def dispatch_location(request, location_address):
+
+    return render_to_response(
+        'dispatch_location.html', RequestContext(request, 
+            dict(location_address=location_address)))
 
 
 def index(request,*args):

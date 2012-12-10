@@ -1,0 +1,23 @@
+<!DOCTYPE html> 
+<html>
+<head>
+
+{% include "resources.html"%}
+    <title>{{location_address}}</title>
+</head>
+<body>
+
+    <div class="dispatch_page" data-role="page" id="about">
+        <div data-theme="c" data-role="header">
+            <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+        </div>
+        
+        <div data-role="content">
+
+            <img src="http://maps.googleapis.com/maps/api/staticmap?\
+            &zoom=14&size=300x300&sensor=false&markers=color:red|{{location_address}},Tulsa,OK|">
+
+     </div>      <!-- end of content  -->
+     </div><!-- end of page -->
+</body>
+</html>
