@@ -63,7 +63,7 @@
     -ms-animation-timing-function: linear;
 
     animation-duration: 3s;
-    animation-name:moz-move_eye;
+    animation-name:move_eye;
     animation-iteration-count: infinite;
     animation-direction: alternate;
     animation-timing-function: linear; 
@@ -81,6 +81,11 @@
 }
 
 @-ms-keyframes ms-move_eye {
+    from {margin-left:-15%;}    
+      to {margin-left:100%;}  
+}
+
+@keyframes move_eye {
     from {margin-left:-15%;}    
       to {margin-left:100%;}  
 }
