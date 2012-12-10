@@ -26,20 +26,61 @@
     height: 100%;
     width:60px;
 
-    background-image:-webkit-linear-gradient(left, 
-        rgba(0,0,0,0.9) 15px, 
-        rgba(0,0,0,0.1) 30px, 
-        rgba(0,0,0,0.9) 45px);
+    background-image:
+        -webkit-linear-gradient(left, 
+            rgba(0,0,0,0.9) 15px, 
+            rgba(0,0,0,0.1) 30px, 
+            rgba(0,0,0,0.9) 45px);
+            
+    background-image:
+        -moz-linear-gradient(left, 
+            rgba(0,0,0,0.9) 15px, 
+            rgba(0,0,0,0.1) 30px, 
+            rgba(0,0,0,0.9) 45px);
     
+    background-image:
+        -ms-linear-gradient(left, 
+            rgba(0,0,0,0.9) 15px, 
+            rgba(0,0,0,0.1) 30px, 
+            rgba(0,0,0,0.9) 45px);
+
     -webkit-animation-duration: 3s;
-    -webkit-animation-name:move_eye;
+    -webkit-animation-name:webkit-move_eye;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-direction: alternate;
-    -webkit-animation-timing-function: linear
+    -webkit-animation-timing-function: linear;
+    
+    -moz-animation-duration: 3s;
+    -moz-animation-name:moz-move_eye;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-direction: alternate;
+    -moz-animation-timing-function: linear;
+
+    -ms-animation-duration: 3s;
+    -ms-animation-name:ms-move_eye;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-direction: alternate;
+    -ms-animation-timing-function: linear;
+
+    animation-duration: 3s;
+    animation-name:moz-move_eye;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: linear; 
 
 }
 
-@-webkit-keyframes move_eye {
+@-webkit-keyframes webkit-move_eye {
+    from {margin-left:-15%;}    
+      to {margin-left:100%;}  
+}
+
+@-moz-keyframes moz-move_eye {
+    from {margin-left:-15%;}    
+      to {margin-left:100%;}  
+}
+
+@-ms-keyframes ms-move_eye {
     from {margin-left:-15%;}    
       to {margin-left:100%;}  
 }
