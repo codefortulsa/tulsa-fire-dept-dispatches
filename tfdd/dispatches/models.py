@@ -94,6 +94,8 @@ class Unit(models.Model):
     """A responder unit or designator"""
     id = models.CharField(max_length=10, primary_key=True)
     station = models.ForeignKey(Station, blank=True, null=True)
+    users = models.ManyToManyField(
+        User, through='UnitFollower', blank=True, null=True)
 
     def __unicode__(self):
         return self.id

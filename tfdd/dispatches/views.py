@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
-from django.db.models import Max,Count
+from django.db.models import Max
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from emailusernames.forms import EmailAuthenticationForm
@@ -193,10 +193,18 @@ def unit_select(request):
 
 @login_required
 def follow_unit(request, unit_id, channel, state):
-    assert channel in ['by_phone', 'by_email']
-    assert state in ['on', 'off']
+    # TODO: this needs to be rewritten to use the POST method
+    if channel not in ['by_phone', 'by_email'] or state not in ['on', 'off']:
+        return HttpResponseBadRequest()
     unit, created = Unit.objects.get_or_create(id=unit_id)
-    follower, created = request.user.unitfollower_set.get_or_create(unit=unit)
+    try:
+        follower, created = request.user.unitfollower_set.get_or_create(
+            unit=unit)
+    except UnitFollower.MultipleObjectsReturned:
+        unit_followers = request.user.unitfollower_set.all()
+        follower = unit_followers[0]
+        for uf in unit_followers[1:]:
+            uf.delete()
     setattr(follower, channel, state == 'on')
     follower.save()
 
