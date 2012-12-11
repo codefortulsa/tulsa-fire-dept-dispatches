@@ -126,6 +126,23 @@
 
     setInterval(function() {UpdateCheck(true);}, 4000);
 
+    moveIncr=1
+    moveSpeed=20
+
+   function moveEye(i){
+       if(i>100){moveIncr=-1;}
+       if (i<-15){moveIncr=1;}
+       
+       $(".cylon_eye").css("margin-left",i+"%")
+
+       setTimeout(function(){moveEye(i+moveIncr);},moveSpeed)
+   };
+
+   setTimeout(function(){moveEye(1);},moveSpeed);
+    
+
+
+
 
 </script>
 {% endif %}
