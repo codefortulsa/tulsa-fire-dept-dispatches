@@ -17,6 +17,7 @@
     background-color:black; 
     height:25px;
     width:100%;
+    overflow:hidden;
         
 }
 
@@ -35,4 +36,13 @@
 
 
 }
+.location_address{
+    float:right;
+    margin-top:2%;
+    margin-right:10%;
+}
 
+.static_map{
+    width:300px;
+    
+}

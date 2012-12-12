@@ -1,23 +1,25 @@
 <!DOCTYPE html> 
 <html>
-<head>
+    <head>
+    {% load static from staticfiles %}  
 
-{% include "resources.html"%}
-    <title>{{location_address}}</title>
-</head>
-<body>
+    <link rel="stylesheet" href="{% static "themes/tfdd_snips.css" %}" />    
+  
+    </head>
+    <body>
+        <div data-role="page" id="dispatch_location">
+            <div data-theme="c" data-role="header">
+                <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+                <div class="location_address">
+                    {{location_address}}
+                </div>
 
-    <div class="dispatch_page" data-role="page" id="about">
-        <div data-theme="c" data-role="header">
-            <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
-        </div>
-        
-        <div data-role="content">
+            </div><!-- end of header -->
+        <div class="static_map" data-role="content">
 
-            <img src="http://maps.googleapis.com/maps/api/staticmap?\
-            &zoom=14&size=300x300&sensor=false&markers=color:red|{{location_address}},Tulsa,OK|">
+                <img  src="http://maps.googleapis.com/maps/api/staticmap?%20&amp;zoom=14&amp;size=300x300&amp;sensor=false&amp;markers=color:red|{{location_address}},Tulsa,OK|"></img>
 
-     </div>      <!-- end of content  -->
-     </div><!-- end of page -->
-</body>
+        </div><!-- end of content  -->
+        <!-- end of page -->
+    </body>
 </html>

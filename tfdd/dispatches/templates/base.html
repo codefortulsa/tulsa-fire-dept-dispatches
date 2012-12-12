@@ -16,9 +16,9 @@
     
 </head>
 <body>
-    <div class="dispatch_page" data-role="page">
+    <div class="dispatch_page" data-role="page"  >
             
-        <div data-role="header">
+        <div id="tfdd_header" data-role="header" data-position="fixed">
             
                 <div class="tfdd_logo">
                     <img  src="{% static "img/logo.png" %}" alt="Tulsa Fire Dept. Dispatches" />
@@ -27,18 +27,18 @@
                     data-icon="info" 
                     data-transition="flip"
                     class="ui-btn-right">About</a>
-
-                
-                
-            <div    data-role="navbar" >
+                    
+            <div data-role="navbar" >
                 <ul>
                     <li><a href="{% url dispatches %}" 
                         data-transition="none"
-                        >Dispatches</a></li>                    
+                        >Dispatches</a></li>
+                                            
                     {% if user.is_authenticated %}
                     <li><a href="{% url following %}"
                         data-transition="none" 
                         >Following</a></li>
+                        
                     <li><a href="{% url settings %}"
                         data-transition="none"
                         >Settings</a>
@@ -56,18 +56,18 @@
             
           
         </div><!--  /header -->
-        {% if user.is_authenticated %}
-            <div class="polling_message">
-                  &nbsp &nbsp Listening for Dispatches
-            </div>
-        
-            <div class="view_port">
-                <div class="cylon_eye"></div>
-            </div>
-        {% endif %}  
 
 
         <div data-role="content">
+            {% if user.is_authenticated %}
+                <div class="polling_message">
+                     Listening for Dispatches
+                </div>
+
+                <div class="view_port">
+                    <div class="cylon_eye"></div>
+                </div>
+            {% endif %}  
 
 
             <div class='messages'>

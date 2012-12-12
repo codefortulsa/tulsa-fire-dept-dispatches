@@ -44,7 +44,6 @@
                 data-iconpos="right" 
                 data-inline="true"
                 data-transition="slide"
-                
                 >{{dispatch.location}}</a>
             </div>
             
@@ -60,8 +59,10 @@
         <h3>Map Page: {{dispatch.map_page}}</h3>
         <h3>Unit{{ dispatch.units.count|pluralize }} dispatched:</h3>   
             <div class="unit_list" 
-                data-role="controlgroup" 
+                data-role="controlgroup"
+                data-corners="false" 
                 data-type="horizontal">
+                
             {% for unit in dispatch.units.all %}
                 <a href="{% url unit_detail unit.id %}"
                     class="unit_button"
