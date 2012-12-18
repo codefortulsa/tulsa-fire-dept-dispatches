@@ -5,9 +5,8 @@
                     var last_dispatch=$('.dispatch').last();
                     var distance = ($(window).scrollTop() + $(window).height()) - last_dispatch.last().offset().top;
                     if (distance > -last_dispatch.height()) {
-                        last_tf = last_dispatch.data("tfdd-tf");
                         $.ajax({
-                            url: $('.dispatch').last().data("tf-more-url"),
+                            url: last_dispatch.data("tf-more-url"),
                             success: function(data){
                                 last_in_list=$('.dispatch').last().data("tfdd-tf");
                                 last_in_data=$("li", data).last().data("tfdd-tf");

@@ -133,12 +133,14 @@
        if(i>100){moveIncr=-1;}
        if (i<-15){moveIncr=1;}
        
-       $(".cylon_eye").css("margin-left",i+"%")
+       $(".cylon_eye").css("margin-left",i+"%");
 
-       setTimeout(function(){moveEye(i+moveIncr);},moveSpeed)
+       setTimeout(function(){moveEye(i+moveIncr);},moveSpeed);
    };
 
    setTimeout(function(){moveEye(1);},moveSpeed);
+    
+    
     
 
 
