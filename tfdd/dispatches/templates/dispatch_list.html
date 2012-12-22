@@ -1,35 +1,72 @@
 {% if user.is_authenticated %}
-    <script>
-        $(document).bind('pageinit',function() {     
-            $(window).scroll(function(event) {
-                    var last_dispatch=$('.dispatch').last();
-                    var distance = ($(window).scrollTop() + $(window).height()) - last_dispatch.last().offset().top;
-                    if (distance > -last_dispatch.height()) {
-                        $.ajax({
-                            url: last_dispatch.data("tf-more-url"),
-                            success: function(data){
-                                last_in_list=$('.dispatch').last().data("tfdd-tf");
-                                last_in_data=$("li", data).last().data("tfdd-tf");
+    <script>  
+        $(document).bind('pageinit',function() {
+            
+            var last_dispatch=$('#last_dispatch'),
+                scrollHappens=false;
+                gettingMore=false;
+                last_li=$("#list_end"),
+                distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
+ 
+            $(window).scroll(function(event) {               
+                 scrollHappens=true;
+            });
+            
+            function CheckLater(){
+                setTimeout(function() {CheckBottom();}, 500);
+            }
+            
+            function GetMore() {
+                $.ajax({
+                    url: last_dispatch.data("tf-more-url"),
+                    success: function(data) {
+                        last_dispatch.attr("id", "xxx")     // this isn't last anymore                        
+                        $("#dispatch_listview").append($("li", data)).listview('refresh').trigger("create");
+                        last_dispatch = $('#last_dispatch'); // reset the new last dispatch
+                        CheckLater();
+                        
+                    },
+                    error: function(){CheckLater();}
+                })
+                gettingMore=false;
 
-                                if (last_in_list!=last_in_data){
-                                    $(".dispatch_listview").append($("li", data)).listview('refresh').trigger( "create" );
-                                }             
-                            }
-                        })
+            };
+                            
+            function CheckBottom() {
+                
+                if (scrollHappens){
+                    scrollHappens=false;
+                    
+                    distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
+                    if (distance_to_bottom > -500 && !gettingMore) 
+                        {
+                            gettingMore=true;
+                            GetMore();}
+                    else {                        
+                        CheckLater();
                     }
-            });       
+                } else{
+                    
+                    CheckLater();
+                }
+            };
+            CheckLater();           
         });//end of page init
     </script>
 {% endif %}
 
 <ul class="dispatch_listview"
+    id="dispatch_listview"
     data-role="listview" 
     data-inset="true" 
     >
 {% for dispatch in dispatches %}
     <li class="dispatch"
+        {% if forloop.last %}
+        id="last_dispatch"
+        {% endif %}
         data-tf-update-url="{% url check_for_update dispatch.tf dispatch_filter %}"
-        data-tf-more-url="{% url dispatch_list dispatch.tf 3 dispatch_filter %}"
+        data-tf-more-url="{% url dispatch_list dispatch.tf 4 dispatch_filter %}"
         data-tfdd-tf="{{dispatch.tf}}" >
             
     
@@ -73,13 +110,14 @@
 
             {% endfor %}
             </div>    
-
+        <p>{{ dispatch.tf|make_list|slice:":4"|join:"" }}:
+            {{ dispatch.tf|make_list|slice:"5:10"|join:"" }}</p>
         <p>{{dispatch.dispatched}}</p>
 
     </li>
 {% endfor %}
+
 </ul>
-
-{% if user.is_authenticated %}    
-
+{% if user.is_authenticated %}
+<p id="list_end" class"list_end">Getting more dispatches...</p>
 {% endif %}

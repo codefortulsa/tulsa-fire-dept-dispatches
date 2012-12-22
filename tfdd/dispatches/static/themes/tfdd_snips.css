@@ -1,6 +1,7 @@
 .tfdd_logo{
 	float: left;
 	margin-left: 1%;
+
 }
 .tfdd_about{
 	float: right;
@@ -21,6 +22,10 @@
         
 }
 
+.list_end{
+    list-style:none;
+    margin-left:40%;
+}
 .cylon_eye {
 
     background-color: red;
