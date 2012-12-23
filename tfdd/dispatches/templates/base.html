@@ -1,19 +1,13 @@
-{% spaceless %}<!DOCTYPE html> 
+{% spaceless %}
+
+<!DOCTYPE html> 
 <html>
 <head>
     <title>{% block title %}Tulsa Fire Dispatch{% endblock %}</title> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
-
-
-    {% load static from staticfiles %}    
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile.structure-1.2.0.min.css" />
-    <link rel="stylesheet" href="{% static "themes/sarah_black2.min.css" %}" />
-    <link rel="stylesheet" href="{% static "themes/tfdd_snips.css" %}" />
-
-
-    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+    {% include "resources.html" %}
     
+    {% load static from staticfiles %}      
 </head>
 <body>
     <div class="dispatch_page" data-role="page"  >
@@ -99,53 +93,19 @@
     </div><!-- End of page -->
 
 {% if user.is_authenticated %}
-
 <script>
+$(document).bind('pageinit',function() {
+
+    // setInterval(function() {UpdateCheck();}, 3000);
+
+    $(window).scroll(function(event) {               
+             scrollHappens=true;
+        });
+    SchedulePositionCheck(500);
+
+});//end of page init
+   
     
-    
-    function UpdateCheck (){
-
-        $(".dispatch_listview").each(function(index,dispatch_listview){
-             $.ajax({
-                 url: $(dispatch_listview.children[0]).data("tf-update-url"),
-                 success: function(data){
-                         $('.cylon_eye').css("background-color","green");
-                         $.mobile.loading( 'show', {
-                         	text: 'Incoming Dispatch',
-                         	textVisible: true,
-                         });
-                         setTimeout(function() {
-                             $(dispatch_listview).prepend($("li", data)).listview('refresh').trigger( "create" );
-                             $.mobile.loading( 'hide');
-                             $('.cylon_eye').css("background-color","red");
-                             }, 750);
-                 }
-             })
-          });                   
-         };
-
-    setInterval(function() {UpdateCheck(true);}, 4000);
-
-    moveIncr=1
-    moveSpeed=20
-
-   function moveEye(i){
-       if(i>100){moveIncr=-1;}
-       if (i<-15){moveIncr=1;}
-       
-       $(".cylon_eye").css("margin-left",i+"%");
-
-       setTimeout(function(){moveEye(i+moveIncr);},moveSpeed);
-   };
-
-   setTimeout(function(){moveEye(1);},moveSpeed);
-    
-    
-    
-
-
-
-
 </script>
 {% endif %}
 
