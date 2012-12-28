@@ -12,10 +12,7 @@
             success: function(data) {
                 var more_dispatches=$("li",data);
                 
-                console.log(last_dispatch.data('tf-more-url'));
-                
                 if (more_dispatches.length>0){
-                    console.log("d: "+more_dispatches.length);
                     last_dispatch.attr("id", "xxx")     // this isn't last anymore                        
                     $("#dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
                     last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
@@ -48,8 +45,6 @@
                     
                     last_dispatch=$("#last_dispatch", $.mobile.activePage);
 
-                    console.log(last_dispatch.data("tf"));
-                    
                     GetMoreDispatches(last_dispatch);
                     
             } else {                        
@@ -83,12 +78,3 @@
           });                   
      };
 
-     // moveIncr=1
-     // moveSpeed=20
-     // 
-     // function moveEye(i){
-     //     if(i>100){moveIncr=-1;}
-     //     if (i<-15){moveIncr=1;}
-     //     $(".cylon_eye").css("margin-left",i+"%");
-         // setTimeout(function(){moveEye(i+moveIncr);},moveSpeed);
-     // };
