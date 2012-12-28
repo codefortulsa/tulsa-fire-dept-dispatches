@@ -10,14 +10,12 @@ from twilio.rest.resources import TwilioRestException
 
 
 def dispatch_msg(dsp):
-    unit_msg = "Unit"
-    unit_plur = " "
-    if dsp.units.count() > 1:
-        unit_plur = "s "
-    unit_msg = unit_msg + unit_plur
-    unit_msg = ' '.join([str(u) for u in dsp.units.all()])
-    message = "%s dispatched to %s for %s " % (
-        unit_msg, dsp.location, dsp.call_type_desc)
+    plu=["","s"]
+    unit_plu=plu[dsp.units.count()>1]
+    unit_list = ' '.join([str(u) for u in dsp.units.all()])
+    map_url="http://tfdd.co/gm/%i/" % dsp.tf
+    message = "%s\n%s\nUnit%s: %s\n%s" % (dsp.call_type_desc,dsp.location,unit_plu,unit_list,map_url)
+        
     return message
 
 
@@ -35,11 +33,10 @@ def send_msg(to_num, msg_end=None, dispatch=None):
         dispatch_text = "%s %s" % (dispatch_text, msg_end)
     client = TwilioRestClient(settings.TWILIO_ACCOUNT, settings.TWILIO_TOKEN)
     try:
-        client.sms.messages.create(
-            to=to_num, from_=settings.TWILIO_FROM, body=dispatch_text)
+        client.sms.messages.create(to=to_num, from_=settings.TWILIO_FROM, body=dispatch_text)
     except TwilioRestException:
         email_traceback()
-
+        
 
 def update(instance, **kwargs):
     using = kwargs.pop('using', '')

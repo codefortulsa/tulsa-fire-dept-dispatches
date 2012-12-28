@@ -120,9 +120,9 @@ WSGI_APPLICATION = 'tfdd.wsgi.application'
 # )
 
 
-#TEMPLATE_DIRS = (
+# TEMPLATE_DIRS = (
 #    os.path.join(base_dir, 'templates'),
-#)
+# )
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -139,6 +139,7 @@ INSTALLED_APPS = (
     'emailusernames',
     'south',
     'dispatches',
+    'gm',
 )
 
 AUTHENTICATION_BACKENDS = (

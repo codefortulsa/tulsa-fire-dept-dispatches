@@ -94,13 +94,20 @@
 
 {% if user.is_authenticated %}
 <script>
+
+
+$(document).bind('pagebeforeshow',function() {
+
+    SchedulePositionCheck(500);
+    
+});
+
 $(document).bind('pageinit',function() {
 
     setInterval(function() {UpdateCheck();}, 3000);
 
-    $(window).scroll(function(event) {               
-             scrollHappens=true;
-        });
+    $(window).scroll(function(event) {scrollHappens=true;});
+        
     SchedulePositionCheck(500);
 
 });//end of page init

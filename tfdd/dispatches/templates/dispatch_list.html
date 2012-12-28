@@ -9,6 +9,7 @@
         {% if forloop.last %}
         id="last_dispatch"
         {% endif %}
+        data-tf="{{dispatch.tf}}"
         data-tf-update-url="{% url check_for_update dispatch.tf dispatch_filter %}"
         data-tf-more-url="{% url dispatch_list dispatch.tf 3 dispatch_filter %}"
         data-tfdd-tf="{{dispatch.tf}}" >
@@ -58,6 +59,8 @@
         <p>{{dispatch.dispatched}}</p>
 
     </li>
+    
+    
 {% endfor %}
 
 </ul>

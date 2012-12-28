@@ -39,12 +39,14 @@ def dispatch_list(request, start_tf=0, how_many=10, dispatch_filter={}):
     
     try:            
         dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:how_many]
+        
         return render_to_response(
             'dispatch_list.html', RequestContext(request, 
                 dict(dispatches=dispatches,
                      dispatch_filter=dispatch_filter)))
     except:
         return HttpResponseBadRequest()
+
 
 @login_required
 def check_for_update(request, start_tf=0, dispatch_filter={}):
@@ -79,7 +81,6 @@ def check_for_update(request, start_tf=0, dispatch_filter={}):
 
 @login_required
 def dispatch_location(request, location_address):
-
     return render_to_response(
         'dispatch_location.html', RequestContext(request, 
             dict(location_address=location_address)))
@@ -125,7 +126,7 @@ def login(request):
     return auth_login(
         request, template_name='login.html',
         authentication_form=EmailAuthenticationForm)
-
+        
 
 def logout(request):
     return auth_logout(request, next_page=reverse('dispatches'))
