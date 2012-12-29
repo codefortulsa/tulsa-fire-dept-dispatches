@@ -4,7 +4,8 @@
 <html>
 <head>
     <title>{% block title %}Tulsa Fire Dispatch{% endblock %}</title> 
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    
     {% include "resources.html" %}
     
     {% load static from staticfiles %}      
@@ -13,7 +14,6 @@
     <div class="dispatch_page" data-role="page"  >
             
         <div id="tfdd_header" data-role="header" data-position="fixed">
-            
                 <div class="tfdd_logo">
                     <img  src="{% static "img/logo.png" %}" alt="Tulsa Fire Dept. Dispatches" />
                 </div>
@@ -93,6 +93,7 @@
     </div><!-- End of page -->
 
 {% if user.is_authenticated %}
+
 <script>
 
 

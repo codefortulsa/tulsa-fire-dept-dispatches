@@ -1,8 +1,8 @@
 .tfdd_logo{
 	float: left;
 	margin-left: 1%;
-
 }
+
 .tfdd_about{
 	float: right;
 	margin-right: 1%;
@@ -16,9 +16,7 @@
     background-color:black; 
     height:25px;
     width:100%;
-    overflow:hidden;
-
-        
+    overflow:hidden;       
 }
 
 .list_end{
@@ -34,8 +32,7 @@
 }
 
 .static_map{
-    width:300px;
-    
+    width:300px;   
 }
 
 @-webkit-keyframes move_eye { from { margin-left:-20%; } to { margin-left:100%; }  }
@@ -49,9 +46,8 @@
   color:white;
   height: 100%;
   width:20%;
-
-  
-  background-color: red;
+ 
+  background-color: rgb(255,143,0);
   background-image: -webkit-linear-gradient(left, rgba( 0,0,0,0.9 ) 25%, rgba( 0,0,0,0.1 ) 50%, rgba( 0,0,0,0.9 ) 75%);
   background-image:    -moz-linear-gradient(left, rgba( 0,0,0,0.9 ) 25%, rgba( 0,0,0,0.1 ) 50%, rgba( 0,0,0,0.9 ) 75%);
   background-image:     -ms-linear-gradient(left, rgba( 0,0,0,0.9 ) 25%, rgba( 0,0,0,0.1 ) 50%, rgba( 0,0,0,0.9 ) 75%);

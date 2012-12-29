@@ -63,7 +63,7 @@
              $.ajax({
                  url: $(dispatch_listview.children[0]).data("tf-update-url"),
                  success: function(data){
-                     $('.cylon_eye').css("background-color","green");
+                     $('.cylon_eye').css("background-color","rgb(215,50,0)");
                      $.mobile.loading( 'show', {
                      	text: 'Incoming Dispatch',
                      	textVisible: true,
@@ -71,7 +71,7 @@
                      setTimeout(function() {
                          $(dispatch_listview).prepend($("li", data)).listview('refresh').trigger( "create" );
                          $.mobile.loading( 'hide');
-                         $('.cylon_eye').css("background-color","red");
+                         $('.cylon_eye').css("background-color","rgb(255,143,0)");
                          }, 750);
                  }
              })
