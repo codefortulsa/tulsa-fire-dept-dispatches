@@ -6,61 +6,69 @@
     >
 {% for dispatch in dispatches %}
     <li class="dispatch"
+        {% if forloop.first %}
+            data-tf-update-url="{% url check_for_update dispatch.tf dispatch_filter %}"
+        {% endif %}
+
         {% if forloop.last %}
-        id="last_dispatch"
+            id="last_dispatch"
+            data-tf-more-url="{% url dispatch_list dispatch.tf 10 dispatch_filter %}"        
         {% endif %}
-        data-tf="{{dispatch.tf}}"
-        data-tf-update-url="{% url check_for_update dispatch.tf dispatch_filter %}"
-        data-tf-more-url="{% url dispatch_list dispatch.tf 3 dispatch_filter %}"
-        data-tfdd-tf="{{dispatch.tf}}" >
-    
-        <h2>{{dispatch.call_type_desc}}</h2>
+        >
+        
+        <a href="{% url dispatch_location dispatch.location %}"
+            data-transition="slide" 
+            >
+            <div class="ui-grid-a" >
+            	<div class="ui-block-a">
+            	    <strong>{{dispatch.call_type_desc}}</strong>
+            	    </br></br>
 
-        {% if user.is_authenticated  %}
-            <div>
-                <a href="{% url dispatch_location dispatch.location %}"
-                data-role="button"
-                data-icon="search" 
-                data-iconpos="right" 
-                data-inline="true"
-                data-transition="slide"
-                >{{dispatch.location}}</a>
+                    {% if user.is_authenticated  %}           
+
+            	    <p>{{dispatch.location}}</p>
+
+                    {% else%}
+
+                        {# TODO: add permission for medical call types #}
+                        {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+                            <p>{{dispatch.location}}</p>
+                        {% endif %}
+
+                    {% endif %}
+
+            	    <p><abbr class="timeago" title="{{ dispatch.dispatched|date:"c" }}">{{dispatch.dispatched}}</abbr></p>
+        	    
+            	</div>
+            	<div class="ui-block-b">
+            	    </br></br>
+                    <p style="font-style:italic;">{{ dispatch.tf|make_list|slice:":4"|join:"" }}: {{ dispatch.tf|make_list|slice:"5:10"|join:"" }}</p>
+                    <p style="font-style:italic;">Map Page: {{dispatch.map_page}}</p>        	    
+            	</div>
+            </div><!-- /grid-a -->
+        </a>
+            <div class="ui-grid-solo" style="margin-left:4%;" 
+                 >
+                <p style="font-variant: small-caps;">Unit{{dispatch.units.count|pluralize}} Dispatched:</p>
+                <div class="unit_list" 
+                        data-role="controlgroup"
+                        data-type="horizontal"
+                        data-inline="true"
+                        data-mini="true"
+                        
+                    >
+                    {% for unit in dispatch.units.all %}
+                        <a href="{% url unit_detail unit.id %}"
+                            data-role="button"
+                            data-transition="slide"
+                            style="height:25px;"
+                        >{{unit.id}}</a>
+                    {% endfor %}
+                </div>
+
             </div>
-            
-        {% else%}
-
-            {# TODO: add permission for medical call types #}
-            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
-                <h3>{{dispatch.location}}</h3>
-            {% endif %}
-
-        {% endif %}
-
-        <h3>Map Page: {{dispatch.map_page}}</h3>
-        <h3>Unit{{ dispatch.units.count|pluralize }} dispatched:</h3>   
-            <div class="unit_list" 
-                data-role="controlgroup"
-                data-corners="false" 
-                data-type="horizontal">
                 
-            {% for unit in dispatch.units.all %}
-                <a href="{% url unit_detail unit.id %}"
-                    class="unit_button"
-                    data-role="button" 
-                    data-inline="true" 
-                    data-mini="true"
-                    data-transition="slide"
-                >{{unit.id}}</a>
-
-            {% endfor %}
-            </div>    
-        <p>{{ dispatch.tf|make_list|slice:":4"|join:"" }}:
-            {{ dispatch.tf|make_list|slice:"5:10"|join:"" }}</p>
-        <p>{{dispatch.dispatched}}</p>
-
-    </li>
-    
-    
+        </li><!-- end of dispatch li -->    
 {% endfor %}
 
 </ul>

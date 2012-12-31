@@ -4,8 +4,7 @@
 <html>
 <head>
     <title>{% block title %}Tulsa Fire Dispatch{% endblock %}</title> 
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
     {% include "resources.html" %}
     
     {% load static from staticfiles %}      
@@ -52,16 +51,7 @@
         </div><!--  /header -->
 
 
-        <div data-role="content">
-            {% if user.is_authenticated %}
-                <div class="polling_message">
-                     Listening for Dispatches
-                </div>
-
-                <div class="view_port">
-                    <div class="cylon_eye"></div>
-                </div>
-            {% endif %}  
+        <div data-role="content" >
 
 
             <div class='messages'>
@@ -97,20 +87,37 @@
 <script>
 
 
+
+
 $(document).bind('pagebeforeshow',function() {
 
-    SchedulePositionCheck(500);
+    dispatch_listview=$("#dispatch_listview",$.mobile.activePage);
+    ScheduleUpdateCheck(500);
+        
+    last_dispatch=$("#last_dispatch", $.mobile.activePage);
+    if(last_dispatch.length>0){
+        last_li=$("#list_end",$.mobile.activePage);   
+        SchedulePositionCheck();     
+    }
     
 });
 
 $(document).bind('pageinit',function() {
 
-    setInterval(function() {UpdateCheck();}, 3000);
-
     $(window).scroll(function(event) {scrollHappens=true;});
-        
-    SchedulePositionCheck(500);
+    $("abbr.timeago").timeago();
+    $.fn.extend({ 
+            disableSelection : function() { 
+                    this.each(function() { 
+                            this.onselectstart = function() { return false; }; 
+                            this.unselectable = "on"; 
+                            $(this).css('-moz-user-select', 'none'); 
+                            $(this).css('-webkit-user-select', 'none'); 
+                    }); 
+            } 
+    });
 
+        
 });//end of page init
    
     

@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-
 <div data-role="content">
 <p><i>Your current settings</i></p>
-
 <form action="" method="post" data-ajax="false">
     {% csrf_token %}
     {{ form.as_p }}
@@ -14,9 +12,6 @@
     </div><!-- /grid-a -->
 </form>
 
-
-<br>
-<br>
 <br>
 
     <div class="ui-grid-solo">
