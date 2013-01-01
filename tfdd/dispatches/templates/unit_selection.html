@@ -9,9 +9,15 @@
     $(document).bind('pageinit',function() {
         
         $("input[type='checkbox']").bind("change", function( event ) { 
+            
             var urls = $(this).data('state-urls');
             var state = this.checked;
-            $.ajax({url: urls[state]});
+            $.ajax({url: urls[state],
+                    success:function(data){
+                        console.log(data);
+                    }
+                
+                });
         });
                 
         $("#unit_list").listview('option', 'filterCallback',

@@ -95,7 +95,7 @@ def index(request,*args):
 @login_required
 def following(request,):
     dispatch_filter = dict(units__unitfollower__user = request.user.id)
-    dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:5]
+    dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:10]
     return render_to_response('following.html', 
         RequestContext(request, 
             dict(dispatches=dispatches,
@@ -106,7 +106,7 @@ def following(request,):
 @login_required(login_url='/dispatches/login/')
 def unit_detail(request,unit_id):
     dispatch_filter = dict(units__id=unit_id)
-    dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:5]
+    dispatches = Dispatch.objects.filter(**dispatch_filter).order_by('-dispatched')[:10]
     followers=UnitFollower.objects.filter(unit=unit_id)
 
     return render_to_response(
@@ -232,12 +232,14 @@ def post(request):
 
 @login_required
 def update_settings(request):
-    if request.method == 'POST':
+    if request.method == 'POST':    
         form = UpdateSettings(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('dispatches')  # Redirect after POST
+            return redirect('/dispatches/settings')  # Redirect after POST
     else:
         c = RequestContext(
             request, dict(form=UpdateSettings(instance=request.user)))
         return render_to_response('settings.html', c)
+
+

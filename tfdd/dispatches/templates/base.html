@@ -10,7 +10,7 @@
     {% load static from staticfiles %}      
 </head>
 <body>
-    <div class="dispatch_page" data-role="page"  >
+    <div class="dispatch_page" data-role="page" >
             
         <div id="tfdd_header" data-role="header" data-position="fixed">
                 <div class="tfdd_logo">
@@ -19,35 +19,33 @@
                 <a href="{% url about %}"
                     data-icon="info" 
                     data-transition="flip"
-                    class="ui-btn-right">About</a>
-                    
-            <div data-role="navbar" >
-                <ul>
-                    <li><a href="{% url dispatches %}" 
-                        data-transition="none"
-                        >Dispatches</a></li>
+                    class="ui-btn-right">About
+                </a>       
+                <div data-role="navbar" >
+                    <ul>
+                        <li><a href="{% url dispatches %}" 
+                            data-transition="none"
+                            >Dispatches</a></li>
                                             
-                    {% if user.is_authenticated %}
-                    <li><a href="{% url following %}"
-                        data-transition="none" 
-                        >Following</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url following %}"
+                            data-transition="none" 
+                            >Following</a></li>
                         
-                    <li><a href="{% url settings %}"
-                        data-transition="none"
-                        >Settings</a>
-                    </li>
+                        <li><a href="{% url settings %}"
+                            data-transition="none"
+                            >Settings</a>
+                        </li>
 
-                    {% else %}
-                    <li><a href="{% url login %}"
-                        data-transition="none"
-                        data-prefetch 
-                        >Login</a></li>
-                    {% endif %}
+                        {% else %}
+                        <li><a href="{% url login %}"
+                            data-transition="none"
+                            data-prefetch 
+                            >Login</a></li>
+                        {% endif %}
 
-                </ul>
-            </div><!-- /navbar -->
-            
-          
+                    </ul>
+                </div><!-- /navbar -->
         </div><!--  /header -->
 
 
@@ -85,9 +83,6 @@
 {% if user.is_authenticated %}
 
 <script>
-
-
-
 
 $(document).bind('pagebeforeshow',function() {
 
