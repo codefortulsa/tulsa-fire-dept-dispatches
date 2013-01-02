@@ -6,8 +6,8 @@
     <title>{% block title %}Tulsa Fire Dispatch{% endblock %}</title> 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
     {% include "resources.html" %}
-    
-    {% load static from staticfiles %}      
+    {% load static from staticfiles %}
+          
 </head>
 <body>
     <div class="dispatch_page" data-role="page" >
@@ -87,7 +87,7 @@
 $(document).bind('pagebeforeshow',function() {
 
     dispatch_listview=$("#dispatch_listview",$.mobile.activePage);
-    ScheduleUpdateCheck(500);
+    ScheduleUpdateCheck(10000);
         
     last_dispatch=$("#last_dispatch", $.mobile.activePage);
     if(last_dispatch.length>0){
