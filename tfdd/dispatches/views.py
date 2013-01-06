@@ -84,6 +84,8 @@ def dispatch_location(request, location_address):
     return render_to_response(
         'dispatch_location.html', RequestContext(request, 
             dict(location_address=location_address)))
+        
+
 
 
 def index(request,*args):

@@ -16,36 +16,35 @@
         {% endif %}
         >
         
-        <a href="{% url dispatch_location dispatch.location %}"
-            data-transition="slide" 
+        <a href="/gm/hydrants?tf_number={{dispatch.tf}}"
+            data-transition="slide"
+            data-ajax="false"
             >
-            <div class="ui-grid-a" >
-            	<div class="ui-block-a">
-            	    <strong>{{dispatch.call_type_desc}}</strong>
-            	    </br></br>
+                <bold >{{dispatch.call_type_desc}}</bold>
+                <p style="font-style:italic;float:right;margin-top:2%;margin-right:2.5%;"> 
+                <abbr class="timeago" title="{{ dispatch.dispatched|date:"c" }}">{{dispatch.dispatched}}</abbr>
+                {% if user.is_authenticated  %}           
 
-                    {% if user.is_authenticated  %}           
+        	    <p style="margin-top:1%;">{{dispatch.location}}</p>
 
-            	    <p>{{dispatch.location}}</p>
+                {% else%}
 
-                    {% else%}
-
-                        {# TODO: add permission for medical call types #}
-                        {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
-                            <p>{{dispatch.location}}</p>
-                        {% endif %}
-
+                    {# TODO: add permission for medical call types #}
+                    {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+                        
+                        <p style="margin-top:1%;">{{dispatch.location}}</p>
                     {% endif %}
 
-            	    <p><abbr class="timeago" title="{{ dispatch.dispatched|date:"c" }}">{{dispatch.dispatched}}</abbr></p>
-        	    
+                {% endif %}
+
+            	<div>
+                    <p style="font-style:oblique;">
+                        {% if not user.is_authenticated  %} </br>{% endif %}
+                        Map Page: {{dispatch.map_page}}&nbsp; &nbsp; &nbsp;     
+                        Dispatch #{{ dispatch.tf|make_list|slice:":4"|join:"" }}:{{ dispatch.tf|make_list|slice:"5:10"|join:"" }}
+                    </p>        	    
             	</div>
-            	<div class="ui-block-b">
-            	    </br></br>
-                    <p style="font-style:italic;">{{ dispatch.tf|make_list|slice:":4"|join:"" }}: {{ dispatch.tf|make_list|slice:"5:10"|join:"" }}</p>
-                    <p style="font-style:italic;">Map Page: {{dispatch.map_page}}</p>        	    
-            	</div>
-            </div><!-- /grid-a -->
+            
         </a>
             <div class="ui-grid-solo" style="margin-left:4%;" 
                  >
@@ -61,7 +60,7 @@
                         <a href="{% url unit_detail unit.id %}"
                             data-role="button"
                             data-transition="slide"
-                            style="height:25px;"
+                            style="height:25px;width:50px"
                         >{{unit.id}}</a>
                     {% endfor %}
                 </div>

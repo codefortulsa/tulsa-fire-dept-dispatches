@@ -80,22 +80,25 @@
         
     </div><!-- End of page -->
 
-{% if user.is_authenticated %}
 
 <script>
 
-$(document).bind('pagebeforeshow',function() {
+    {% if user.is_authenticated %}
 
-    dispatch_listview=$("#dispatch_listview",$.mobile.activePage);
-    ScheduleUpdateCheck(10000);
+        $(document).bind('pagebeforeshow',function() {
+
+            dispatch_listview=$("#dispatch_listview",$.mobile.activePage);
+            ScheduleUpdateCheck(10000);
         
-    last_dispatch=$("#last_dispatch", $.mobile.activePage);
-    if(last_dispatch.length>0){
-        last_li=$("#list_end",$.mobile.activePage);   
-        SchedulePositionCheck();     
-    }
+            last_dispatch=$("#last_dispatch", $.mobile.activePage);
+            if(last_dispatch.length>0){
+                last_li=$("#list_end",$.mobile.activePage);   
+                SchedulePositionCheck();     
+            }
     
-});
+        });
+
+    {% endif %}
 
 $(document).bind('pageinit',function() {
 
@@ -111,13 +114,13 @@ $(document).bind('pageinit',function() {
                     }); 
             } 
     });
-
+    $.disableSelection;
         
 });//end of page init
    
     
 </script>
-{% endif %}
+
 
 </body>
 </html>{% endspaceless %}

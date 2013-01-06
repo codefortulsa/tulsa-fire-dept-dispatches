@@ -16,6 +16,7 @@ urlpatterns = patterns(
     url(r'^update_check/(?P<start_tf>.*)/(?P<dispatch_filter>.*)/$', 'check_for_update',name='check_for_update'),
     
     url(r'^by_tf/(?P<start_tf>.*)/(?P<how_many>.*)/(?P<dispatch_filter>.*)/$', 'dispatch_list',name='dispatch_list'),
+
     url(r'^location_map/(?P<location_address>.*)/$', 'dispatch_location',name='dispatch_location'),
 
     url(r'^settings/$', 'update_settings', name='settings'),
