@@ -42,7 +42,7 @@ def okdata(request):
     r = urllib2.urlopen(boundary_request)
     if r.getcode()==200:
         ok_resp=r.read()
-        return HttpResponse(ok_resp)
+        return HttpResponse("")
     
 #    http://oklahomadata.org/boundary/1.0/point/?near=35.8915265,-95.9261487,500m&sets=hydrants
     

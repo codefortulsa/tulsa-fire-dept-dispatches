@@ -35,10 +35,10 @@ sw=new google.maps.LatLng(35.93131670856903, -96.141357421875),
 ne=new google.maps.LatLng(36.26199220445664, -95.701904296875),
 geocoder = new google.maps.Geocoder(),
 tulsaBounds= new google.maps.LatLngBounds(sw,ne),
-dispatchZoom=17,
+dispatchZoom=14,
 hydrant_markers=[],
 boundary_url=["http://oklahomadata.org/boundary/1.0/point/?near=",
-"lat",",","long",",500m&sets=hydrants"];
+"lat",",","long",",500m&sets=hydrants&?format=jsonp&callback=?"];
 
 function Hydrant_Info(hydrant_metadata){
     response=[]
@@ -67,8 +67,7 @@ function getHydrants(){
     boundary_url[1]=mapLatlng.lat();
     boundary_url[3]=mapLatlng.lng();   
     $.ajax({
-        url:"{% url okdata %}",
-        data:{boundary_url:boundary_url.join("")},
+        url:boundary_url.join(""),  
         dataType:"json",
         success:function(data){
             if (data.meta.total_count>0){
@@ -79,18 +78,18 @@ function getHydrants(){
                         hydrant.LATITUDE,
                         hydrant.LONGITUDE
                         );
-                    var hyd_mark = new google.maps.Marker({
+                    var hyd_marker = new google.maps.Marker({
                         map: map,
                         position: hydLatLng,
                         icon:"{% static "img/hydrant.png" %}"                    
                     });
 
-                    hydrant_click(hyd_mark,hydrant);
+                    hydrant_click(hyd_marker,hydrant);
                 }
             }
         },
         error:function(data){
-            
+           
         }
     });
 };
@@ -155,7 +154,7 @@ function setupMap() {
           style: google.maps.ZoomControlStyle.SMALL,
           position: google.maps.ControlPosition.LEFT_TOP
       },
-      mapTypeId: google.maps.MapTypeId.HYBRID
+      mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     
     map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
