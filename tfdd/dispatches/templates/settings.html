@@ -8,7 +8,7 @@
         {% endfor %}
     {% endif %}
 
-    <form action="" method="post" data-ajax="false">
+    <form method="post" action="" data-ajax="false">
         {% csrf_token %}
         {{ form.as_p }}
 

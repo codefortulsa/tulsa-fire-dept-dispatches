@@ -40,7 +40,7 @@
             	<div>
                     <p style="font-style:oblique;">
                         {% if not user.is_authenticated  %} </br>{% endif %}
-                        Map Page: {{dispatch.map_page}}&nbsp; &nbsp; &nbsp;     
+                        Map Page: {{dispatch.map_page}}&nbsp; &nbsp;     
                         Dispatch #{{ dispatch.tf|make_list|slice:":4"|join:"" }}:{{ dispatch.tf|make_list|slice:"5:10"|join:"" }}
                     </p>        	    
             	</div>
@@ -60,7 +60,7 @@
                         <a href="{% url unit_detail unit.id %}"
                             data-role="button"
                             data-transition="slide"
-                            style="height:25px;width:50px"
+                            style="height:25px;width:50px;overflow:hidden;"
                         >{{unit.id}}</a>
                     {% endfor %}
                 </div>

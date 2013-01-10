@@ -239,6 +239,7 @@ def update_settings(request):
         if form.is_valid():
             form.save()
             return redirect('/dispatches/settings')  # Redirect after POST
+
     else:
         c = RequestContext(
             request, dict(form=UpdateSettings(instance=request.user)))

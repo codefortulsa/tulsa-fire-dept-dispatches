@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>location</title>
+        <title>{{dispatch.location}}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% include "resources.html" %}
         {% load static from staticfiles %}
@@ -38,7 +38,8 @@ tulsaBounds= new google.maps.LatLngBounds(sw,ne),
 dispatchZoom=14,
 hydrant_markers=[],
 boundary_url=["http://oklahomadata.org/boundary/1.0/point/?near=",
-"lat",",","long",",500m&sets=hydrants&?format=jsonp&callback=?"];
+"lat",",","long",",500m&sets=hydrants&limit=","10","&offset=","10","&format=jsonp&callback=?"];
+
 
 function Hydrant_Info(hydrant_metadata){
     response=[]
@@ -52,7 +53,7 @@ function Hydrant_Info(hydrant_metadata){
     return response.join("</br>")    
 }
 
-function hydrant_click(hydrant_marker,hydrant){
+function set_hydrant_click(hydrant_marker,hydrant){
     var infowindow = new google.maps.InfoWindow({
          content: Hydrant_Info(hydrant),
          position:hydrant_marker.LatLng,                     
@@ -62,34 +63,50 @@ function hydrant_click(hydrant_marker,hydrant){
       infowindow.open(map,hydrant_marker);
     });
 }
-function getHydrants(){
+
+
+function set_hydrants(hydrants){
+
+  for (var index in hydrants){
+      hydrant=hydrants[index].metadata
+      var hydLatLng=new google.maps.LatLng(
+          hydrant.LATITUDE,
+          hydrant.LONGITUDE
+          );
+      var hyd_marker = new google.maps.Marker({
+          map: map,
+          position: hydLatLng,
+          icon:"{% static "img/hydrant.png" %}"                    
+      });
+
+      set_hydrant_click(hyd_marker,hydrant);
+  }
+              
+};
+
+function getHydrants(limit,offset){
     mapLatlng=map.getCenter();
     boundary_url[1]=mapLatlng.lat();
-    boundary_url[3]=mapLatlng.lng();   
+    boundary_url[3]=mapLatlng.lng();
+    boundary_url[5]=limit;//limit
+    boundary_url[7]=offset;//offset
     $.ajax({
         url:boundary_url.join(""),  
         dataType:"json",
         success:function(data){
-            if (data.meta.total_count>0){
-                hydrants=data.objects;
-                for (var index in hydrants){
-                    hydrant=hydrants[index].metadata
-                    var hydLatLng=new google.maps.LatLng(
-                        hydrant.LATITUDE,
-                        hydrant.LONGITUDE
-                        );
-                    var hyd_marker = new google.maps.Marker({
-                        map: map,
-                        position: hydLatLng,
-                        icon:"{% static "img/hydrant.png" %}"                    
-                    });
 
-                    hydrant_click(hyd_marker,hydrant);
+            hydrants_returned=data.meta.total_count;
+            if (hydrants_returned>0){
+                set_hydrants(data.objects);    
+                if (data.objects.length == limit){
+                    getHydrants(limit,limit+offset);                    
                 }
             }
+            
+            
         },
         error:function(data){
-           
+            
         }
     });
 };
@@ -161,7 +178,7 @@ function setupMap() {
     
     google.maps.event.addListener(map, 'center_changed', function() {
       window.setTimeout(function() {
-        getHydrants();;
+        getHydrants(10,10);;
       }, 200);
     });
     

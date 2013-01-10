@@ -91,7 +91,7 @@
             ScheduleUpdateCheck(10000);
         
             last_dispatch=$("#last_dispatch", $.mobile.activePage);
-            if(last_dispatch.length>0){
+            if(last_dispatch){
                 last_li=$("#list_end",$.mobile.activePage);   
                 SchedulePositionCheck();     
             }
@@ -103,19 +103,8 @@
 $(document).bind('pageinit',function() {
 
     $(window).scroll(function(event) {scrollHappens=true;});
-    $("abbr.timeago").timeago();
-    $.fn.extend({ 
-            disableSelection : function() { 
-                    this.each(function() { 
-                            this.onselectstart = function() { return false; }; 
-                            this.unselectable = "on"; 
-                            $(this).css('-moz-user-select', 'none'); 
-                            $(this).css('-webkit-user-select', 'none'); 
-                    }); 
-            } 
-    });
     $.disableSelection;
-        
+    $("abbr.timeago").timeago();  
 });//end of page init
    
     

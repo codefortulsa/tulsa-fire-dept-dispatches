@@ -9,10 +9,14 @@ urlpatterns = patterns('gm.views',
 
     url(r'^hydrants$', 'hydrant_map', name='hydrant_map'),
 
-    url(r'^okdata$', 'okdata', name='okdata'),
+    # url(r'^heat_map$', 'heat_map', name='heat_map'),
 
+    # url(r'^hydrant_heat$', 'hydrant_heat', name='hydrant_heat'),
     
     url(r'^(?P<tf_number>.*)/$', 'map_redirect', name='map_redirect'),
+
+
+
 
 )
 

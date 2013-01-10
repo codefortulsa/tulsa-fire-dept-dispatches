@@ -37,12 +37,14 @@ def hydrant_map(request):
     except:
         return HttpResponseBadRequest()
                 
-def okdata(request):
-    boundary_request=request.GET.get("boundary_url")    
-    r = urllib2.urlopen(boundary_request)
-    if r.getcode()==200:
-        ok_resp=r.read()
-        return HttpResponse("")
+def hydrant_heat(request):
+    return render_to_response('hydrant_heat.html')
     
-#    http://oklahomadata.org/boundary/1.0/point/?near=35.8915265,-95.9261487,500m&sets=hydrants
+
+
+def heat_map(request):
     
+    dispatches = Dispatch.objects.filter(call_type_desc__contains='FIRE')
+    return render_to_response('heat_map.html', RequestContext(request, 
+        dict(dispatches=dispatches)))
+        

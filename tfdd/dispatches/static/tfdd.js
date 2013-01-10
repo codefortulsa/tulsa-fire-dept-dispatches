@@ -35,7 +35,6 @@
                     $("#dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
                     last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
                     gettingMore=false;
-                    $("abbr.timeago").timeago();
                     SchedulePositionCheck();          
                 } else{
                     $("#list_end",$.mobile.activePage).text("");
@@ -91,3 +90,13 @@
         } 
      };
 
+     $.fn.extend({ 
+              disableSelection : function() { 
+                      this.each(function() { 
+                              this.onselectstart = function() { return false; }; 
+                              this.unselectable = "on"; 
+                              $(this).css('-moz-user-select', 'none'); 
+                              $(this).css('-webkit-user-select', 'none'); 
+                      }); 
+              } 
+      });
