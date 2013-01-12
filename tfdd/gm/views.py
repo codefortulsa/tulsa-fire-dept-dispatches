@@ -39,8 +39,6 @@ def hydrant_map(request):
                 
 def hydrant_heat(request):
     return render_to_response('hydrant_heat.html')
-    
-
 
 def heat_map(request):
     

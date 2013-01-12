@@ -19,7 +19,10 @@
             </div><!-- end of header -->
 
 
-            <div data-role="content" id="map_content" data-theme="a">
+            <div id="map_content"
+                 data-role="content" 
+                 data-theme="a">
+                
                 <div id="map_content">
                     <div id="map_canvas"></div>
                 </div>
@@ -63,25 +66,26 @@ function set_hydrant_click(hydrant_marker,hydrant){
 }
 
 
-function set_hydrants(hydrants){
+function set_hydrants(hydrants) {
 
-  for (var index in hydrants){
-      hydrant=hydrants[index].metadata
-      var hydLatLng=new google.maps.LatLng(
-          hydrant.LATITUDE,
-          hydrant.LONGITUDE
-          );
-      var hyd_marker = new google.maps.Marker({
-          map: map,
-          position: hydLatLng,
-          icon:"{% static "img/hydrant.png" %}"                    
-      });
+    for (var index in hydrants) {
+        hydrant = hydrants[index].metadata
+        if (!hydrant_markers[hydrant.HYDRANT_ID]) {
+            hydrant_markers[hydrant.HYDRANT_ID] = true;
+            var hydLatLng = new google.maps.LatLng(
+            hydrant.LATITUDE, hydrant.LONGITUDE);
+            var hyd_marker = new google.maps.Marker({
+                map: map,
+                position: hydLatLng,
+                icon: "{% static "img/hydrant.png" %}"
+            });
 
-      set_hydrant_click(hyd_marker,hydrant);
-  }
-              
+            window.setTimeout(set_hydrant_click(hyd_marker, hydrant),100);
+
+        }
+    }
+
 };
-
 
 
 function getHydrants(limit,offset){
@@ -92,21 +96,18 @@ function getHydrants(limit,offset){
           near:  mapLatlng.lat()+","+mapLatlng.lng()+",500m",
           sets:"hydrants",
           limit:limit,
-          offset:offset,
+          offset:0,
           format:"jsonp",
         },  
         dataType:"jsonp",
         success:function(data){
-
             hydrants_returned=data.meta.total_count;
             if (hydrants_returned>0){
                 set_hydrants(data.objects);    
                 if (data.objects.length == limit){
                     getHydrants(limit,limit+offset);                    
                 }
-            }
-            
-            
+            }            
         },
         error:function(data){
             
@@ -116,19 +117,19 @@ function getHydrants(limit,offset){
 
 
 function tulsaGeocode(address,callback){
-    address=address.split("@")[1]
+    var clean_address=address.split("@");
+    clean_address=clean_address[clean_address.length-1];
     geocoder.geocode( {
-        'address': address,
+        'address': clean_address,
         'bounds':tulsaBounds,
         }, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             result_location=results[0].geometry.location;
             if (tulsaBounds.contains(result_location)){
-               callback(results[0].geometry.location);
-                
+               callback(results[0].geometry.location);                
             } else {
                 geocoder.geocode({
-                   'address': address+" Tulsa, OK",
+                   'address': clean_address+" Tulsa, OK",
                    'bounds':tulsaBounds, 
                }, function(results, status) {
                if (status == google.maps.GeocoderStatus.OK) {
@@ -144,48 +145,63 @@ function tulsaGeocode(address,callback){
 
 function setDispatch(dispatch_location){
 
+    map.setCenter(dispatch_location);
+
     var marker = new google.maps.Marker({
         map: map,
         position: dispatch_location
     });
     
     var infowindow = new google.maps.InfoWindow({
-         content: "{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}"
+         content: "<div class='dsp_infowindow' }>{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}</div>"
      });
      
-     infowindow.open(map,marker);
- 
      google.maps.event.addListener(marker, 'click', function() {
        infowindow.open(map,marker);
      });
      
-    map.setCenter(dispatch_location);
+    window.setTimeout(function(){infowindow.open(map,marker);},200);
+
   
 };
 
   
-function setupMap() {
-    var mapOptions = {
-      zoom: dispatchZoom,
-      center: tulsaBounds.getCenter(),
-      overviewMapControl: true,
-      zoomControl: true,
-      zoomControlOptions: {
-          style: google.maps.ZoomControlStyle.SMALL,
-          position: google.maps.ControlPosition.LEFT_TOP
-      },
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
+function setupMap(address) {
+
+var mapOptions = {
+    zoom: dispatchZoom,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+
+    panControl: false,
+    scaleControl: false,
+    overviewMapControl: false,
+
+    streetViewControl: true,
+    streetViewControlOptions: {
+        position: google.maps.ControlPosition.LEFT_CENTER,
+    },
+
+    mapTypeControl: true,
+    mapTypeControlOptions: {
+        position: google.maps.ControlPosition.LEFT_BOTTOM,
+    },
+
+    zoomControl: true,
+    zoomControlOptions: {
+        style: google.maps.ZoomControlStyle.SMALL,
+        position: google.maps.ControlPosition.RIGHT_CENTER,
+    },
+};
     
     map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
     
     google.maps.event.addListener(map, 'center_changed', function() {
       window.setTimeout(function() {
-        getHydrants(10,10);;
+        getHydrants(limit=20,offset=20);;
       }, 200);
     });
     
-    tulsaGeocode("{{dispatch.location}}",setDispatch);
+    tulsaGeocode(address,setDispatch);
     
 };
 
