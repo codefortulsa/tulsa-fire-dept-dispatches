@@ -36,9 +36,7 @@ ne=new google.maps.LatLng(36.26199220445664, -95.701904296875),
 geocoder = new google.maps.Geocoder(),
 tulsaBounds= new google.maps.LatLngBounds(sw,ne),
 dispatchZoom=14,
-hydrant_markers=[],
-boundary_url=["http://oklahomadata.org/boundary/1.0/point/?near=",
-"lat",",","long",",500m&sets=hydrants&limit=","10","&offset=","10","&format=jsonp&callback=?"];
+hydrant_markers=[];
 
 
 function Hydrant_Info(hydrant_metadata){
@@ -84,15 +82,20 @@ function set_hydrants(hydrants){
               
 };
 
+
+
 function getHydrants(limit,offset){
     mapLatlng=map.getCenter();
-    boundary_url[1]=mapLatlng.lat();
-    boundary_url[3]=mapLatlng.lng();
-    boundary_url[5]=limit;//limit
-    boundary_url[7]=offset;//offset
     $.ajax({
-        url:boundary_url.join(""),  
-        dataType:"json",
+        url:"http://oklahomadata.org/boundary/1.0/point/",
+        data:{
+          near:  mapLatlng.lat()+","+mapLatlng.lng()+",500m",
+          sets:"hydrants",
+          limit:limit,
+          offset:offset,
+          format:"jsonp",
+        },  
+        dataType:"jsonp",
         success:function(data){
 
             hydrants_returned=data.meta.total_count;
@@ -113,7 +116,7 @@ function getHydrants(limit,offset){
 
 
 function tulsaGeocode(address,callback){
-
+    address=address.split("@")[1]
     geocoder.geocode( {
         'address': address,
         'bounds':tulsaBounds,

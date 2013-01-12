@@ -11,6 +11,7 @@ import dateutil.parser
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import PhoneNumberField
+
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
