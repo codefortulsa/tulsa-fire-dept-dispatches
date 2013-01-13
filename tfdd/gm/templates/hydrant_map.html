@@ -11,7 +11,11 @@
     <body>      
         <div id="details" data-role="page" class="details-page" style="height:100%; width:100%;">
             <div data-theme="c" data-role="header">
-                <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+                <a href={% if user.is_authenticated  %} "#" {% else %}"{% url dispatches %}"{% endif %} 
+                data-role="button" 
+                data-rel="back" 
+                data-icon="arrow-l"
+                >Back</a>
                 <div class="location_address">
                     {{dispatch.location}}
                 </div>

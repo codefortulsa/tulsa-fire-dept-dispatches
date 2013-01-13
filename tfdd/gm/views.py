@@ -16,17 +16,11 @@ from django.utils import simplejson as json
 @csrf_exempt
 def map_redirect(request,tf_number):
     try:
-        dispatch = Dispatch.objects.get(tf=tf_number)
-        address=dispatch.location
-        google_map_url="http://maps.google.com/maps?t=h&z=14&q="+address+"+Tulsa+OK" 
-        return redirect(google_map_url)
+        map_url="/gm/hydrants?tf_number=%s" % tf_number
+        return redirect(map_url)
     except:
         return HttpResponseBadRequest()
 
-
-
-
-@login_required(login_url='/dispatches/login/')
 def hydrant_map(request):
     try:
         tf_number=request.GET.get("tf_number")
