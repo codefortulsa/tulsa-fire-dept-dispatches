@@ -156,16 +156,29 @@ function setDispatch(dispatch_location){
         position: dispatch_location
     });
     
+    var location_info="{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}";
+    
     var infowindow = new google.maps.InfoWindow({
-         content: "<div class='dsp_infowindow' }>{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}</div>"
-     });
+        {% if user.is_authenticated  %}
+            content: location_info
+        {% else %}
+            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+                content: location_info
+            {% else %}    
+                content: "Please login for location information"
+            {% endif %}
+        {% endif %}
+        
+            });
+
+     
+     
      
      google.maps.event.addListener(marker, 'click', function() {
        infowindow.open(map,marker);
      });
      
     window.setTimeout(function(){infowindow.open(map,marker);},200);
-
   
 };
 
@@ -213,7 +226,15 @@ var mapOptions = {
 // Initialize the map
 $(document).bind('pageinit', function() {
     if (map == null) {
-        setupMap("{{dispatch.location}}");
+        {% if user.is_authenticated  %}
+            setupMap("{{dispatch.location}}");        
+        {% else %}
+            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+                setupMap("{{dispatch.location}}");
+            {% else %}    
+                setupMap("Tulsa,OK");
+            {% endif %}
+        {% endif %}
         }
 });
 
