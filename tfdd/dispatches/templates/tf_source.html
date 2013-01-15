@@ -1,0 +1,21 @@
+<!DOCTYPE html> 
+<html>
+<head>
+</head>
+<body>
+
+
+{% for dispatch in dispatches%}
+
+
+
+<div style="border-style:solid;border-color:black;">
+    <p> #{{dispatch.tf}}</p>
+    
+    <p>SOURCE</p>
+
+<p>{{dispatch.raw.text}}</p>
+
+</div>
+{%endfor%}
+</body>

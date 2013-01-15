@@ -245,4 +245,15 @@ def update_settings(request):
             request, dict(form=UpdateSettings(instance=request.user)))
         return render_to_response('settings.html', c)
 
-
+@login_required
+def tf_source(request):
+    dispatches=[]
+    tf=request.GET.get("tf")
+    tf_numbers=tf.split(",")
+    for tf_number in tf_numbers:        
+        dispatch = Dispatch.objects.get(tf=tf_number)
+        raw=RawDispatch.objects.get(text__contains=tf_number)
+        dispatch.raw=raw
+        dispatches.append(dispatch)
+    
+    return render_to_response('tf_source.html',dict(dispatches=dispatches))
