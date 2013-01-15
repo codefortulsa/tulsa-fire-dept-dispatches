@@ -248,12 +248,19 @@ def update_settings(request):
 @login_required
 def tf_source(request):
     dispatches=[]
+    dispatch=Dispatch()
     tf=request.GET.get("tf")
     tf_numbers=tf.split(",")
-    for tf_number in tf_numbers:        
-        dispatch = Dispatch.objects.get(tf=tf_number)
-        raw=RawDispatch.objects.get(text__contains=tf_number)
-        dispatch.raw=raw
+    for tf_number in tf_numbers:
+        try:        
+            dispatch = Dispatch.objects.get(tf=tf_number)
+        except dispatch.DoesNotExist:
+            dispatch=Dispatch()
+        try:
+            raw=RawDispatch.objects.get(text__contains=tf_number)
+            dispatch.raw_text=raw.text
+        except raw.DoesNotExist:
+            dispatch.raw_text="Raw dispatch for %s not found" % tf_number
         dispatches.append(dispatch)
     
     return render_to_response('tf_source.html',dict(dispatches=dispatches))
