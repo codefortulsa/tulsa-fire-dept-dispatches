@@ -6,7 +6,7 @@ from django_any import any_model
 from django_any.contrib import any_user
 import mox
 
-from dispatches import models
+from dispatches import models, utils
 
 
 
@@ -118,3 +118,16 @@ class NotifyListenersTest(TestCase):
         self.assertTrue(
             m0.to == ['email@follower.co'] and m1.to == ['both@follower.co'] or
             m1.to == ['email@follower.co'] and m0.to == ['both@follower.co'])
+
+
+class DispatchMsgTest(TestCase):
+    def test_dispatch_msg(self):
+        dispatch = any_model(
+            models.Dispatch, location='test_location',
+            call_type_desc='test_call_type_desc')
+        dispatch.tf = 'test_tf'  # not valid at db, but possible for instance
+        dispatch.units.create(id='test_unit')
+        self.assertEqual(
+            utils.dispatch_msg(dispatch),
+            'test_call_type_desc\ntest_location\nUnit: test_unit\n'
+            'http://tfdd.co/gm/test_tf/')
