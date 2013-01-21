@@ -8,7 +8,9 @@ pyserial==2.6
 twilio==3.4.1
 wsgiref==0.1.2
 requests==0.14.2
-ipdb==0.7
+ipdb
+ipdbplugin
 python-dateutil==2.1
 mox==0.5.3
 django-nose==1.1
+git+git://github.com/ConsumerAffairs/django-whatever.git@master#egg=django-whatever

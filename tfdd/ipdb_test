@@ -1,0 +1,2 @@
+#!/bin/bash
+./manage.py test $@ --ipdb --ipdb-failures -sx
