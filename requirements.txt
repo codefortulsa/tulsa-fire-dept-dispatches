@@ -10,3 +10,5 @@ wsgiref==0.1.2
 requests==0.14.2
 ipdb==0.7
 python-dateutil==2.1
+mox==0.5.3
+django-nose==1.1

@@ -218,14 +218,10 @@ def follow_unit(request, unit_id, channel, state):
 
 @csrf_exempt
 @require_POST
-def post(request):
+def post_raw(request):
     raw_dispatch = RawDispatch(text=request.POST.get('text'))
     if raw_dispatch.text:
-        try:
-            raw_dispatch.parse()
-        except:
-            logging.error(traceback.format_exc())
-            raw_dispatch.save()
+        raw_dispatch.parse()
         ACCEPTED = 202
         return HttpResponse(status=ACCEPTED)
     else:

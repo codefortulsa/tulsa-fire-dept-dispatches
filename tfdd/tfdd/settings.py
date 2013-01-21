@@ -139,6 +139,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'emailusernames',
     'south',
+    'django_nose',  # must come after south to ensure test runner used
     'dispatches',
     'gm',
 )
@@ -185,6 +186,8 @@ TWILIO_TOKEN = 'override in local_settings'
 TWILIO_FROM = 'override in local_settings'
 BASE_URL = 'http://tfdd.co'
 LOGIN_REDIRECT_URL = '/dispatches/'
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 try:
     from local_settings import *

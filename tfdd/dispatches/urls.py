@@ -3,11 +3,10 @@ from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns(
     'dispatches.views',
-
     url(r'^unit_select/','unit_select'),
     url(r'^follow/(?P<unit_id>.*)/(?P<channel>.*)/(?P<state>.*)/$', 'follow_unit',
         name='follow_unit'),
-    url(r'^post/$', 'post', name='dispatch_post'),
+    url(r'^post/$', 'post_raw', name='dispatches_post_raw'),
     url(r'^register/$', 'register', name='dispatches_register'),
     url(r'^login/$', 'login', name='login'),
     url(r'^logout/$', 'logout', name='logout'),
