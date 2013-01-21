@@ -107,3 +107,10 @@ class UpdateSettings(forms.ModelForm):
         super(UpdateSettings, self).__init__(*args, **kwargs)
         if self.instance:
             self.initial['phone'] = self.instance.profile.phone
+
+    def save(self):
+        instance = super(UpdateSettings, self).save()
+        instance.profile.phone = self.cleaned_data['phone']
+        instance.profile.save()
+        return instance
+        
