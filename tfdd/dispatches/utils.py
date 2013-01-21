@@ -13,7 +13,7 @@ def dispatch_msg(dsp):
     plu=["","s"]
     unit_plu=plu[dsp.units.count()>1]
     unit_list = ' '.join([str(u) for u in dsp.units.all()])
-    map_url="http://tfdd.co/gm/%i/" % dsp.tf
+    map_url="http://tfdd.co/gm/%s/" % dsp.tf
     message = "%s\n%s\nUnit%s: %s\n%s" % (dsp.call_type_desc,dsp.location,unit_plu,unit_list,map_url)       
     return message
 
