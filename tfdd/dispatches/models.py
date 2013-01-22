@@ -17,7 +17,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 
-from .utils import dispatch_msg, send_msg, update 
+from .utils import dispatch_msg, send_msg, update
 
 
 class Profile(models.Model):
@@ -159,7 +159,12 @@ class RawDispatch(models.Model):
         r'UNIT\s+(?P<units>.+)\s+TF\s+(?P<tf>\d+)\s+END OF MESSAGE', re.S)
 
     def parse(self):
-        p = self.regex.match(self.text).groupdict()
+        match = self.regex.match(self.text)
+        if not match:
+            self.save()
+            logging.error('regex match failure: ' + self.text)
+            return
+        p = match.groupdict()
         if ';' in p['location']:
             p['location'], p['notes'] = p['location'].split(';', 1)
         for k, v in p.items():
@@ -188,4 +193,7 @@ class RawDispatch(models.Model):
         else:
             if response.status_code == 202:
                 update(self, sent=datetime.now())
-            logging.error('status code %s from server' % response.status_code)
+            else:
+                logging.error('status code %s from server' %
+                              response.status_code)
+                logging.error(response.content)

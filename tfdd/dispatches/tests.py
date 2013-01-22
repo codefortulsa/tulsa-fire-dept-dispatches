@@ -9,7 +9,6 @@ import mox
 from dispatches import models, utils
 
 
-
 RAW_DISPATCH_EXAMPLE = (
     u'  \r\r\r\r\r\r\r\r\r\r\r           '
     u'\x07\x07\x07\x07\x07\x07\x07                   '
@@ -54,12 +53,12 @@ class RawDispatchParseTest(TestCase):
         models.Dispatch.notify_listeners()
         self.mox.ReplayAll()
         raw = models.RawDispatch(text=RAW_DISPATCH_EXAMPLE)
-        raw.parse() 
+        raw.parse()
         self.mox.VerifyAll()
         dispatch = raw.dispatch
         self.assertTrue(dispatch)
         self.assertEqual(dispatch.call_type, 'FLUIDS')
-        self.assertEqual(dispatch.call_type_desc , 'ANY TYPE FLUID SPILL')
+        self.assertEqual(dispatch.call_type_desc, 'ANY TYPE FLUID SPILL')
         self.assertEqual(dispatch.location, '7675 E 51 ST S')
         self.assertEqual(dispatch.notes, 'KUM-N-GO/10 GALS OR LESS/GASOLINE')
         self.assertEqual(int(dispatch.map_page), 1378)
@@ -68,6 +67,16 @@ class RawDispatchParseTest(TestCase):
         self.assertEqual(int(dispatch.tf), 2012053706)
         unit = dispatch.units.get()
         self.assertEqual(unit.id, 'E25')
+
+    def test_parse_match_failure(self):
+        text = 'non-matching test text'
+        self.mox.ReplayAll()
+        raw = models.RawDispatch(text=text)
+        raw.parse()
+        self.mox.VerifyAll()
+        self.assertTrue(raw.id)
+        self.assertEqual(raw.text, text)
+        self.assertFalse(raw.dispatch)
 
 
 class NotifyListenersTest(TestCase):
@@ -98,7 +107,8 @@ class NotifyListenersTest(TestCase):
             by_email=True, by_phone=True)
 
         self.neither_follower = any_user(id=4, email='neither@follower.co')
-        models.update(self.neither_follower.profile, phone='neither_follower #')
+        models.update(self.neither_follower.profile,
+                      phone='neither_follower #')
         models.UnitFollower.objects.create(
             unit=self.unit, user=self.neither_follower,
             by_email=False, by_phone=False)
