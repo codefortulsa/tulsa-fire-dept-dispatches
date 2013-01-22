@@ -247,6 +247,7 @@ def tf_source(request):
     dispatch=Dispatch()
     tf=request.GET.get("tf")
     tf_numbers=tf.split(",")
+    
     for tf_number in tf_numbers:
         try:        
             dispatch = Dispatch.objects.get(tf=tf_number)
