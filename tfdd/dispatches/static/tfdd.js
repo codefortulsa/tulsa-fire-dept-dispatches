@@ -53,16 +53,17 @@
     function PositionCheck() {
         if (scrollHappens){
             scrollHappens=false;
-            distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
-            if (distance_to_bottom > -1000) {
-                    GetMoreDispatches();    
-            } else {                        
-                SchedulePositionCheck();
+            if (last_li.length>0){
+                distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
+                if (distance_to_bottom > -1000) {
+                        GetMoreDispatches();    
+                } else {                        
+                    SchedulePositionCheck();
+                }
             }
         } else{
             SchedulePositionCheck();
         }
-
     };
 
 

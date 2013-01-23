@@ -4,31 +4,6 @@
 
 {% include "resources.html"%}
     
-<script>
-    
-    $(document).bind('pageinit',function() {
-        
-        $("input[type='checkbox']").bind("change", function( event ) { 
-            
-            var urls = $(this).data('state-urls');
-            var state = this.checked;
-            $.ajax({url: urls[state],
-                    success:function(data){
-                        console.log(data);
-                    }
-                
-                });
-        });
-                
-        $("#unit_list").listview('option', 'filterCallback',
-            function( text, searchValue, item ){
-                return !RegExp(searchValue, "g").test(text.toString().toLowerCase());
-            });
-        
-    });//end of page init
-</script>
-
-
 </head>
 
 
@@ -71,4 +46,21 @@
             </ul>
         </form>
     </content>
+
+    <script>
+
+        $("input[type='checkbox']").bind("change", function( event ) { 
+            var urls = $(this).data('state-urls');
+            var state = this.checked;
+            $.ajax({url: urls[state]});
+        });
+
+        //  This is the list filter
+        $("#unit_list").listview('option', 'filterCallback',
+            function( text, searchValue, item ){
+                return !RegExp(searchValue, "g").test(text.toString().toLowerCase());
+            });
+
+    </script>
+
 </body>
