@@ -33,6 +33,7 @@
                 if (more_dispatches.length>0){
                     last_dispatch.attr("id", "xxx")     // this isn't last anymore
                     $("#dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
+                    $("abbr.timeago").timeago(); 
                     last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
                     gettingMore=false;
                     SchedulePositionCheck();          
