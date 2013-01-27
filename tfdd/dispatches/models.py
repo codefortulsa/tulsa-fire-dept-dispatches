@@ -141,7 +141,7 @@ class Dispatch(models.Model):
         email_msg = dispatch_msg(self)
         for email in emails:
             send_mail(
-                'TPDD Dispatch %s' % self.call_type_desc,
+                'TFD Dispatch %s' % self.call_type_desc,
                 email_msg, 'tfdd@tfdd.co', [email], fail_silently=True)
 
 
