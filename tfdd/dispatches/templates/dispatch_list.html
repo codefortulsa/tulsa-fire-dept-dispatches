@@ -16,9 +16,13 @@
         {% endif %}
         >
         
-        <a href="/gm/hydrants?tf_number={{dispatch.tf}}"
+        <!-- <a href="/gm/hydrants?tf_number={{dispatch.tf}}" -->
+        <a href="#map-page"
+            class="dispatch-link"
             data-transition="slide"
-            data-ajax="false"
+            data-location="{{dispatch.location}}"
+            data-call_type_desc="{{dispatch.call_type_desc}}"
+            data-map_page="{{dispatch.map_page}}"
             >
                 <bold >{{dispatch.call_type_desc}}</bold>
                 <p style="font-style:italic;float:right;margin-top:1%;margin-right:0%;height:5%"> 

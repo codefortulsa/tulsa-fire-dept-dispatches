@@ -9,7 +9,8 @@
           
 </head>
 <body>
-    <div class="dispatch_page" data-role="page" >
+
+    <div id="dispatch_page" class="dispatch_page" data-role="page" >
             
         <div id="tfdd_header" data-role="header" data-position="fixed">
                 <div class="tfdd_logo">
@@ -50,7 +51,6 @@
 
         <div data-role="content" >
 
-
             <div class='messages'>
                 {% comment %}
                 {% if user.is_authenticated %}
@@ -76,35 +76,97 @@
             {% endblock %}
 
         </div>    <!-- End of content -->
-        
+    
     </div><!-- End of page -->
+    
+    {% include "map_page.html" %}
 
 
 <script>
 
-    {% if user.is_authenticated %}
+{% if user.is_authenticated %}
 
-        $(document).bind('pagebeforeshow',function() {
+    $(".dispatch_page").bind('pageinit',function() {
 
-            dispatch_listview=$("#dispatch_listview",$.mobile.activePage);
-            ScheduleUpdateCheck(10000);
-        
-            last_dispatch=$("#last_dispatch", $.mobile.activePage);
-            if(last_dispatch){
-                last_li=$("#list_end",$.mobile.activePage);   
-                SchedulePositionCheck();     
-            }
+        $.disableSelection;
+        $("abbr.timeago").timeago();
     
+        $("a.dispatch-link").bind('click', function(event) {
+            event.preventDefault();
+            dispatch_address = $(this).data('location');
+            dispatch_call_type_desc = $(this).data('call_type_desc');
+            dispatch_map_page = $(this).data('map_page');
+            $.mobile.changePage("#map-page");
+        });  
+    });//end of page init
+
+    $(".dispatch_page").bind('pagebeforeshow', function() {
+
+        dispatch_listview = $("#dispatch_listview", $.mobile.activePage);
+        ScheduleUpdateCheck(25000);
+
+        last_dispatch = $("#last_dispatch", $.mobile.activePage);
+        if (last_dispatch) {
+            last_li = $("#list_end", $.mobile.activePage);
+        }
+
+    });
+
+    $(window).bind('scrollstop', function() {
+         window.setTimeout(PositionCheck(),20);
+    });
+
+
+    $("#map-page").bind('pagecreate', function() {
+        console.log("pageinit");
+        if (map == null) {
+            map = new google.maps.Map(document.getElementById("map_canvas"), dispatchMapOptions);
+            // google.maps.event.addListener(map, 'center_changed', function() {
+            //   window.setTimeout(function() {
+                // getHydrants(location=map.getCenter(),limit=20,offset=0);
+            //   }, 20);
+            // });
+        }
+    });
+    
+    $("#map-page").bind('pagebeforeshow', function() {
+        console.log("pagebeforeshow");
+        hydrant_markers={};
+        tulsaGeocode(dispatch_address, function(xlocation) {
+
+            var location_info = dispatch_call_type_desc + "</br>" + dispatch_address + "</br>Map Page: " + dispatch_map_page;;
+            dispatchMarker(xlocation, location_info);           
+            map.setCenter(xlocation);
+
         });
+        // document.title=dispatch_address;
+        // $("#dispatch_address").value=dispatch_address; 
+         
+    });
+    
+    $("#map-page").bind('pagehide',function(event,ui) {
+    console.log("pagehide");
+    //remove the marker
+        if(dispatch_marker!=null){
+            window.setTimeout(
+            dispatch_marker.setMap(null),
+            20);
+        }
+    //remove hydrant markers 
+        for  (marker in hydrant_markers){
+            // marker.setMap(null);
+            window.setTimeout(
+            hydrant_markers[marker].setMap(null),
+            20);
+        }        
+        // $("#map_canvas").html('');
+        // map=null;
+    });
+    
+    
+{% endif %}
 
-    {% endif %}
 
-$(document).bind('pageinit',function() {
-
-    $(window).scroll(function(event) {scrollHappens=true;});
-    $.disableSelection;
-    $("abbr.timeago").timeago();  
-});//end of page init
    
     
 </script>

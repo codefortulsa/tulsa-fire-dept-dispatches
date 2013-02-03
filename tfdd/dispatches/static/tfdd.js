@@ -1,19 +1,10 @@
-    var scrollHappens=false,
-        dispatch_listview=[],
-        last_dispatch=[],
-        last_li=[],
-        UpdateCheckScheduled=false,
-        PositionCheckScheduled=false;
-        
-    function SchedulePositionCheck(){
-        if(!PositionCheckScheduled){
-            PositionCheckScheduled=true;
-            setTimeout(function() {
-                PositionCheckScheduled=false;                
-                PositionCheck();
-                }, 2500);
-        }
-    };
+
+// dispatch list variables
+var dispatch_listview=[],
+    gettingMore=false;
+    last_dispatch=[],
+    last_li=[],
+    UpdateCheckScheduled=false;
 
     function ScheduleUpdateCheck(nextCheck){
         if (!UpdateCheckScheduled){
@@ -26,44 +17,37 @@
     };
     
     function GetMoreDispatches() {
-        $.ajax({
-            url: last_dispatch.data("tf-more-url"),
-            success: function(data) {
-                var more_dispatches=$("li.dispatch",data);
-                if (more_dispatches.length>0){
-                    last_dispatch.attr("id", "xxx")     // this isn't last anymore
-                    $("#dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
-                    $("abbr.timeago").timeago(); 
-                    last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
-                    gettingMore=false;
-                    SchedulePositionCheck();          
-                } else{
-                    $("#list_end",$.mobile.activePage).text("");
-                    gettingMore=false;
+        if (!gettingMore){
+            gettingMore=true
+            $.ajax({
+                url: last_dispatch.data("tf-more-url"),
+                success: function(data) {
+                    var more_dispatches=$("li.dispatch",data);
+                    if (more_dispatches.length>0){
+                        last_dispatch.attr("id", "xxx")     // this isn't last anymore
+                        $("#dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
+                        $("abbr.timeago").timeago(); 
+                        last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
+                        // SchedulePositionCheck();          
+                    } else{
+                        $("#list_end",$.mobile.activePage).text("");
                     
-                }                
-            },
-            error: function(){
-                gettingMore=false;
-                SchedulePositionCheck();
+                    }                
+                },
+                complete:function(){
+                    gettingMore=false;
+                
                 }
-        })
-      
+            })
+      }
     };
 
     function PositionCheck() {
-        if (scrollHappens){
-            scrollHappens=false;
-            if (last_li.length>0){
-                distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
-                if (distance_to_bottom > -1000) {
-                        GetMoreDispatches();    
-                } else {                        
-                    SchedulePositionCheck();
-                }
-            }
-        } else{
-            SchedulePositionCheck();
+        if (last_li.length>0){
+            distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
+            if (distance_to_bottom > -1000) {
+                    GetMoreDispatches();    
+            } 
         }
     };
 
@@ -80,13 +64,13 @@
                      });
                      $(dispatch_listview).prepend($("li.dispatch", data)).listview('refresh').trigger( "create" );                     
                      $("abbr.timeago").timeago();
-                     ScheduleUpdateCheck(5000);                     
                      setTimeout(function() {
                          $.mobile.loading('hide');
                          }, 1500);
                  },
-                error: function(){
-                    ScheduleUpdateCheck(5000);                  
+                complete:function(){
+                    ScheduleUpdateCheck(25000);                     
+                    
                 }
              })
         } 
@@ -107,19 +91,31 @@
 
 
 // map related functions
-
-
+// 
+// 
 
 var
 // 'tulsa 36.1539,-95.9925'
 sw=new google.maps.LatLng(35.93131670856903, -96.141357421875),
 ne=new google.maps.LatLng(36.26199220445664, -95.701904296875),
+tulsaLatlng=new google.maps.LatLng(36.1539,-95.9925)
 tulsaBounds= new google.maps.LatLngBounds(sw,ne),
 geocoder = new google.maps.Geocoder();
 
+
+// map page variables
+var map,
+    dispatch_address,
+    dispatch_call_type_desc,
+    dispatch_map_page,
+    dispatch_marker=null;
+
+var hydrant_markers={};
+
 var dispatchMapOptions = {
-    zoom: 14,
+    zoom: 16,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
+    center:tulsaLatlng,
 
     panControl: false,
     scaleControl: false,
@@ -154,20 +150,43 @@ function tulsaGeocode(address,callback){
             result_location=results[0].geometry.location;
             if (tulsaBounds.contains(result_location)){
                callback(results[0].geometry.location);                
-            } else {
+            } 
+            else {
                 geocoder.geocode({
                    'address': clean_address+" Tulsa, OK",
                    'bounds':tulsaBounds, 
                }, function(results, status) {
                if (status == google.maps.GeocoderStatus.OK) {
                    callback(results[0].geometry.location);
-               } 
+                } 
 
-            });
+                });
+            }
         }
-    }
     });
 };
+
+function dispatchMarker(dispatch_location,info_text){
+    
+    var marker = new google.maps.Marker({
+        map: map,
+        position: dispatch_location
+    });
+
+    dispatch_marker=marker;
+
+    var infowindow = new google.maps.InfoWindow({
+            content: info_text        
+            });
+    
+     google.maps.event.addListener(marker, 'click', function() {
+       infowindow.open(map,marker);
+     });
+     
+    infowindow.open(map,marker);
+      
+};
+
 
 function Hydrant_Info(hydrant_metadata){
     response=[]
@@ -192,21 +211,20 @@ function set_hydrant_click(hydrant_marker,hydrant){
     });
 }
 
-function set_hydrants(hydrants) {
+function setHydrants(hydrants) {
 
     for (var index in hydrants) {
         hydrant = hydrants[index].metadata
         if (!hydrant_markers[hydrant.HYDRANT_ID]) {
-            hydrant_markers[hydrant.HYDRANT_ID] = true;
-            var hydLatLng = new google.maps.LatLng(
-            hydrant.LATITUDE, hydrant.LONGITUDE);
             var hyd_marker = new google.maps.Marker({
                 map: map,
-                position: hydLatLng,
+                position: new google.maps.LatLng(hydrant.LATITUDE, hydrant.LONGITUDE),
                 icon: "/static/img/hydrant.png"
             });
-
-            window.setTimeout(set_hydrant_click(hyd_marker, hydrant),100);
+            
+            hydrant_markers[hydrant.HYDRANT_ID] = hyd_marker;
+            
+            window.setTimeout(set_hydrant_click(hyd_marker, hydrant),10);
 
         }
     }
@@ -214,34 +232,26 @@ function set_hydrants(hydrants) {
 };
 
 
-function getHydrants(limit,offset){
-    mapLatlng=map.getCenter();
+function getHydrants(xlocation,limit,offset){
     $.ajax({
+        type:"get",
         url:"http://oklahomadata.org/boundary/1.0/point/",
+        dataType:"jsonp",
         data:{
-          near:  mapLatlng.lat()+","+mapLatlng.lng()+",500m",
+          near:  xlocation.lat()+","+xlocation.lng()+",350m",
           sets:"hydrants",
           limit:limit,
-          offset:0,
+          offset:offset,
           format:"jsonp",
         },  
-        dataType:"jsonp",
-        beforeSend: function(xhr)   
-            {
-                xhr.setRequestHeader("Connection", "close");
-            },
         success:function(data){
             hydrants_returned=data.meta.total_count;
             if (hydrants_returned>0){
-                set_hydrants(data.objects);    
+                window.setTimeout(setHydrants(data.objects),20);    
                 if (data.objects.length == limit){
                     getHydrants(limit,limit+offset);                    
                 }
             }            
-        },
-        error:function(data){
-            
         }
-        
     });
 };
