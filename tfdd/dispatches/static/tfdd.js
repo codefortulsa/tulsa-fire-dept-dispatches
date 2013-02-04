@@ -98,7 +98,7 @@ var
 // 'tulsa 36.1539,-95.9925'
 sw=new google.maps.LatLng(35.93131670856903, -96.141357421875),
 ne=new google.maps.LatLng(36.26199220445664, -95.701904296875),
-tulsaLatlng=new google.maps.LatLng(36.1539,-95.9925)
+tulsaLatlng=new google.maps.LatLng(36.1539,-95.9925),
 tulsaBounds= new google.maps.LatLngBounds(sw,ne),
 geocoder = new google.maps.Geocoder();
 
@@ -232,26 +232,36 @@ function setHydrants(hydrants) {
 };
 
 
-function getHydrants(xlocation,limit,offset){
+
+
+function getHydrants(dspLocation,limit,offset){
     $.ajax({
-        type:"get",
+        type:"GET",
         url:"http://oklahomadata.org/boundary/1.0/point/",
         dataType:"jsonp",
         data:{
-          near:  xlocation.lat()+","+xlocation.lng()+",350m",
+          near:  dspLocation.lat()+","+dspLocation.lng()+",350m",
           sets:"hydrants",
           limit:limit,
           offset:offset,
           format:"jsonp",
-        },  
+        },
         success:function(data){
+            // alert(data.meta.total_count);
             hydrants_returned=data.meta.total_count;
             if (hydrants_returned>0){
                 window.setTimeout(setHydrants(data.objects),20);    
                 if (data.objects.length == limit){
-                    getHydrants(limit,limit+offset);                    
+                    getHydrants(dspLocation=dspLocation,limit=limit,offset=limit+offset);                    
                 }
-            }            
+            }           
+            
+        },
+        error:function(data){
+            // alert(data);
+        },
+        complete:function(jqXHR,textStatus){
+            // alert(textStatus);
         }
     });
 };

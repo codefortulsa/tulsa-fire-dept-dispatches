@@ -82,9 +82,8 @@
     {% include "map_page.html" %}
 
 
-<script>
-
 {% if user.is_authenticated %}
+<script>
 
     $(".dispatch_page").bind('pageinit',function() {
 
@@ -93,10 +92,30 @@
     
         $("a.dispatch-link").bind('click', function(event) {
             event.preventDefault();
+            document.title=dispatch_address;
+            // $("#dispatch_address").value=dispatch_address; 
+            hydrant_markers={};
+            if (map == null) {
+                map = new google.maps.Map(document.getElementById("map_content"), dispatchMapOptions);
+                google.maps.event.addListener(map, 'center_changed', function() {
+                  window.setTimeout(function() {
+                    map_center=map.getCenter();
+                    getHydrants(dspLocation=map_center,limit=20,offset=0);  
+                    }, 20);
+                });
+            }
+
             dispatch_address = $(this).data('location');
             dispatch_call_type_desc = $(this).data('call_type_desc');
             dispatch_map_page = $(this).data('map_page');
-            $.mobile.changePage("#map-page");
+            
+            tulsaGeocode(dispatch_address, function(dspLocation) {   
+                var location_info = dispatch_call_type_desc + "</br>" + dispatch_address + "</br>Map Page: " + dispatch_map_page;;
+                dispatchMarker(dspLocation, location_info);           
+                // map.setCenter(dspLocation);    
+            });
+            $.mobile.changePage("#map_page");
+            
         });  
     });//end of page init
 
@@ -113,39 +132,42 @@
     });
 
     $(window).bind('scrollstop', function() {
-         window.setTimeout(PositionCheck(),20);
+         window.setTimeout(PositionCheck(),5);
     });
 
 
-    $("#map-page").bind('pagecreate', function() {
-        console.log("pageinit");
+    $("#map_page").bind('pagecreate', function() {
+        // alert("pagecreate");
         if (map == null) {
             map = new google.maps.Map(document.getElementById("map_canvas"), dispatchMapOptions);
-            // google.maps.event.addListener(map, 'center_changed', function() {
-            //   window.setTimeout(function() {
-                // getHydrants(location=map.getCenter(),limit=20,offset=0);
-            //   }, 20);
-            // });
+            google.maps.event.addListener(map, 'center_changed', function() {
+              window.setTimeout(function() {
+                map_center=map.getCenter();
+                getHydrants(dspLocation=map_center,limit=20,offset=0);
+                map.setZoom(16);    
+                }, 20);
+            });
         }
+
+
+
     });
     
-    $("#map-page").bind('pagebeforeshow', function() {
-        console.log("pagebeforeshow");
-        hydrant_markers={};
-        tulsaGeocode(dispatch_address, function(xlocation) {
-
-            var location_info = dispatch_call_type_desc + "</br>" + dispatch_address + "</br>Map Page: " + dispatch_map_page;;
-            dispatchMarker(xlocation, location_info);           
-            map.setCenter(xlocation);
-
-        });
-        // document.title=dispatch_address;
-        // $("#dispatch_address").value=dispatch_address; 
-         
-    });
+    // $("#map-page").bind('pageshow', function(event,ui) {        
+    //     alert("pageshow");
+    //     hydrant_markers={};
+    //     tulsaGeocode(dispatch_address, function(dspLocation) {   
+    //         var location_info = dispatch_call_type_desc + "</br>" + dispatch_address + "</br>Map Page: " + dispatch_map_page;;
+    //         dispatchMarker(dspLocation, location_info);           
+    //         map.setCenter(dspLocation);    
+    //     });
+    //     document.title=dispatch_address;
+    //     // $("#dispatch_address").value=dispatch_address; 
+    //      
+    // });
     
-    $("#map-page").bind('pagehide',function(event,ui) {
-    console.log("pagehide");
+    $("#map_page").bind('pagehide',function(event,ui) {
+    // alert("pagehide");
     //remove the marker
         if(dispatch_marker!=null){
             window.setTimeout(
@@ -163,14 +185,8 @@
         // map=null;
     });
     
-    
+</script>    
 {% endif %}
-
-
-   
-    
-</script>
-
 
 </body>
 </html>{% endspaceless %}
