@@ -26,17 +26,14 @@ var dispatch_listview=[],
                     if (more_dispatches.length>0){
                         last_dispatch.attr("id", "xxx")     // this isn't last anymore
                         $("#dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
-                        $("abbr.timeago").timeago(); 
                         last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
-                        // SchedulePositionCheck();          
-                    } else{
+                        $(".dispatch_page").trigger('pageinit');
+                    } else {
                         $("#list_end",$.mobile.activePage).text("");
-                    
                     }                
                 },
                 complete:function(){
-                    gettingMore=false;
-                
+                    gettingMore=false;                
                 }
             })
       }
@@ -100,6 +97,7 @@ sw=new google.maps.LatLng(35.93131670856903, -96.141357421875),
 ne=new google.maps.LatLng(36.26199220445664, -95.701904296875),
 tulsaLatlng=new google.maps.LatLng(36.1539,-95.9925),
 tulsaBounds= new google.maps.LatLngBounds(sw,ne),
+requestHydrants=false,
 geocoder = new google.maps.Geocoder();
 
 
@@ -181,9 +179,9 @@ function dispatchMarker(dispatch_location,info_text){
     
      google.maps.event.addListener(marker, 'click', function() {
        infowindow.open(map,marker);
-     });
-     
+     }); 
     infowindow.open(map,marker);
+   
       
 };
 
@@ -206,8 +204,8 @@ function set_hydrant_click(hydrant_marker,hydrant){
          position:hydrant_marker.LatLng,                     
      });
     google.maps.event.addListener(hydrant_marker, 'click',
-     function() {
-      infowindow.open(map,hydrant_marker);
+        function() {
+            infowindow.open(map,hydrant_marker);
     });
 }
 
@@ -224,14 +222,11 @@ function setHydrants(hydrants) {
             
             hydrant_markers[hydrant.HYDRANT_ID] = hyd_marker;
             
-            window.setTimeout(set_hydrant_click(hyd_marker, hydrant),10);
+            window.setTimeout(function() {set_hydrant_click(hyd_marker, hydrant);},20);
 
         }
     }
-
 };
-
-
 
 
 function getHydrants(dspLocation,limit,offset){
@@ -240,28 +235,21 @@ function getHydrants(dspLocation,limit,offset){
         url:"http://oklahomadata.org/boundary/1.0/point/",
         dataType:"jsonp",
         data:{
-          near:  dspLocation.lat()+","+dspLocation.lng()+",350m",
+          near:  dspLocation.lat()+","+dspLocation.lng()+",250m",
           sets:"hydrants",
           limit:limit,
           offset:offset,
           format:"jsonp",
         },
         success:function(data){
-            // alert(data.meta.total_count);
             hydrants_returned=data.meta.total_count;
             if (hydrants_returned>0){
-                window.setTimeout(setHydrants(data.objects),20);    
+                window.setTimeout(function() {setHydrants(data.objects);},20);    
                 if (data.objects.length == limit){
                     getHydrants(dspLocation=dspLocation,limit=limit,offset=limit+offset);                    
                 }
             }           
             
         },
-        error:function(data){
-            // alert(data);
-        },
-        complete:function(jqXHR,textStatus){
-            // alert(textStatus);
-        }
     });
 };
