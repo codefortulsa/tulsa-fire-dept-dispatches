@@ -15,7 +15,7 @@
             data-tf-more-url="{% url dispatch_list dispatch.tf 10 dispatch_filter %}"        
         {% endif %}
         >
-        <a href="#map_page"
+        <a href="{% if user.is_authenticated %}#map_page{% endif %}"
             class="dispatch-link"
             data-transition="slide"
             data-location="{{dispatch.location}}"

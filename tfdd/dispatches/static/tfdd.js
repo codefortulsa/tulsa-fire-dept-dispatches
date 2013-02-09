@@ -106,6 +106,7 @@ var map,
     dispatch_address,
     dispatch_call_type_desc,
     dispatch_map_page,
+    currentLocation=null,
     dispatch_marker=null;
 
 var hydrant_markers={};
@@ -222,7 +223,10 @@ function setHydrants(hydrants) {
             
             hydrant_markers[hydrant.HYDRANT_ID] = hyd_marker;
             
-            window.setTimeout(function() {set_hydrant_click(hyd_marker, hydrant);},20);
+            window.setTimeout(function() {
+                set_hydrant_click(hyd_marker, hydrant);
+                console.log("set_hyd:"+hydrant.HYDRANT_ID);
+                },20);
 
         }
     }
@@ -244,8 +248,10 @@ function getHydrants(dspLocation,limit,offset){
         success:function(data){
             hydrants_returned=data.meta.total_count;
             if (hydrants_returned>0){
+                console.log("recd: "+hydrants_returned);
                 window.setTimeout(function() {setHydrants(data.objects);},20);    
                 if (data.objects.length == limit){
+                    debugger;
                     getHydrants(dspLocation=dspLocation,limit=limit,offset=limit+offset);                    
                 }
             }           

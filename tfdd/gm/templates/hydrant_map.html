@@ -2,41 +2,33 @@
 <html>
     <head>
         <title>{{dispatch.location}}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         {% include "resources.html" %}
         {% load static from staticfiles %}
         <meta name="layout" content="mobile"/>          
     </head>
 
     <body>      
-        <div id="map-page" data-role="page" class="map-page" style="height:100%; width:100%;">
+        <div id="map_page" data-role="page" class="map_page" style="height:100%; width:100%;">
             <div data-theme="c" data-role="header">
-                <a href={% if user.is_authenticated  %} "#" {% else %}"{% url dispatches %}"{% endif %} 
+                <a href="{% url dispatches %}"
                 data-role="button" 
-                data-rel="back" 
                 data-icon="arrow-l"
-                >Back</a>
+                style="z-index:1"
+                >TFDD.co</a>
                 <div class="location_address">
                     {{dispatch.location}}
                 </div>
 
             </div><!-- end of header -->
 
-
             <div id="map_content"
                  data-role="content" 
-                 data-theme="a">
-                
-                <div id="map_content">
-                    <div id="map_canvas"></div>
-                </div>
             </div>
+            
         </div>
 
 
 <script type="text/javascript">
-var map,
-hydrant_markers=[];
 
 function setDispatch(dispatch_location){
 
@@ -60,27 +52,31 @@ function setDispatch(dispatch_location){
             {% endif %}
         {% endif %}
         
-            });
+    });
     
-     google.maps.event.addListener(marker, 'click', function() {
-       infowindow.open(map,marker);
-     });
+    google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(map,marker);
+    });
      
-    window.setTimeout(function(){infowindow.open(map,marker);},200);
+    infowindow.open(map,marker);
   
 };
 
   
 function setupMap(address) {
-
-    
-    map = new google.maps.Map(document.getElementById("map_canvas"), dispatchMapOptions);
-    
-    google.maps.event.addListener(map, 'center_changed', function() {
-      window.setTimeout(function() {
-        getHydrants(limit=20,offset=20);
-      }, 200);
-    });
+        
+    console.log("setupMap");
+    if (map == null) {
+        console.log("null");
+        map = new google.maps.Map(document.getElementById("map_content"), dispatchMapOptions);
+        google.maps.event.addListener(map, 'center_changed', function() {
+            window.setTimeout(function() {
+                google.maps.event.trigger(map, 'resize');
+                map_center = map.getCenter();
+                getHydrants(dspLocation = map_center, limit = 15, offset = 0);
+            }, 20);
+        });
+    }
     
     tulsaGeocode(address,setDispatch);
     
@@ -103,6 +99,5 @@ $(document).bind('pageinit', function() {
 });
 
 </script>
-
-    </body>
+</body>
 </html>

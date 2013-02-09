@@ -15,11 +15,11 @@ from django.utils import simplejson as json
 
 @csrf_exempt
 def map_redirect(request,tf_number):
-    try:
+    # try:
         map_url="/gm/hydrants?tf_number=%s" % tf_number
         return redirect(map_url)
-    except:
-        return HttpResponseBadRequest()
+    # except:
+        # return HttpResponseBadRequest()
 
 def hydrant_map(request):
     try:
