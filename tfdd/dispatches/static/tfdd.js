@@ -225,7 +225,6 @@ function setHydrants(hydrants) {
             
             window.setTimeout(function() {
                 set_hydrant_click(hyd_marker, hydrant);
-                console.log("set_hyd:"+hydrant.HYDRANT_ID);
                 },20);
 
         }
@@ -248,10 +247,8 @@ function getHydrants(dspLocation,limit,offset){
         success:function(data){
             hydrants_returned=data.meta.total_count;
             if (hydrants_returned>0){
-                console.log("recd: "+hydrants_returned);
                 window.setTimeout(function() {setHydrants(data.objects);},20);    
                 if (data.objects.length == limit){
-                    debugger;
                     getHydrants(dspLocation=dspLocation,limit=limit,offset=limit+offset);                    
                 }
             }           
