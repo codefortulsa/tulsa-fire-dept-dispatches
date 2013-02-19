@@ -102,7 +102,7 @@ geocoder = new google.maps.Geocoder();
 
 
 // map page variables
-var map,
+var map=null,
     dispatch_address,
     dispatch_call_type_desc,
     dispatch_map_page,
