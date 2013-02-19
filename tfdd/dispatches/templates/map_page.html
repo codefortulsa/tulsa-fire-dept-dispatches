@@ -1,0 +1,23 @@
+<div id="map_page" data-role="page"  style="height:100%; width:100%;">
+    <div data-theme="c" data-role="header">
+        <a href="{% url dispatches %}"
+        data-role="button" 
+        data-rel="back" 
+        data-icon="arrow-l"
+        style="z-index:1"
+    
+        >Back</a>
+        <div id="location_address">
+            {{dispatch.location}}
+        </div>
+
+    </div><!-- end of header -->
+
+
+    <div id="map_content"
+         data-role="content" 
+         data-theme="a"
+         style="height:100%; width:100%;">
+    
+    </div>
+</div>
