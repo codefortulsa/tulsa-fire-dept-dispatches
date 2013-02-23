@@ -89,7 +89,7 @@ def dispatch_location(request, location_address):
 
 
 def index(request,*args):
-    dispatches = Dispatch.objects.order_by('-dispatched')[:10]            
+    dispatches = Dispatch.objects.order_by('-dispatched')[:20]            
     return render_to_response('index.html', RequestContext(request,
     dict(dispatches=dispatches)))
 

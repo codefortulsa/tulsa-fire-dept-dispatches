@@ -1,90 +1,33 @@
 
 // dispatch list variables
 var dispatch_listview=[],
-    gettingMore=false;
     last_dispatch=[],
-    last_li=[],
-    UpdateCheckScheduled=false;
+    last_li=[];
 
-    function ScheduleUpdateCheck(nextCheck){
-        if (!UpdateCheckScheduled){
-            UpdateCheckScheduled=true;            
-            setTimeout(function() {
-                UpdateCheckScheduled=false;
-                UpdateCheck();
-                }, nextCheck);
-        }
-    };
-    
-    function GetMoreDispatches() {
-        if (!gettingMore){
-            gettingMore=true
-            $.ajax({
-                url: last_dispatch.data("tf-more-url"),
-                success: function(data) {
-                    var more_dispatches=$("li.dispatch",data);
-                    if (more_dispatches.length>0){
-                        last_dispatch.attr("id", "xxx")     // this isn't last anymore
-                        $("#dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
-                        last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
-                        $(".dispatch_page").trigger('pageinit');
-                    } else {
-                        $("#list_end",$.mobile.activePage).text("");
-                    }                
-                },
-                complete:function(){
-                    gettingMore=false;                
-                }
-            })
-      }
-    };
-
-    function PositionCheck() {
-        if (last_li.length>0){
-            distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
-            if (distance_to_bottom > -1000) {
-                    GetMoreDispatches();    
-            } 
-        }
-    };
-
-
-    function UpdateCheck (){
-        
-         if(dispatch_listview.length>0){
-             $.ajax({ 
-                 url: $(dispatch_listview.children()[0]).data("tf-update-url"),
-                 success: function(data){
-                     $.mobile.loading( 'show', {
-                     	text: 'Incoming Dispatch',
-                     	textVisible: true,
-                     });
-                     $(dispatch_listview).prepend($("li.dispatch", data)).listview('refresh').trigger( "create" );                     
-                     $("abbr.timeago").timeago();
-                     setTimeout(function() {
-                         $.mobile.loading('hide');
-                         }, 1500);
-                 },
-                complete:function(){
-                    ScheduleUpdateCheck(25000);                     
-                    
-                }
-             })
+function PositionCheck() {
+    if (last_li.length>0){
+        distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
+        if (distance_to_bottom > -2000) {
+            tf_more_url=last_dispatch.data("tf-more-url");
+            getMoreDispatches_worker.postMessage(tf_more_url);
+            
         } 
-     };
+    }
+};
 
-    $.fn.extend({
-        disableSelection: function() {
-            this.each(function() {
-                this.onselectstart = function() {
-                    return false;
-                };
-                this.unselectable = "on";
-                $(this).css('-moz-user-select', 'none');
-                $(this).css('-webkit-user-select', 'none');
-            });
-        }
-    });
+
+$.fn.extend({
+    disableSelection: function() {
+        this.each(function() {
+            this.onselectstart = function() {
+                return false;
+            };
+            this.unselectable = "on";
+            $(this).css('-moz-user-select', 'none');
+            $(this).css('-webkit-user-select', 'none');
+        });
+    }
+});
 
 
 // map related functions
@@ -138,9 +81,12 @@ var dispatchMapOptions = {
 };
 
 
-function tulsaGeocode(address,callback){
+function tulsaGeocode(address){
+    dfd=$.Deferred();
+    
     var clean_address=address.split("@");
     clean_address=clean_address[clean_address.length-1];
+    
     geocoder.geocode( {
         'address': clean_address,
         'bounds':tulsaBounds,
@@ -148,21 +94,22 @@ function tulsaGeocode(address,callback){
         if (status == google.maps.GeocoderStatus.OK) {
             result_location=results[0].geometry.location;
             if (tulsaBounds.contains(result_location)){
-               callback(results[0].geometry.location);                
-            } 
-            else {
+                dfd.resolve(result_location);                
+            } else {
                 geocoder.geocode({
                    'address': clean_address+" Tulsa, OK",
                    'bounds':tulsaBounds, 
                }, function(results, status) {
                if (status == google.maps.GeocoderStatus.OK) {
-                   callback(results[0].geometry.location);
-                } 
-
+                    dfd.resolve(results[0].geometry.location);
+                } else {
+                    dfd.reject();
+                }
                 });
             }
         }
     });
+    return dfd.promise();
 };
 
 function dispatchMarker(dispatch_location,info_text){
@@ -223,9 +170,7 @@ function setHydrants(hydrants) {
             
             hydrant_markers[hydrant.HYDRANT_ID] = hyd_marker;
             
-            window.setTimeout(function() {
-                set_hydrant_click(hyd_marker, hydrant);
-                },20);
+            set_hydrant_click(hyd_marker, hydrant);
 
         }
     }
@@ -233,6 +178,7 @@ function setHydrants(hydrants) {
 
 
 function getHydrants(dspLocation,limit,offset){
+
     $.ajax({
         type:"GET",
         url:"http://oklahomadata.org/boundary/1.0/point/",
@@ -243,16 +189,16 @@ function getHydrants(dspLocation,limit,offset){
           limit:limit,
           offset:offset,
           format:"jsonp",
-        },
-        success:function(data){
-            hydrants_returned=data.meta.total_count;
-            if (hydrants_returned>0){
-                window.setTimeout(function() {setHydrants(data.objects);},20);    
-                if (data.objects.length == limit){
-                    getHydrants(dspLocation=dspLocation,limit=limit,offset=limit+offset);                    
-                }
-            }           
-            
-        },
+        }
+    })
+    .done(function(data){
+        hydrants_returned=data.meta.total_count;
+        if (hydrants_returned>0){
+            setHydrants(data.objects);    
+            // if (data.objects.length === limit){
+            //     getHydrants(dspLocation=dspLocation,limit=limit,offset=limit+offset);                    
+            // }
+        }             
     });
+
 };
