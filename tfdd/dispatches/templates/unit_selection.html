@@ -8,7 +8,7 @@
 
 
 <body>
-    <div class="dispatch_page" data-role="page" id="about">
+    <div class="select_page" data-role="page" id="about">
         <div data-theme="c" data-role="header">
             <a href="#" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
         </div>
@@ -49,18 +49,21 @@
 
     <script>
 
-        $("input[type='checkbox']").bind("change", function( event ) { 
-            var urls = $(this).data('state-urls');
-            var state = this.checked;
-            $.ajax({url: urls[state]});
-        });
-
-        //  This is the list filter
-        $("#unit_list").listview('option', 'filterCallback',
-            function( text, searchValue, item ){
-                return !RegExp(searchValue, "g").test(text.toString().toLowerCase());
+        $(".select_page").on('pageshow', function() {
+            
+            $("input[type='checkbox']").on("change", function( event ) { 
+                var urls = $(this).data('state-urls'),
+                    state = this.checked;
+                $.ajax({url: urls[state]});
             });
-
+            
+            //  This is the list filter                        
+            $("#unit_list").listview('option', 'filterCallback',
+                function( text, searchValue, item ){
+                    return !RegExp(searchValue, "g").test(text.toString().toLowerCase());
+                }
+            );
+        });
     </script>
 
 </body>

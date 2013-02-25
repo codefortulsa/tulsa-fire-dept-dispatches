@@ -40,19 +40,12 @@ sw=new google.maps.LatLng(35.93131670856903, -96.141357421875),
 ne=new google.maps.LatLng(36.26199220445664, -95.701904296875),
 tulsaLatlng=new google.maps.LatLng(36.1539,-95.9925),
 tulsaBounds= new google.maps.LatLngBounds(sw,ne),
-requestHydrants=false,
 geocoder = new google.maps.Geocoder();
-
 
 // map page variables
 var map=null,
-    dispatch_address,
-    dispatch_call_type_desc,
-    dispatch_map_page,
-    currentLocation=null,
-    dispatch_marker=null;
-
-var hydrant_markers={};
+    dispatch_marker=null,
+    hydrant_markers={};
 
 var dispatchMapOptions = {
     zoom: 16,
@@ -113,10 +106,12 @@ function tulsaGeocode(address){
 };
 
 function dispatchMarker(dispatch_location,info_text){
-    
+    // dfd=$.Deferred();
+    currentLocation=dispatch_location;
     var marker = new google.maps.Marker({
         map: map,
-        position: dispatch_location
+        position: dispatch_location,
+        icon: "/static/img/tfdd_map_icon.png"
     });
 
     dispatch_marker=marker;
@@ -130,7 +125,10 @@ function dispatchMarker(dispatch_location,info_text){
      }); 
     infowindow.open(map,marker);
    
-      
+   // dfd.resolve(dispatch_location);
+   
+   // return dfd.promise();  
+   
 };
 
 
@@ -161,14 +159,16 @@ function setHydrants(hydrants) {
 
     for (var index in hydrants) {
         hydrant = hydrants[index].metadata
-        if (!hydrant_markers[hydrant.HYDRANT_ID]) {
+        // need this because many hydrants have the same '0-0' id
+        hydrant_unique=hydrant.HYDRANT_ID+hydrant.ADDRESS
+        if (!hydrant_markers[hydrant_unique]) {
             var hyd_marker = new google.maps.Marker({
                 map: map,
                 position: new google.maps.LatLng(hydrant.LATITUDE, hydrant.LONGITUDE),
                 icon: "/static/img/hydrant.png"
             });
             
-            hydrant_markers[hydrant.HYDRANT_ID] = hyd_marker;
+            hydrant_markers[hydrant_unique] = hyd_marker;
             
             set_hydrant_click(hyd_marker, hydrant);
 
@@ -177,8 +177,8 @@ function setHydrants(hydrants) {
 };
 
 
-function getHydrants(dspLocation,limit,offset){
-
+function getHydrants(dspLocation){
+    dfd=new $.Deferred();
     $.ajax({
         type:"GET",
         url:"http://oklahomadata.org/boundary/1.0/point/",
@@ -186,19 +186,18 @@ function getHydrants(dspLocation,limit,offset){
         data:{
           near:  dspLocation.lat()+","+dspLocation.lng()+",250m",
           sets:"hydrants",
-          limit:limit,
-          offset:offset,
+          limit:50,
+          offset:0,
           format:"jsonp",
         }
     })
     .done(function(data){
         hydrants_returned=data.meta.total_count;
         if (hydrants_returned>0){
-            setHydrants(data.objects);    
-            // if (data.objects.length === limit){
-            //     getHydrants(dspLocation=dspLocation,limit=limit,offset=limit+offset);                    
-            // }
+            setHydrants(data.objects);
+            dfd.resolve()    
         }             
     });
-
+    
+    return dfd.promise();
 };
