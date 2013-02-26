@@ -104,11 +104,11 @@ function init_map_links(){
                
     $("a.map-link").on('click', function(event) {
         event.preventDefault();
-console.log("click fired");
+// console.log("click fired");
         
         if (map_click===null) {
             map_click=1;
-console.log("click accepted");
+// console.log("click accepted");
             var dispatch_address=$(this).data('location'),
                 location_info = 
                     $(this).data('call_type_desc') + "</br>"
@@ -120,13 +120,17 @@ console.log("click accepted");
 
             tulsaGeocode(dispatch_address)
                 .done(function(dsp_location){
+                    $.mobile.loading( 'show', {
+                     text: 'Loading Map',
+                     textVisible: true,
+                    });
                     $.when(dispatchMarker(dsp_location,location_info),getHydrants(dsp_location))
                         .then(function(){
-                            busy=false;
                             map.setZoom(16); 
                             $.mobile.changePage( $("#map_page"), { transition: "slide"});
+                            $.mobile.loading('hide');
                             map_click=null;
-console.log("click finished");
+// console.log("click finished");
                     });
                 });//end of done
         }//end of if for map_click
@@ -184,7 +188,6 @@ console.log("click finished");
            distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
            if (distance_to_bottom > -2000) {
                tf_more_url=last_dispatch.data("tf-more-url");
-console.log("sending: "+tf_more_url);
                 if (tf_more_url){
                    getMoreDispatches_worker.postMessage(tf_more_url);
                 }
