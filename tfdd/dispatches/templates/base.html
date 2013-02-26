@@ -82,45 +82,56 @@
     {% include "map_page.html" %}
 
 
-{% if user.is_authenticated %}
+
 <script>
+
+// logged out functions are here
+
+$("abbr.timeago").timeago();
+
+
+// starting logged in functions!!
+{% if user.is_authenticated %}
+
+
 //init the map
 map = map || new google.maps.Map(document.getElementById("map_content"), dispatchMapOptions);
 
+map_click= null;
+
 function init_map_links(){
-    
     $("abbr.timeago").timeago();  
                
-    $("a.map-link").on('tap', function(event) {
-        
-        var busy=busy||true;
-        
-        console.log("map click");
-        
+    $("a.map-link").on('click', function(event) {
         event.preventDefault();
-        dispatch_address=$(this).data('location'),
-        location_info = 
-            $(this).data('call_type_desc') + "</br>"
-            + dispatch_address
-            + "</br>Map Page: " + $(this).data('map_page');
+console.log("click fired");
+        
+        if (map_click===null) {
+            map_click=1;
+console.log("click accepted");
+            var dispatch_address=$(this).data('location'),
+                location_info = 
+                    $(this).data('call_type_desc') + "</br>"
+                    + dispatch_address
+                    + "</br>Map Page: " + $(this).data('map_page');
 
-        document.title=dispatch_address;
-        $("#location_address").value=dispatch_address;
+            document.title=dispatch_address;
+            $("#location_address").value=dispatch_address;
 
-        tulsaGeocode(dispatch_address)
-            .done(function(dsp_location){
-                $.when(dispatchMarker(dsp_location,location_info),getHydrants(dsp_location))
-                    .then(function(){
-                        busy=false;
-                        map.setZoom(16); 
-                        $.mobile.changePage( $("#map_page"), { transition: "slide"});
-                });
-            });//end of done
+            tulsaGeocode(dispatch_address)
+                .done(function(dsp_location){
+                    $.when(dispatchMarker(dsp_location,location_info),getHydrants(dsp_location))
+                        .then(function(){
+                            busy=false;
+                            map.setZoom(16); 
+                            $.mobile.changePage( $("#map_page"), { transition: "slide"});
+                            map_click=null;
+console.log("click finished");
+                    });
+                });//end of done
+        }//end of if for map_click
     });//end of click
-
-    // $("a.map-link").disableSelection;
-    
-    
+       
 };
 
 
@@ -142,13 +153,15 @@ function init_map_links(){
             
         //reset the polling on new dispatch
         update_url=$(dispatch_listview.children()[0]).data("tf-update-url");
-        // newDispatch_worker.postMessage(update_url);
+        newDispatch_worker.postMessage(update_url);
+        
+        // dispatch pagebeforeshow event has init message to start polling
         
     };
 
 //end new dispatch event
 
-//set up web worker to get more dispatches for a list
+//set up web worker to get more dispatches for at the bottom of the list
     var getMoreDispatches_worker = new Worker('{% static "scroll_request.js" %}');
     
     getMoreDispatches_worker.onmessage = function (event) {
@@ -167,12 +180,22 @@ function init_map_links(){
     };    
   
    $(window).on('scrollstop', function() {
-        PositionCheck();
+       if (last_li.length>0){
+           distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
+           if (distance_to_bottom > -2000) {
+               tf_more_url=last_dispatch.data("tf-more-url");
+console.log("sending: "+tf_more_url);
+                if (tf_more_url){
+                   getMoreDispatches_worker.postMessage(tf_more_url);
+                }
+           } 
+       }
    });   
  //end scroll_request event
 
     
    $("body").on('pagechange',function (){
+       last_dispatch=$("#last_dispatch", $.mobile.activePage);
        init_map_links();       
    });
 
@@ -184,7 +207,7 @@ function init_map_links(){
 
         //start web worker polling
         update_url=$(dispatch_listview.children()[0]).data("tf-update-url");
-        // newDispatch_worker.postMessage(update_url);
+        newDispatch_worker.postMessage(update_url);
 
         last_dispatch = $("#last_dispatch", this);
         if (last_dispatch) {
@@ -197,10 +220,10 @@ function init_map_links(){
     $("#map_page").on('pageshow', function() {    
         
         $.when(google.maps.event.trigger(map, 'resize'))
-        .done(function(){
+        .then(function(){
             map.setCenter(currentLocation);           
             })
-        .done(function(){
+        .then(function(){
             google.maps.event.addListener(map, 'center_changed', function() {
                     getHydrants(map.getCenter());
             });
@@ -220,9 +243,9 @@ function init_map_links(){
         }
         hydrant_markers=[];        
     });
-    
+{% endif %}   
 </script>    
-{% endif %}
+
 
 </body>
 </html>{% endspaceless %}

@@ -1,6 +1,4 @@
 // this is a web worker to poll for new dispatches
-
-
 var intervalID;
 
 function checkforupdate(tfdd_update_url) {

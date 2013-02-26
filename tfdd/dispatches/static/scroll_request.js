@@ -1,5 +1,6 @@
 // this is a web worker to get more dispatches at the end of a list
 
+var requested_url=null;
 
 function getdispatches(tfdd_url) {
     var request = new XMLHttpRequest();
@@ -11,6 +12,9 @@ function getdispatches(tfdd_url) {
 };
     
 self.onmessage = function(event) {
-    getdispatches(event.data);
+
+    if (!(requested_url===event.data)){
+        getdispatches(event.data);
+    }
 
 };

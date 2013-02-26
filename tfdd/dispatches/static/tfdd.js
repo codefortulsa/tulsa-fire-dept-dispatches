@@ -4,17 +4,6 @@ var dispatch_listview=[],
     last_dispatch=[],
     last_li=[];
 
-function PositionCheck() {
-    if (last_li.length>0){
-        distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
-        if (distance_to_bottom > -2000) {
-            tf_more_url=last_dispatch.data("tf-more-url");
-            getMoreDispatches_worker.postMessage(tf_more_url);
-            
-        } 
-    }
-};
-
 
 $.fn.extend({
     disableSelection: function() {
