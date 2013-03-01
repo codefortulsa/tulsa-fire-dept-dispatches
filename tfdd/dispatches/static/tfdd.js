@@ -31,6 +31,7 @@ tulsaLatlng=new google.maps.LatLng(36.1539,-95.9925),
 tulsaBounds= new google.maps.LatLngBounds(sw,ne),
 geocoder = new google.maps.Geocoder();
 
+
 // map page variables
 var map=null,
     dispatch_marker=null,
@@ -66,57 +67,70 @@ var dispatchMapOptions = {
 function tulsaGeocode(address){
     dfd=$.Deferred();
     
-    var clean_address=address.split("@");
-    clean_address=clean_address[clean_address.length-1];
-    
-    geocoder.geocode( {
-        'address': clean_address,
-        'bounds':tulsaBounds,
-        }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            result_location=results[0].geometry.location;
-            if (tulsaBounds.contains(result_location)){
-                dfd.resolve(result_location);                
-            } else {
-                geocoder.geocode({
-                   'address': clean_address+" Tulsa, OK",
-                   'bounds':tulsaBounds, 
-               }, function(results, status) {
-               if (status == google.maps.GeocoderStatus.OK) {
-                    dfd.resolve(results[0].geometry.location);
+    if (address){
+        var clean_address=address.split("@");
+        clean_address=clean_address[clean_address.length-1];
+
+        geocoder.geocode( {
+            'address': clean_address,
+            'bounds':tulsaBounds,
+            }, function(results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                result_location=results[0].geometry.location;
+                if (tulsaBounds.contains(result_location)){
+                    dfd.resolve(result_location);                
                 } else {
-                    dfd.reject();
+                    geocoder.geocode({
+                       'address': clean_address+" Tulsa, OK",
+                       'bounds':tulsaBounds, 
+                   }, function(results, status) {
+                   if (status === google.maps.GeocoderStatus.OK) {
+                        dfd.resolve(results[0].geometry.location);
+                    } else {
+                        dfd.reject();
+                    }
+                    });
                 }
-                });
+            } else {
+                dfd.reject();
             }
-        }
-    });
+        });
+    }
+    
     return dfd.promise();
 };
 
 function dispatchMarker(dispatch_location,info_text){
-    // dfd=$.Deferred();
-    currentLocation=dispatch_location;
-    var marker = new google.maps.Marker({
-        map: map,
-        position: dispatch_location,
-        icon: "/static/img/tfdd_map_icon.png"
-    });
-
-    dispatch_marker=marker;
-
-    var infowindow = new google.maps.InfoWindow({
-            content: info_text        
-            });
+    dfd=$.Deferred();
     
-     google.maps.event.addListener(marker, 'click', function() {
-       infowindow.open(map,marker);
-     }); 
-    infowindow.open(map,marker);
+    if(dispatch_location){
+        
+        var marker = new google.maps.Marker({
+            map: map,
+            position: dispatch_location,
+            icon: "/static/img/tfdd_map_icon.png"
+        });
+
+        dispatch_marker=marker;
+
+        var info_html="<div style='font-size: small '>"+info_text+"</div>"
+
+        var infowindow = new google.maps.InfoWindow({
+                content: info_html,
+                disableAutoPan:true
+                });
+
+         google.maps.event.addListener(marker, 'click', function() {
+           infowindow.open(map,marker);
+         }); 
+
+         infowindow.open(map,marker);
+    }
+     
    
-   // dfd.resolve(dispatch_location);
+   dfd.resolve(marker);
    
-   // return dfd.promise();  
+   return dfd.promise();  
    
 };
 
@@ -158,7 +172,6 @@ function setHydrants(hydrants) {
             });
             
             hydrant_markers[hydrant_unique] = hyd_marker;
-            
             set_hydrant_click(hyd_marker, hydrant);
 
         }
@@ -184,8 +197,8 @@ function getHydrants(dspLocation){
         hydrants_returned=data.meta.total_count;
         if (hydrants_returned>0){
             setHydrants(data.objects);
-            dfd.resolve()    
-        }             
+        }
+        dfd.resolve();    
     });
     
     return dfd.promise();

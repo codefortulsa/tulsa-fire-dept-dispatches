@@ -86,53 +86,79 @@
 <script>
 
 // logged out functions are here
-
+logged_in=false;
 $("abbr.timeago").timeago();
 
+if (logged_in){
+     $("a.map-link").on('click', function(event) {
+
+        $.mobile.loading('show', {
+            html: 'Please log in',
+            textVisible: true
+        });
+        window.setTimeout(function(){
+         $.mobile.loading('hide');   
+        },1500);
+     });     
+}
 
 // starting logged in functions!!
 {% if user.is_authenticated %}
 
-
 //init the map
+logged_in=true;
 map = map || new google.maps.Map(document.getElementById("map_content"), dispatchMapOptions);
-
 map_click= null;
 
 function init_map_links(){
     $("abbr.timeago").timeago();  
+    $(".dispatch_list").disableSelection();
                
     $("a.map-link").on('click', function(event) {
         event.preventDefault();
-// console.log("click fired");
+console.log("click fired");
         
         if (map_click===null) {
             map_click=1;
-// console.log("click accepted");
+console.log("click accepted");
+            $.mobile.loading( 'show', {
+                text: 'Loading Map',
+                textVisible: true,
+            });
+
             var dispatch_address=$(this).data('location'),
                 location_info = 
                     $(this).data('call_type_desc') + "</br>"
                     + dispatch_address
                     + "</br>Map Page: " + $(this).data('map_page');
-
-            document.title=dispatch_address;
-            $("#location_address").value=dispatch_address;
-
+            
+            
             tulsaGeocode(dispatch_address)
                 .done(function(dsp_location){
-                    $.mobile.loading( 'show', {
-                     text: 'Loading Map',
-                     textVisible: true,
-                    });
+                    map.setCenter(dsp_location);
                     $.when(dispatchMarker(dsp_location,location_info),getHydrants(dsp_location))
-                        .then(function(){
-                            map.setZoom(16); 
-                            $.mobile.changePage( $("#map_page"), { transition: "slide"});
-                            $.mobile.loading('hide');
-                            map_click=null;
-// console.log("click finished");
+                    .then(function(marker){
+                        document.title=dispatch_address;
+                        $("#location_address").value=dispatch_address;
+                        map.setCenter(marker.getPosition());
+                        $.mobile.changePage( $("#map_page"), { transition: "slide",changeHash:true});
+                        $.mobile.loading('hide')
+console.log("click finished");
                     });
-                });//end of done
+                })
+                .fail(function(){
+                    console.log("fail");
+                    $.mobile.loading('show', {
+                        html: 'Cannot find</br>'+dispatch_address,
+                        textVisible: true,
+                    });
+                    window.setTimeout(function(){
+                     $.mobile.loading('hide');   
+                    },1500);
+                })
+                .always(function(){
+                    map_click=null;                    
+                });
         }//end of if for map_click
     });//end of click
        
@@ -178,9 +204,7 @@ function init_map_links(){
             last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
         } else {
             $("#list_end",$.mobile.activePage).text("");
-        }                
-
-    
+        }                   
     };    
   
    $(window).on('scrollstop', function() {
@@ -195,7 +219,7 @@ function init_map_links(){
        }
    });   
  //end scroll_request event
-
+ 
     
    $("body").on('pagechange',function (){
        last_dispatch=$("#last_dispatch", $.mobile.activePage);
@@ -218,20 +242,16 @@ function init_map_links(){
         }
 
     });
-
-
+    
     $("#map_page").on('pageshow', function() {    
-        
-        $.when(google.maps.event.trigger(map, 'resize'))
-        .then(function(){
-            map.setCenter(currentLocation);           
-            })
-        .then(function(){
-            google.maps.event.addListener(map, 'center_changed', function() {
-                    getHydrants(map.getCenter());
-            });
-        }); 
+
+        google.maps.event.trigger(map, 'resize');
+        map.setCenter(dispatch_marker.getPosition());
+        google.maps.event.addListener(map, 'center_changed', function() {
+            getHydrants(map.getCenter());
+        });
     });
+
     
     $("#map_page").on('pagehide', function(event,ui) {
         //stop listening for map center changes
@@ -244,11 +264,16 @@ function init_map_links(){
         for  (marker in hydrant_markers){
             hydrant_markers[marker].setMap(null);
         }
-        hydrant_markers=[];        
+        hydrant_markers=[];
+        
+        //reset the zoom if changed
+        if (map.getZoom!=16){map.setZoom(16); }
+        
+                
     });
 {% endif %}   
 </script>    
-
+ 
 
 </body>
 </html>{% endspaceless %}
