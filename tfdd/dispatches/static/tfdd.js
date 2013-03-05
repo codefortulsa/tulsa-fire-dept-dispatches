@@ -19,121 +19,10 @@ $.fn.extend({
 });
 
 
-// map related functions
-// 
-// 
-
-var
-// 'tulsa 36.1539,-95.9925'
-sw=new google.maps.LatLng(35.93131670856903, -96.141357421875),
-ne=new google.maps.LatLng(36.26199220445664, -95.701904296875),
-tulsaLatlng=new google.maps.LatLng(36.1539,-95.9925),
-tulsaBounds= new google.maps.LatLngBounds(sw,ne),
-geocoder = new google.maps.Geocoder();
+// map related function
 
 
-// map page variables
-var map=null,
-    dispatch_marker=null,
-    hydrant_markers={};
-
-var dispatchMapOptions = {
-    zoom: 16,
-    mapTypeId: google.maps.MapTypeId.ROADMAP,
-    center:tulsaLatlng,
-
-    panControl: false,
-    scaleControl: false,
-    overviewMapControl: false,
-
-    streetViewControl: true,
-    streetViewControlOptions: {
-        position: google.maps.ControlPosition.LEFT_CENTER,
-    },
-
-    mapTypeControl: true,
-    mapTypeControlOptions: {
-        position: google.maps.ControlPosition.LEFT_BOTTOM,
-    },
-
-    zoomControl: true,
-    zoomControlOptions: {
-        style: google.maps.ZoomControlStyle.SMALL,
-        position: google.maps.ControlPosition.RIGHT_CENTER,
-    },
-};
-
-
-function tulsaGeocode(address){
-    dfd=$.Deferred();
-    
-    if (address){
-        var clean_address=address.split("@");
-        clean_address=clean_address[clean_address.length-1];
-
-        geocoder.geocode( {
-            'address': clean_address,
-            'bounds':tulsaBounds,
-            }, function(results, status) {
-            if (status === google.maps.GeocoderStatus.OK) {
-                result_location=results[0].geometry.location;
-                if (tulsaBounds.contains(result_location)){
-                    dfd.resolve(result_location);                
-                } else {
-                    geocoder.geocode({
-                       'address': clean_address+" Tulsa, OK",
-                       'bounds':tulsaBounds, 
-                   }, function(results, status) {
-                   if (status === google.maps.GeocoderStatus.OK) {
-                        dfd.resolve(results[0].geometry.location);
-                    } else {
-                        dfd.reject();
-                    }
-                    });
-                }
-            } else {
-                dfd.reject();
-            }
-        });
-    }
-    
-    return dfd.promise();
-};
-
-function dispatchMarker(dispatch_location,info_text){
-    dfd=$.Deferred();
-    
-    if(dispatch_location){
-        
-        var marker = new google.maps.Marker({
-            map: map,
-            position: dispatch_location,
-            icon: "/static/img/tfdd_map_icon.png"
-        });
-
-        dispatch_marker=marker;
-
-        var info_html="<div style='font-size: small '>"+info_text+"</div>"
-
-        var infowindow = new google.maps.InfoWindow({
-                content: info_html,
-                disableAutoPan:true
-                });
-
-         google.maps.event.addListener(marker, 'click', function() {
-           infowindow.open(map,marker);
-         }); 
-
-         infowindow.open(map,marker);
-    }
-     
-   
-   dfd.resolve(marker);
-   
-   return dfd.promise();  
-   
-};
-
+//hydrant functions
 
 function Hydrant_Info(hydrant_metadata){
     response=[]
@@ -154,7 +43,7 @@ function set_hydrant_click(hydrant_marker,hydrant){
      });
     google.maps.event.addListener(hydrant_marker, 'click',
         function() {
-            infowindow.open(map,hydrant_marker);
+            infowindow.open(hydrant_map().map,hydrant_marker);
     });
 }
 
@@ -162,11 +51,11 @@ function setHydrants(hydrants) {
 
     for (var index in hydrants) {
         hydrant = hydrants[index].metadata
-        // need this because many hydrants have the same '0-0' id
-        hydrant_unique=hydrant.HYDRANT_ID+hydrant.ADDRESS
+        // need this because some hydrants have the same '0-0' id
+        hydrant_unique=hydrant.LATITUDE+hydrant.LONGITUDE
         if (!hydrant_markers[hydrant_unique]) {
             var hyd_marker = new google.maps.Marker({
-                map: map,
+                map: hydrant_map().map,
                 position: new google.maps.LatLng(hydrant.LATITUDE, hydrant.LONGITUDE),
                 icon: "/static/img/hydrant.png"
             });
@@ -203,3 +92,164 @@ function getHydrants(dspLocation){
     
     return dfd.promise();
 };
+
+// dispatch marker functions
+function setMarker(dispatch_location,info_text){
+    var dfd=$.Deferred();
+    if(dispatch_location){
+        
+        var marker = new google.maps.Marker({
+            map: hydrant_map().map,
+            position: dispatch_location,
+            icon: "/static/img/tfdd_map_icon.png"
+        });
+
+        hydrant_map().dispatch_marker=marker;
+
+        var info_html="<div style='font-size: small '>"+info_text+"</div>"
+
+        var infowindow = new google.maps.InfoWindow({
+                content: info_html,
+                disableAutoPan:true
+                });
+
+         google.maps.event.addListener(marker, 'click', function() {
+           infowindow.open(hydrant_map().map,marker);
+         }); 
+
+         infowindow.open(hydrant_map().map,marker);
+    }
+     
+   
+   dfd.resolve(marker);
+   
+   return dfd.promise();  
+   
+};
+
+
+
+
+
+
+
+
+// geocoding function
+newAddress=function (address){
+    var dfd=$.Deferred(),
+    geocoder = geocoder || new google.maps.Geocoder();
+    
+    var clean_address=function (address){
+        var ca=address.split("@");
+        return ca[ca.length-1];
+    };
+    
+    var accept_address= function (new_loc){
+        map.setCenter(new_loc);
+        dfd.resolve(new_loc);        
+    };        
+
+    var gcode= function (address){
+        var gfd= new $.Deferred();
+        geocoder.geocode( {
+            'address': clean_address(address),
+            'bounds':this.bounds,
+            }, function(results, status) {
+                loc=results[0].geometry.location;
+                if (status !== google.maps.GeocoderStatus.OK) {
+                    gfd.reject(0); //really bad, don't even bother
+                }
+                if (tulsaBounds.contains(loc)){
+                    gfd.resolve(loc)
+                } else {
+                    gfd.reject(1);//not so bad, try with Tulsa, OK
+                }
+            
+            });
+        return gfd.promise();        
+    };
+    
+    if (address){
+        geocode(address)
+            .done(function(loc){
+               accept_address(loc);
+            })
+            .fail(function(result){
+                if (results===1){
+                    geocode(address+" Tulsa, OK")
+                        .done(function(loc) {
+                            accept_address(loc);
+                        }):
+                        .fail(function() {
+                            dfd.reject();
+                        };)
+                } else {
+                    dfd.reject();
+                }
+            });
+    }  
+        
+    return dfd.promise();
+};
+
+
+// tfdd map 
+var tfdd_map= function (element){    
+    // 'tulsa 36.1539,-95.9925'
+        var 
+        sw= sw || new google.maps.LatLng(35.93131670856903, -96.141357421875),
+        ne= ne || new google.maps.LatLng(36.26199220445664, -95.701904296875),
+        tulsaLatlng=  tulsaLatlng ||  new google.maps.LatLng(36.1539,-95.9925),
+        tulsaBounds=  tulsaBounds ||  new google.maps.LatLngBounds(sw,ne),
+        dispatch_marker=null,
+        hydrant_markers={},
+        dispatchMapOptions = {
+            zoom: 16,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            center:tulsaLatlng,
+
+            panControl: false,
+            scaleControl: false,
+            overviewMapControl: false,
+
+            streetViewControl: true,
+            streetViewControlOptions: {
+                position: google.maps.ControlPosition.LEFT_CENTER,
+            },
+
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                position: google.maps.ControlPosition.LEFT_BOTTOM,
+            },
+
+            zoomControl: true,
+            zoomControlOptions: {
+                style: google.maps.ZoomControlStyle.SMALL,
+                position: google.maps.ControlPosition.RIGHT_CENTER,
+            },
+        };
+          
+    this.__defineSetter__("map", function (element){
+        if (element){
+            var map = map || new google.maps.Map(element, dispatchMapOptions);        
+        }
+        return map;
+        });
+        
+    this.__defineGetter__("map", function(){
+               return map;
+           });
+         
+    return {
+        marker: dispatch_marker,
+        bounds: tulsaBounds,
+        LatLng: tulsaLatlng,
+        setMarker: setMarker,
+        newAddress: newAddress,
+            
+        };               
+};
+
+
+
+
