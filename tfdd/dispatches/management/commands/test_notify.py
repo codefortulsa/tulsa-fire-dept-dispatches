@@ -3,18 +3,15 @@ from django.core.management.base import BaseCommand, CommandError
 from dispatches.models import Dispatch
 
 
-
 class Command(BaseCommand):
-    help = 'Test dispatch notification'
-    
-    
+    args = '[tf ...]'
+    help = 'Test dispatch notification(s) by tf numbers'
+
+
     def handle(self, *args, **options):
-        
-        dispatch = Dispatch.objects.get(tf='2013001272') 
-        
-        dispatch.notify_listeners()
-
-
-# '2013001118'
-
-# 2013001272
+        if not len(args) == 1:
+            raise CommandError(
+                "Need at least one dispatch tf to notify listeners")
+        for tf in args:
+            dispatch = Dispatch.objects.get(tf=tf)
+            dispatch.notify_listeners()

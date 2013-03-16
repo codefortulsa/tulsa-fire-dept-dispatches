@@ -2,11 +2,8 @@ import logging
 import traceback
 
 from django.conf import settings
-from django.core.mail import mail_admins
+from django.core.mail import mail_admins, send_mail
 from django.db.models.expressions import ExpressionNode
-
-from twilio.rest import TwilioRestClient
-from twilio.rest.resources import TwilioRestException
 
 
 def dispatch_msg(dsp):
@@ -30,12 +27,13 @@ def send_msg(to_num, msg_end=None, dispatch=None):
         dispatch_text = dispatch_msg(dispatch)
     if msg_end:
         dispatch_text = "%s %s" % (dispatch_text, msg_end)
-    client = TwilioRestClient(settings.TWILIO_ACCOUNT, settings.TWILIO_TOKEN)
-    try:
-        client.sms.messages.create(to=to_num, from_=settings.TWILIO_FROM, body=dispatch_text)
-    except TwilioRestException:
-        email_traceback()
-        
+    # some gateways don't work with dashes
+    to_num = str(to_num).translate(None, '-')
+    to = []
+    for gateway in settings.SMS_GATEWAYS:
+        to.append('%s@%s' % (to_num, gateway))
+    send_mail('TFDD:', dispatch_text, 'tfdd@tfdd.co', to, fail_silently=True)
+
 
 def update(instance, **kwargs):
     using = kwargs.pop('using', '')

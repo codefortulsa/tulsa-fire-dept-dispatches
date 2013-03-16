@@ -181,9 +181,12 @@ LOGGING = {
 DISPATCH_POST_URL = 'http://tfdd.co/dispatches/post/'
 SERIAL_PORT = '/dev/ttyUSB0'
 SERIAL_BAUDRATE = 1200
-TWILIO_ACCOUNT = 'override in local_settings'
-TWILIO_TOKEN = 'override in local_settings'
-TWILIO_FROM = 'override in local_settings'
+
+# based on http://www.wirelessadvisor.com/zipcode-search/1o4N7tebat
+# and https://en.wikipedia.org/wiki/List_of_SMS_gateways
+SMS_GATEWAYS = ['vtext.com', 'txt.att.net', 'messaging.sprintpcs.com',
+                'tmomail.net', 'email.uscc.net', 'sms.mycricket.com']
+
 BASE_URL = 'http://tfdd.co'
 LOGIN_REDIRECT_URL = '/dispatches/'
 
