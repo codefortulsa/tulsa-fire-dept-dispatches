@@ -31,45 +31,42 @@
 <script type="text/javascript">
 
 
+var map= map || new tfdd_map(document.getElementById("map_content"));
   
 function setupMap(address) {
-
-        map = map || new google.maps.Map(document.getElementById("map_content"), dispatchMapOptions);
+            
         google.maps.event.addListener(map, 'center_changed', function() {
-            window.setTimeout(function() {
                 google.maps.event.trigger(map, 'resize');
                 map_center = map.getCenter();
-                getHydrants(dspLocation = map_center);
-            }, 20);
+                map.hydrants.getHydrants(map_center);
         });
 
-            {% if user.is_authenticated  %}
-                var location_info="{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}";
-            {% else %}
-                {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
-                var location_info="{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}";
-                {% else %}    
-                var location_info="Please login for information on this Dispatch"
-                {% endif %}
+        {% if user.is_authenticated  %}
+            var location_info="{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}";
+        {% else %}
+            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+            var location_info="{{dispatch.call_type_desc}}</br>{{dispatch.location}}</br>Map Page: {{dispatch.map_page}}";
+            {% else %}    
+            var location_info="Please login for information on this Dispatch";
             {% endif %}
+        {% endif %}
 
 
-        tulsaGeocode(address)
-            .done(function(dsp_location){
-                map.setCenter(dsp_location);
-                $.when(dispatchMarker(dsp_location,location_info),getHydrants(dsp_location))
-                    .then(function(){
-                        map.setZoom(16);
-                        $.mobile.changePage( $("#map_page"), { transition: "slide"});
-                    });
-            });
+        map.dispatch.setAddress(address)
+        .done(function(dsp_location){
+            map.dispatch.setMarker(dsp_location, location_info);
+            map.setCenter(dsp_location);
+            map.hydrants.getHydrants(map_center);
+            map.setZoom(16);
+        });
+                
     
 };
 
 
 // Initialize the map
 $(document).bind('pageinit', function() {
-    if (map == null) {
+    if (map !== null) {
         {% if user.is_authenticated  %}
             setupMap("{{dispatch.location}}");        
         {% else %}
