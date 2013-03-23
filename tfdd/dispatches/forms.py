@@ -19,7 +19,7 @@ class RegisterForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if email and User.objects.filter(email=email).exists():
+        if email and User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError(
                 'There is already a user with that email.')
         return email
@@ -89,10 +89,13 @@ class VerifyPhoneForm(forms.ModelForm):
     def save(self):
         assert self.instance
         phone = self.instance.value
-        self.instance.delete()
-        user = User.objects.get(profile__phone=phone)
+        # we shouldn't have more than one user with the same phone,
+        # but if we do, let's assume it's the latest one
+        # TODO: come up with a better solution for this situation
+        user = User.objects.filter(profile__phone=phone).latest('id')
         user.profile.phone_confirmed = True
         user.profile.save()
+        self.instance.delete()
         return user
 
 

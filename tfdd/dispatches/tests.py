@@ -6,7 +6,7 @@ from django_any import any_model
 from django_any.contrib import any_user
 import mox
 
-from dispatches import models, utils
+from dispatches import forms, models, utils
 
 
 RAW_DISPATCH_EXAMPLE = (
@@ -141,3 +141,25 @@ class DispatchMsgTest(TestCase):
             utils.dispatch_msg(dispatch),
             'test_call_type_desc\ntest_location\nUnit: test_unit\n'
             'http://tfdd.co/gm/test_tf/')
+
+
+class VerifyPhoneFormTest(TestCase):
+    def test_clean_code_unknown_code(self):
+        form = forms.VerifyPhoneForm({'code': '42'})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['code'], [u'Unknown code'])
+
+    def test_save_latest_if_duplicate_phone(self):
+        user1 = any_user(id=1)
+        utils.update(user1.profile, phone='555-555-5555')
+        user2 = any_user(id=2)
+        utils.update(user2.profile, phone='555-555-5555')
+        verification = models.PhoneVerification.objects.create(
+            code='42', sent_at=datetime.now(), value='555-555-5555')
+        form = forms.VerifyPhoneForm({'code': '42'})
+        self.assertTrue(form.is_valid())
+        saved_user = form.save()
+        self.assertEqual(saved_user, user2)
+        self.assertTrue(saved_user.profile.phone_confirmed)
+        self.assertEqual(
+            models.Profile.objects.filter(phone_confirmed=True).count(), 1)
