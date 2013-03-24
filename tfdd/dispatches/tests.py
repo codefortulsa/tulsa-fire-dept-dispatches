@@ -87,21 +87,24 @@ class NotifyListenersTest(TestCase):
     def tearDown(self):
         self.mox.UnsetStubs()
 
-    def setup_unit_and_followers(self):
+    def setup_unit_and_followers(self, confirmed=True):
         self.unit = models.Unit.objects.create(id='E25')
 
         self.phone_follower = any_user(id=1, email='phone@follower.co')
-        models.update(self.phone_follower.profile, phone='phone_follower #')
+        models.update(self.phone_follower.profile, phone='phone_follower #',
+                      phone_confirmed=confirmed)
         models.UnitFollower.objects.create(
             unit=self.unit, user=self.phone_follower, by_phone=True)
 
         self.email_follower = any_user(id=2, email='email@follower.co')
-        models.update(self.email_follower.profile, phone='email_follower #')
+        models.update(self.email_follower.profile, phone='email_follower #',
+                      email_confirmed=confirmed)
         models.UnitFollower.objects.create(
             unit=self.unit, user=self.email_follower, by_email=True)
 
         self.both_follower = any_user(id=3, email='both@follower.co')
-        models.update(self.both_follower.profile, phone='both_follower #')
+        models.update(self.both_follower.profile, phone='both_follower #',
+                      email_confirmed=confirmed, phone_confirmed=confirmed)
         models.UnitFollower.objects.create(
             unit=self.unit, user=self.both_follower,
             by_email=True, by_phone=True)
@@ -129,6 +132,15 @@ class NotifyListenersTest(TestCase):
             m0.to == ['email@follower.co'] and m1.to == ['both@follower.co'] or
             m1.to == ['email@follower.co'] and m0.to == ['both@follower.co'])
 
+    def test_unconfirmed_listeners(self):
+        self.setup_unit_and_followers(confirmed=False)
+        dispatch = any_model(models.Dispatch)
+        dispatch.units.add(self.unit)
+        self.mox.ReplayAll()
+        dispatch.notify_listeners()
+        self.mox.VerifyAll()
+        self.assertEqual(len(mail.outbox), 0)
+        
 
 class DispatchMsgTest(TestCase):
     def test_dispatch_msg(self):

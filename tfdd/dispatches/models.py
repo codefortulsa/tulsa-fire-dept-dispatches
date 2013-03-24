@@ -131,9 +131,11 @@ class Dispatch(models.Model):
         emails = set()
         for unit in self.units.all():
             for unitfollower in unit.unitfollower_set.all():
-                if unitfollower.by_phone:
+                if unitfollower.by_phone and (
+                        unitfollower.user.profile.phone_confirmed):
                     phones.add(unitfollower.user.profile.phone)
-                if unitfollower.by_email:
+                if unitfollower.by_email and (
+                        unitfollower.user.profile.email_confirmed):
                     emails.add(unitfollower.user.email)
         for phone in phones:
             if phone:
