@@ -161,14 +161,15 @@ var dispatch= function (owning_map) {
                 }, function(results, status) {
                     if (status !== google.maps.GeocoderStatus.OK) {
                         gfd.reject(0); //really bad, don't even bother
-                    }
-                    var loc=results[0].geometry.location;
-                    if (tulsaBounds.contains(loc)){
-                        gfd.resolve(loc)
+                        
                     } else {
-                        gfd.reject(1);//getting close, try with Tulsa, OK
-                    }
-            
+                        var loc=results[0].geometry.location;
+                        if (tulsaBounds.contains(loc)){
+                            gfd.resolve(loc)
+                        } else {
+                            gfd.reject(1);//getting close, try with Tulsa, OK
+                        }
+                    }            
                 });
             return gfd.promise();        
         };
@@ -180,7 +181,7 @@ var dispatch= function (owning_map) {
                    dfd.resolve(loc);
                 })
                 .fail(function (result) {
-                    if (results === 1){
+                    if (result === 1){
                         geocode(address+" Tulsa, OK")
                             .done(function (loc) {
                                 dfd.resolve(loc);

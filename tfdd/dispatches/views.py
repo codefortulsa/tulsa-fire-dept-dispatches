@@ -18,7 +18,6 @@ from .forms import (RegisterForm, VerifyEmailForm, VerifyPhoneForm,
 from .models import Dispatch, RawDispatch, Unit, UnitFollower
 
 
-@login_required
 def dispatch_list(request, start_tf=0, how_many=10, dispatch_filter={}):
 
     try:
@@ -48,7 +47,7 @@ def dispatch_list(request, start_tf=0, how_many=10, dispatch_filter={}):
         return HttpResponseBadRequest()
 
 
-@login_required
+
 def check_for_update(request, start_tf=0, dispatch_filter={}):
 
     try:

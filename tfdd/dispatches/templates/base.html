@@ -85,73 +85,42 @@
 
 <script>
 
-// logged out functions are here
-logged_in=false;
 $("abbr.timeago").timeago();
 
-if (logged_in){
-     $("a.map-link").on('click', function(event) {
-
-        $.mobile.loading('show', {
-            html: 'Please log in',
-            textVisible: true
-        });
-        window.setTimeout(function(){
-         $.mobile.loading('hide');   
-        },1500);
-     });     
-}
-
-    
-
-// starting logged in functions!!
-{% if user.is_authenticated %}
-var logged_in=true;
-
-
-
-{% endif%}
-
 var tf_map= new tfdd_map(document.getElementById("map_content"));
+
+{% if user.is_authenticated  %}
+    var user_is_authenticated = true;
+{% else %}    
+    var user_is_authenticated = false;
+{% endif %}
+
 
 function init_map_links(){
     $("abbr.timeago").timeago();  
     $(".dispatch_list").disableSelection();
-    
     $("a.map-link").unbind('click');          
     $("a.map-link").on('click', function(event) {
         event.preventDefault();
-        
+
+    if($(this).data('medical') & !user_is_authenticated){            
+            $.mobile.changePage( "{% url login %}", {
+            transition: "slide",
+            reverse: false,
+            });
+
+    } else {
         $.mobile.loading( 'show', {
             text: 'Loading Map',
             textVisible: true,
         });
 
+        var dispatch_address=$(this).data('location'),
+        location_info = 
+            $(this).data('call_type_desc') + "</br>"
+            + dispatch_address
+            + "</br>Map Page: " + $(this).data('map_page');
 
-
-{% if user.is_authenticated  %}
-    var dispatch_address=$(this).data('location'),
-    location_info = 
-        $(this).data('call_type_desc') + "</br>"
-        + dispatch_address
-        + "</br>Map Page: " + $(this).data('map_page');
-
-    {% else %}
-        if($(this).data('medical')){
-            var dispatch_address="Tulsa,OK",
-            location_info="Please login for information on this Dispatch";
-        }else{
-            var dispatch_address=$(this).data('location'),
-            location_info = 
-                $(this).data('call_type_desc') + "</br>"
-                + dispatch_address
-                + "</br>Map Page: " + $(this).data('map_page');
-        }    
-{% endif %}
-
-
-
-                
         tf_map.dispatch.setAddress(dispatch_address)
             .done(function(dsp_location){
                 
@@ -177,7 +146,10 @@ function init_map_links(){
                 window.setTimeout(function(){
                  $.mobile.loading('hide');   
                 },1500);
-            })
+            });
+    }
+
+        
     });//end of click
        
 };
