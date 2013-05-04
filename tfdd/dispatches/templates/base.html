@@ -106,9 +106,12 @@ if (logged_in){
 
 // starting logged in functions!!
 {% if user.is_authenticated %}
-
-//init the map
 var logged_in=true;
+
+
+
+{% endif%}
+
 var tf_map= new tfdd_map(document.getElementById("map_content"));
 
 function init_map_links(){
@@ -124,11 +127,30 @@ function init_map_links(){
             textVisible: true,
         });
 
-        var dispatch_address=$(this).data('location'),
+
+
+{% if user.is_authenticated  %}
+    var dispatch_address=$(this).data('location'),
+    location_info = 
+        $(this).data('call_type_desc') + "</br>"
+        + dispatch_address
+        + "</br>Map Page: " + $(this).data('map_page');
+
+    {% else %}
+        if($(this).data('medical')){
+            var dispatch_address="Tulsa,OK",
+            location_info="Please login for information on this Dispatch";
+        }else{
+            var dispatch_address=$(this).data('location'),
             location_info = 
                 $(this).data('call_type_desc') + "</br>"
                 + dispatch_address
                 + "</br>Map Page: " + $(this).data('map_page');
+        }    
+{% endif %}
+
+
+
                 
         tf_map.dispatch.setAddress(dispatch_address)
             .done(function(dsp_location){
@@ -243,6 +265,7 @@ function init_map_links(){
 
         google.maps.event.trigger(tf_map, 'resize');
         tf_map.setCenter(tf_map.dispatch.marker.getPosition());
+        
         google.maps.event.addListener(tf_map, 'center_changed', function() {
             tf_map.hydrants.getHydrants(tf_map.getCenter());
         });
@@ -260,7 +283,7 @@ function init_map_links(){
         
                 
     });
-{% endif %}   
+
 </script>    
  
 

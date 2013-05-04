@@ -18,6 +18,12 @@
             data-location="{{dispatch.location}}"
             data-call_type_desc="{{dispatch.call_type_desc}}"
             data-map_page="{{dispatch.map_page}}"
+            {% if dispatch.call_type not in dispatch.MEDICAL_CALL_TYPES or user.is_superuser %}
+                data-medical="false"
+            {% else %}
+                data-medical="true"
+            {% endif %}
+
             >
                 <bold >{{dispatch.call_type_desc}}</bold>
                 <p style="font-style:italic;float:right;margin-top:1%;margin-right:0%;height:5%"> 
