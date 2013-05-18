@@ -206,6 +206,7 @@ var tfdd_map= function (element) {
         var map_element = null,
         tulsaLatlng =  tulsaLatlng ||  new google.maps.LatLng(36.1539,-95.9925),
         dispatchMapOptions = {
+            visualRefresh:true,
             zoom: 16,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             center:tulsaLatlng,
