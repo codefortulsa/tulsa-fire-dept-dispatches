@@ -1,7 +1,6 @@
 
 <ul class="dispatch_listview"
     data-role="listview" 
-    data-inset="true" 
     >
 {% for dispatch in dispatches %}
     <li class="dispatch"
@@ -10,7 +9,6 @@
         {% endif %}
 
         {% if forloop.last %}
-            id="last_dispatch"
             data-tf-more-url="{% url dispatch_list dispatch.tf 20 dispatch_filter %}"        
         {% endif %}
         >

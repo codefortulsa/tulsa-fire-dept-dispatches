@@ -1,11 +1,19 @@
 {% spaceless %}
-
 <!DOCTYPE html> 
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Tulsa-Fire-Dispatch">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
     <title>{% block title %}Tulsa Fire Dispatch{% endblock %}</title> 
     {% include "resources.html" %}
     {% load static from staticfiles %}
+
+
+
           
 </head>
 <body>
@@ -103,54 +111,54 @@ function init_map_links(){
     $("a.map-link").on('click', function(event) {
         event.preventDefault();
 
-    if($(this).data('medical') & !user_is_authenticated){            
-            $.mobile.changePage( "{% url login %}", {
-            transition: "slide",
-            reverse: false,
+        if($(this).data('medical') & !user_is_authenticated){            
+                $.mobile.changePage( "{% url login %}", {
+                transition: "slide",
+                reverse: false,
+                });
+
+        } else {
+            $.mobile.loading( 'show', {
+                text: 'Loading Map',
+                textVisible: true,
             });
 
-    } else {
-        $.mobile.loading( 'show', {
-            text: 'Loading Map',
-            textVisible: true,
-        });
+            var dispatch_address=$(this).data('location'),
+            location_info = 
+                $(this).data('call_type_desc') + "</br>"
+                + dispatch_address
+                + "</br>Map Page: " + $(this).data('map_page');
 
-        var dispatch_address=$(this).data('location'),
-        location_info = 
-            $(this).data('call_type_desc') + "</br>"
-            + dispatch_address
-            + "</br>Map Page: " + $(this).data('map_page');
+            tf_map.dispatch.setAddress(dispatch_address)
+                .done(function(dsp_location){
+                
+                    tf_map.dispatch.setMarker(dsp_location, location_info)
+                
+                    .then(function(marker){
+                        tf_map.hydrants.getHydrants(marker.getPosition());
 
-        tf_map.dispatch.setAddress(dispatch_address)
-            .done(function(dsp_location){
+                        document.title=dispatch_address;
+                        $("#location_address").value=dispatch_address;
                 
-                tf_map.dispatch.setMarker(dsp_location, location_info)
-                
-                .then(function(marker){
-                    tf_map.hydrants.getHydrants(marker.getPosition());
-
-                    document.title=dispatch_address;
-                    $("#location_address").value=dispatch_address;
-                
-                    $.mobile.changePage( $("#map_page"), { transition: "slide",changeHash:true});
-                    $.mobile.loading('hide');
+                        $.mobile.changePage( $("#map_page"), { transition: "slide",changeHash:true});
+                        $.mobile.loading('hide');
                     
+                    });
+                })
+                .fail(function(){
+                    console.log("fail");
+                    $.mobile.loading('show', {
+                        html: 'Cannot find</br>'+dispatch_address,
+                        textVisible: true,
+                    });
+                    window.setTimeout(function(){
+                     $.mobile.loading('hide');   
+                    },1500);
                 });
-            })
-            .fail(function(){
-                console.log("fail");
-                $.mobile.loading('show', {
-                    html: 'Cannot find</br>'+dispatch_address,
-                    textVisible: true,
-                });
-                window.setTimeout(function(){
-                 $.mobile.loading('hide');   
-                },1500);
-            });
-    }
+        }
 
         
-    });//end of click
+        });//end of click
        
 };
 
@@ -188,10 +196,10 @@ function init_map_links(){
         
         var more_dispatches=$("li.dispatch",event.data);
         if (more_dispatches.length>0){
-            last_dispatch.attr("id", "xxx")     // this isn't last anymore
-            $(".dispatch_listview",$.mobile.activePage).append(more_dispatches).listview('refresh').trigger("create");
+            $(".dispatch_listview li:last-child",$.mobile.activePage).after(more_dispatches);
+            $(".dispatch_listview").listview('refresh').trigger("create");
             init_map_links();
-            last_dispatch=$("#last_dispatch", $.mobile.activePage); // reset the new last dispatch
+
         } else {
             $("#list_end",$.mobile.activePage).text("");
         }                   
@@ -201,7 +209,7 @@ function init_map_links(){
        if (last_li.length>0){
            distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
            if (distance_to_bottom > -2000) {
-               tf_more_url=last_dispatch.data("tf-more-url");
+               tf_more_url=$(".dispatch_listview li:last-child",$.mobile.activePage).data("tf-more-url");
                 if (tf_more_url){
                    getMoreDispatches_worker.postMessage(tf_more_url);
                 }
@@ -212,7 +220,7 @@ function init_map_links(){
  
     
    $("body").on('pagechange',function (){
-       last_dispatch=$("#last_dispatch", $.mobile.activePage);
+       // last_dispatch=$("#last_dispatch", $.mobile.activePage);
        init_map_links();       
    });
 
@@ -226,7 +234,7 @@ function init_map_links(){
         update_url=$(dispatch_listview.children()[0]).data("tf-update-url");
         newDispatch_worker.postMessage(update_url);
 
-        last_dispatch = $("#last_dispatch", this);
+        // last_dispatch = $("#last_dispatch", this);
         if (last_dispatch) {
             last_li = $("#list_end", this);
         }
