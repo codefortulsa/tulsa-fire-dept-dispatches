@@ -131,20 +131,20 @@ function init_map_links(){
 
             tf_map.dispatch.setAddress(dispatch_address)
                 .done(function(dsp_location){
-                
-                    tf_map.dispatch.setMarker(dsp_location, location_info)
-                
-                    .then(function(marker){
-                        tf_map.hydrants.getHydrants(marker.getPosition());
+                    tf_map.hydrants.getHydrants(dsp_location);
+                    document.title=dispatch_address;
+                    $("#location_address").value=dispatch_address;
+                    tf_map.setCenter(dsp_location);
 
-                        document.title=dispatch_address;
-                        $("#location_address").value=dispatch_address;
-                
-                        $.mobile.changePage( $("#map_page"), { transition: "slide",changeHash:true});
-                        $.mobile.loading('hide');
-                    
-                    });
+                    tf_map.dispatch.setMarker(dsp_location, location_info)
+                    .then(function(marker){
+                            
+                            $.mobile.changePage( $("#map_page"), { transition: "slide",changeHash:true});
+                            $.mobile.loading('hide');
+
+                        });
                 })
+
                 .fail(function(){
                     console.log("fail");
                     $.mobile.loading('show', {
@@ -155,7 +155,7 @@ function init_map_links(){
                      $.mobile.loading('hide');   
                     },1500);
                 });
-        }
+        }//end of med type if
 
         
         });//end of click
@@ -206,10 +206,14 @@ function init_map_links(){
     };    
   
    $(window).on('scrollstop', function() {
+       
+       last_li=$(".dispatch_listview li:last-child",$.mobile.activePage);
+       
        if (last_li.length>0){
-           distance_to_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
-           if (distance_to_bottom > -2000) {
-               tf_more_url=$(".dispatch_listview li:last-child",$.mobile.activePage).data("tf-more-url");
+           
+           distance_below_bottom = ($(window).scrollTop() + $(window).height()) - last_li.offset().top;
+           if (distance_below_bottom > -2000) {
+               tf_more_url=last_li.data("tf-more-url");
                 if (tf_more_url){
                    getMoreDispatches_worker.postMessage(tf_more_url);
                 }
@@ -220,7 +224,6 @@ function init_map_links(){
  
     
    $("body").on('pagechange',function (){
-       // last_dispatch=$("#last_dispatch", $.mobile.activePage);
        init_map_links();       
    });
 
@@ -234,17 +237,12 @@ function init_map_links(){
         update_url=$(dispatch_listview.children()[0]).data("tf-update-url");
         newDispatch_worker.postMessage(update_url);
 
-        // last_dispatch = $("#last_dispatch", this);
-        if (last_dispatch) {
-            last_li = $("#list_end", this);
-        }
-
     });
     
     $("#map_page").on('pageshow', function() {    
 
         google.maps.event.trigger(tf_map, 'resize');
-        tf_map.setCenter(tf_map.dispatch.marker.getPosition());
+        tf_map.panTo(tf_map.dispatch.marker.getPosition());
         
         google.maps.event.addListener(tf_map, 'center_changed', function() {
             tf_map.hydrants.getHydrants(tf_map.getCenter());
@@ -253,15 +251,17 @@ function init_map_links(){
 
     
     $("#map_page").on('pagehide', function(event,ui) {
+        
         //stop listening for map center changes
         google.maps.event.clearListeners(tf_map, 'center_changed');
+        
         //remove hydrant markers 
         tf_map.hydrants.clearHydrants();
 
         //reset the zoom if changed
-        if (tf_map.getZoom!=16){tf_map.setZoom(16); }
-        
-                
+        if (tf_map.getZoom!=16)
+            {tf_map.setZoom(16); }
+                     
     });
 
 </script>    

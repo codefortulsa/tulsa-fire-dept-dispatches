@@ -1,9 +1,6 @@
 "use strict";
 // dispatch list variables
-var dispatch_listview = [],
-    last_dispatch = [],
-    last_li = [];
-
+var Ï = [];
 
 $.fn.extend({
     disableSelection: function () {
@@ -112,6 +109,7 @@ var dispatch= function (owning_map) {
     tulsaBounds =  tulsaBounds ||  new google.maps.LatLngBounds(sw,ne);
        
     this.marker = null;
+    var infowindow=null;
         
     this.setMarker = function (dispatch_location,info_text) {
         var dfd = $.Deferred();
@@ -120,19 +118,27 @@ var dispatch= function (owning_map) {
             this.marker = this.marker || new google.maps.Marker({
                 map: owning_map,
                 icon: "/static/img/tfdd_map_icon.png"
-            });
-         
+            });            
+                
             this.marker.setPosition(dispatch_location);
         
             var info_html = "<div style='font-size: small '>"+info_text+"</div>"
+            
+            if (infowindow){
+                infowindow.close();
+                infowindow=null;
+            }
 
-            var infowindow = new google.maps.InfoWindow({
+            infowindow = new google.maps.InfoWindow({
                     content: info_html,
                     disableAutoPan:true
                     });
-
-             google.maps.event.addListener(this.marker, 'click', function () {
-               infowindow.open(owning_map,this.marker);
+            if(this.marker.removeEventListener){
+                this.marker.removeEventListener('click')                
+            }
+            
+             this.marker.addListener('click', function () {
+                infowindow.open(owning_map,this.marker);
              }); 
 
              infowindow.open(owning_map,this.marker);

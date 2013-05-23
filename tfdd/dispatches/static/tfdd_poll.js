@@ -1,14 +1,20 @@
-// this is a web worker to poll for new dispatches
-var intervalID;
+// this is a web worker to poll for incoming dispatches
+var intervalID,
+    request= request || new XMLHttpRequest();
+
+request.onreadystatechange = function () {
+    if (request.readyState === 4) {
+        // XHR state is DONE
+        if (request.status == 200) {
+            clearInterval(intervalID);
+            self.postMessage(request.responseText);
+        }
+    }
+};
 
 function checkforupdate(tfdd_update_url) {
-    var request = new XMLHttpRequest();
-    request.open('GET', tfdd_update_url, false);
+    request.open('GET', tfdd_update_url, true);
     request.send();
-    if (request.status === 200) {
-        clearInterval(intervalID);
-        self.postMessage(request.responseText);
-    }
 };
     
 self.onmessage = function(event) {

@@ -1,14 +1,20 @@
 // this is a web worker to get more dispatches at the end of a list
 
-var requested_url=null;
+var requested_url=null,
+    request= request || new XMLHttpRequest();
 
-function getdispatches(tfdd_url) {
-    var request = new XMLHttpRequest();
-    request.open('GET', tfdd_url, false);
-    request.send();
-    if (request.status === 200) {
-        self.postMessage(request.responseText);
+request.onreadystatechange = function () {
+    if (request.readyState === 4) {
+        // XHR state is DONE
+        if (request.status == 200) {
+            self.postMessage(request.responseText);
+        }
     }
+};
+
+var getdispatches = function (tfdd_url) {
+debugger;    request.open('GET', tfdd_url, true);
+    request.send();
 };
     
 self.onmessage = function(event) {
