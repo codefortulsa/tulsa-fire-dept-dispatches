@@ -1,6 +1,5 @@
 "use strict";
 // dispatch list variables
-var Ï = [];
 
 $.fn.extend({
     disableSelection: function () {
@@ -109,39 +108,34 @@ var dispatch= function (owning_map) {
     tulsaBounds =  tulsaBounds ||  new google.maps.LatLngBounds(sw,ne);
        
     this.marker = null;
-    var infowindow=null;
+    this.infowindow=null;
         
-    this.setMarker = function (dispatch_location,info_text) {
+    this.setMarker = function (dispatch_location) {
         var dfd = $.Deferred();
         if(dispatch_location){
+
 
             this.marker = this.marker || new google.maps.Marker({
                 map: owning_map,
                 icon: "/static/img/tfdd_map_icon.png"
             });            
-                
-            this.marker.setPosition(dispatch_location);
-        
-            var info_html = "<div style='font-size: small '>"+info_text+"</div>"
-            
-            if (infowindow){
-                infowindow.close();
-                infowindow=null;
-            }
 
-            infowindow = new google.maps.InfoWindow({
-                    content: info_html,
-                    disableAutoPan:true
-                    });
+            this.infowindow = this.infowindow || new google.maps.InfoWindow({
+                disableAutoPan:true
+            });
+
+            this.marker.setPosition(dispatch_location);
+                
+            this.infowindow.setPosition(dispatch_location);
+                    
             if(this.marker.removeEventListener){
-                this.marker.removeEventListener('click')                
+                owning_map.dispatch.marker.removeEventListener('click')                
             }
             
              this.marker.addListener('click', function () {
-                infowindow.open(owning_map,this.marker);
+                owning_map.dispatch.infowindow.open(owning_map,this.marker);
              }); 
-
-             infowindow.open(owning_map,this.marker);
+             
              dfd.resolve(this.marker);
         }
        
@@ -212,7 +206,6 @@ var tfdd_map= function (element) {
         var map_element = null,
         tulsaLatlng =  tulsaLatlng ||  new google.maps.LatLng(36.1539,-95.9925),
         dispatchMapOptions = {
-            visualRefresh:true,
             zoom: 16,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             center:tulsaLatlng,
@@ -240,8 +233,9 @@ var tfdd_map= function (element) {
 
     if (element !== map_element){
         map_element = element;
-        
-        this.map = new google.maps.Map(element, dispatchMapOptions);        
+        google.maps.visualRefresh=true;
+        this.map = new google.maps.Map(element, dispatchMapOptions); 
+               
         this.map.dispatch = new dispatch(this.map);
         this.map.hydrants = new hydrant_set(this.map);
     }

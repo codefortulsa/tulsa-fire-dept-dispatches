@@ -124,10 +124,13 @@ function init_map_links(){
             });
 
             var dispatch_address=$(this).data('location'),
-            location_info = 
-                $(this).data('call_type_desc') + "</br>"
+            location_info = "<div class='dsp_info'>"
+                +$(this).data('call_type_desc') + "</br>"
                 + dispatch_address
-                + "</br>Map Page: " + $(this).data('map_page');
+                + "</br>Map Page: " + $(this).data('map_page')
+                +"</div>";;
+                
+                $("#map_page").data("location_info",location_info);
 
             tf_map.dispatch.setAddress(dispatch_address)
                 .done(function(dsp_location){
@@ -136,9 +139,8 @@ function init_map_links(){
                     $("#location_address").value=dispatch_address;
                     tf_map.setCenter(dsp_location);
 
-                    tf_map.dispatch.setMarker(dsp_location, location_info)
+                    tf_map.dispatch.setMarker(dsp_location)
                     .then(function(marker){
-                            
                             $.mobile.changePage( $("#map_page"), { transition: "slide",changeHash:true});
                             $.mobile.loading('hide');
 
@@ -239,10 +241,14 @@ function init_map_links(){
 
     });
     
-    $("#map_page").on('pageshow', function() {    
-
+    $("#map_page").on('pageshow', function() {
+        
         google.maps.event.trigger(tf_map, 'resize');
         tf_map.panTo(tf_map.dispatch.marker.getPosition());
+        
+        tf_map.dispatch.infowindow.setContent($("#map_page").data("location_info"))
+        
+        tf_map.dispatch.infowindow.open(tf_map,tf_map.dispatch.marker);
         
         google.maps.event.addListener(tf_map, 'center_changed', function() {
             tf_map.hydrants.getHydrants(tf_map.getCenter());
