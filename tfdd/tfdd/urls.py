@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from django.views.generic import RedirectView
 
 
 admin.autodiscover()
@@ -10,8 +11,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^gm/', include('gm.urls')), 
+    url(r'^gm/', include('gm.urls')),
     url(r'^dispatches/', include('dispatches.urls')),
-    url(r'^$', 'django.views.generic.simple.redirect_to',
-        dict(url='/dispatches/', permanent=False)),
+    url(r'^$', RedirectView.as_view(url='/dispatches/'))
 )

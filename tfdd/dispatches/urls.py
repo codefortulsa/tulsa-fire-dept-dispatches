@@ -1,5 +1,4 @@
 from django.conf.urls import url, patterns
-from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns(
     'dispatches.views',
@@ -21,5 +20,4 @@ urlpatterns = patterns(
     url(r'^register/email/$', 'register_email', name='register_email'),
     url(r'^about/$', 'about',name='about'),
     url(r'^$', 'index', name='dispatches'),
-    
 )
