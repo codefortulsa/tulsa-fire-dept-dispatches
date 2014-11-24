@@ -33,16 +33,18 @@ class Command(BaseCommand):
                 map_page=1,
                 tf=1
             )
-            if created:
-                dispatch.save()
             units = []
             if type(incident['Vehicles']['Vehicle']) == list:
                 for vehicle in incident['Vehicles']['Vehicle']:
-                    unit, created = Unit.objects.get_or_create(id=vehicle['VehicleID'])
-                    units.append(unit)
+                    vehicle_id = vehicle.get('VehicleID')
+                    if vehicle_id:
+                        unit, created = Unit.objects.get_or_create(id=vehicle_id)
+                        units.append(unit)
             else:
-                vehicle = incident['Vehicles']['Vehicle']
-                unit, created = Unit.objects.get_or_create(id=vehicle['VehicleID'])
+                vehicle_id = incident['Vehicles']['Vehicle'].get('VehicleID')
+                if vehicle_id:
+                    unit, created = Unit.objects.get_or_create(id=vehicle_id)
+                    units.append(unit)
             dispatch.units.add(*units)
             if created:
                 dispatch.notify_listeners()
