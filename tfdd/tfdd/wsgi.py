@@ -21,7 +21,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tfdd.settings")
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 from django.core.wsgi import get_wsgi_application
-from whitenoise.django import DjangoWhiteNoise
+from dj_static import Cling
 
 application = get_wsgi_application()
-application = DjangoWhiteNoise(application)
+application = Cling(application)
