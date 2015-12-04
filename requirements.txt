@@ -15,3 +15,4 @@ mox==0.5.3
 django-nose==1.1
 git+git://github.com/ConsumerAffairs/django-whatever.git@master#egg=django-whatever
 django-toolbelt==0.0.1
+whitenoise==2.0.6
